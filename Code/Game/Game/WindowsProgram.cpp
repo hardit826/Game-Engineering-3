@@ -45,6 +45,7 @@ int CreateMainWindowAndReturnExitCodeWhenItCloses( const HINSTANCE i_thisInstanc
 	// Try to create the main window
 	if ( CreateMainWindow( i_thisInstanceOfTheProgram, i_initialWindowDisplayState ) )
 	{
+		eae6320::Graphics::Initialize(s_mainWindow);
 		// If the main window was successfully created wait for it to be closed
 		const int exitCode = WaitForMainWindowToCloseAndReturnExitCode( i_thisInstanceOfTheProgram );
 		return exitCode;
@@ -485,6 +486,8 @@ bool WaitForMainWindowToClose( int& o_exitCode )
 			// A real game might have something like the following:
 			//	someGameClass.OnNewFrame();
 			// or similar, though.)
+			eae6320::Graphics::Render();
+
 		}
 		else
 		{
@@ -505,6 +508,8 @@ bool WaitForMainWindowToClose( int& o_exitCode )
 			DispatchMessage( &message );
 		}
 	} while ( message.message != WM_QUIT );
+
+	eae6320::Graphics::ShutDown();
 
 	// The exit code for the application is stored in the WPARAM of a WM_QUIT message
 	o_exitCode = static_cast<int>( message.wParam );
