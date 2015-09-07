@@ -157,7 +157,7 @@ void eae6320::Graphics::Render()
 			// It's possible to start rendering primitives in the middle of the stream
 			const GLint indexOfFirstVertexToRender = 0;
 			// We are drawing a single triangle
-			const GLsizei vertexCountToRender = 3;
+			const GLsizei vertexCountToRender = 6;
 			glDrawArrays( mode, indexOfFirstVertexToRender, vertexCountToRender );
 			assert( glGetError() == GL_NO_ERROR );
 		}
@@ -484,8 +484,9 @@ namespace
 		// Assign the data to the buffer
 		{
 			// We are drawing a single triangle
+			const int numTriangles = 2;
 			const unsigned int verticesPerTriangle = 3;
-			sVertex vertexData[verticesPerTriangle];
+			sVertex vertexData[verticesPerTriangle * numTriangles];
 			// Fill in the data for the triangle
 			{
 				vertexData[0].x = 0.0f;
@@ -496,8 +497,18 @@ namespace
 
 				vertexData[2].x = 1.0f;
 				vertexData[2].y = 1.0f;
+
+				vertexData[3].x = 0.0f;
+				vertexData[3].y = 0.0f;
+
+				vertexData[4].x = 1.0f;
+				vertexData[4].y = 1.0f;
+
+				vertexData[5].x = 0.0f;
+				vertexData[5].y = 1.0f;
+
 			}
-			glBufferData( GL_ARRAY_BUFFER, sizeof( sVertex ) * verticesPerTriangle, reinterpret_cast<GLvoid*>( vertexData ),
+			glBufferData( GL_ARRAY_BUFFER, sizeof( sVertex ) * verticesPerTriangle * numTriangles, reinterpret_cast<GLvoid*>( vertexData ),
 				// Our code will only ever write to the buffer
 				GL_STATIC_DRAW );
 			const GLenum errorCode = glGetError();
