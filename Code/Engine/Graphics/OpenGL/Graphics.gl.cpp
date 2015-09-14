@@ -13,28 +13,32 @@
 #include "../../UserOutput/UserOutput.h"
 #include "../../Windows/WindowsFunctions.h"
 #include "../../../External/OpenGlExtensions/OpenGlExtensions.h"
+#include "../../Graphics/Mesh.h"
 
 // Static Data Initialization
 //===========================
 
 namespace
 {
+
 	HWND s_renderingWindow = NULL;
 	HDC s_deviceContext = NULL;
 	HGLRC s_openGlRenderingContext = NULL;
+	eae6320::Graphics::Mesh *s_Mesh = NULL;
 
-	// This struct determines the layout of the data that the CPU will send to the GPU
-	struct sVertex
-	{
-		// POSITION
-		// 2 floats == 8 bytes
-		// Offset = 0
-		float x, y;
-		// COLOR0
-		// 4 uint8_ts == 4 bytes
-		// Offset = 8
-		uint8_t r, g, b, a;	// 8 bits [0,255] per RGBA channel (the alpha channel is unused but is present so that color uses a full 4 bytes)
-	};
+
+	//// This struct determines the layout of the data that the CPU will send to the GPU
+	//struct sVertex
+	//{
+	//	// POSITION
+	//	// 2 floats == 8 bytes
+	//	// Offset = 0
+	//	float x, y;
+	//	// COLOR0
+	//	// 4 uint8_ts == 4 bytes
+	//	// Offset = 8
+	//	uint8_t r, g, b, a;	// 8 bits [0,255] per RGBA channel (the alpha channel is unused but is present so that color uses a full 4 bytes)
+	//};
 
 	// A vertex array encapsulates both the vertex and index data as well as the vertex format
 	GLuint s_vertexArrayId = 0;
@@ -126,6 +130,8 @@ OnError:
 
 void eae6320::Graphics::Render()
 {
+
+
 	// Every frame an entirely new image will be created.
 	// Before drawing anything, then, the previous image will be erased
 	// by "clearing" the image buffer (filling it with a solid color)
@@ -147,29 +153,32 @@ void eae6320::Graphics::Render()
 			glUseProgram( s_programId );
 			assert( glGetError() == GL_NO_ERROR );
 		}
-		// Bind a specific vertex buffer to the device as a data source
-		{
-			glBindVertexArray( s_vertexArrayId );
-			assert( glGetError() == GL_NO_ERROR );
-		}
-		// Render objects from the current streams
-		{
-			// We are using triangles as the "primitive" type,
-			// and we have defined the vertex buffer as a triangle list
-			// (meaning that every triangle is defined by three vertices)
-			const GLenum mode = GL_TRIANGLES;
-			// We'll use 32-bit indices in this class to keep things simple
-			// (i.e. every index will be a 32 bit unsigned integer)
-			const GLenum indexType = GL_UNSIGNED_INT;
-			// It is possible to start rendering in the middle of an index buffer
-			const GLvoid* const offset = 0;
-			// We are drawing a square
-			const GLsizei primitiveCountToRender = 2;	// How many triangles will be drawn?
-			const GLsizei vertexCountPerTriangle = 3;
-			const GLsizei vertexCountToRender = primitiveCountToRender * vertexCountPerTriangle;
-			glDrawElements( mode, vertexCountToRender, indexType, offset );
-			assert( glGetError() == GL_NO_ERROR );
-		}
+		s_Mesh = new eae6320::Graphics::Mesh(s_vertexArrayId);
+		s_Mesh->DrawMesh();
+
+		//// Bind a specific vertex buffer to the device as a data source
+		//{
+		//	glBindVertexArray( s_vertexArrayId );
+		//	assert( glGetError() == GL_NO_ERROR );
+		//}
+		//// Render objects from the current streams
+		//{
+		//	// We are using triangles as the "primitive" type,
+		//	// and we have defined the vertex buffer as a triangle list
+		//	// (meaning that every triangle is defined by three vertices)
+		//	const GLenum mode = GL_TRIANGLES;
+		//	// We'll use 32-bit indices in this class to keep things simple
+		//	// (i.e. every index will be a 32 bit unsigned integer)
+		//	const GLenum indexType = GL_UNSIGNED_INT;
+		//	// It is possible to start rendering in the middle of an index buffer
+		//	const GLvoid* const offset = 0;
+		//	// We are drawing a square
+		//	const GLsizei primitiveCountToRender = 2;	// How many triangles will be drawn?
+		//	const GLsizei vertexCountPerTriangle = 3;
+		//	const GLsizei vertexCountToRender = primitiveCountToRender * vertexCountPerTriangle;
+		//	glDrawElements( mode, vertexCountToRender, indexType, offset );
+		//	assert( glGetError() == GL_NO_ERROR );
+		//}
 	}
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
@@ -493,9 +502,11 @@ namespace
 		}
 		// Assign the data to the buffer
 		{
+			
 			// We are drawing a square
 			const unsigned int vertexCount = 4;	// What is the minimum number of vertices a square needs (so that no data is duplicated)?
-			sVertex vertexData[vertexCount];
+			eae6320::Graphics::Mesh::sVertex vertexData[vertexCount];
+
 			// Fill in the data for the triangle
 			{
 				// You will need to fill in two pieces of information for each vertex:
@@ -551,7 +562,7 @@ namespace
 				vertexData[3].b = 0;
 				vertexData[3].a = 255;
 			}
-			glBufferData( GL_ARRAY_BUFFER, vertexCount * sizeof( sVertex ), reinterpret_cast<GLvoid*>( vertexData ),
+			glBufferData( GL_ARRAY_BUFFER, vertexCount * sizeof(eae6320::Graphics::Mesh::sVertex), reinterpret_cast<GLvoid*>( vertexData ),
 				// Our code will only ever write to the buffer
 				GL_STATIC_DRAW );
 			const GLenum errorCode = glGetError();
@@ -567,7 +578,7 @@ namespace
 		}
 		// Initialize the vertex format
 		{
-			const GLsizei stride = sizeof( sVertex );
+			const GLsizei stride = sizeof(eae6320::Graphics::Mesh::sVertex);
 			GLvoid* offset = 0;
 
 			// Position (0)

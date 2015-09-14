@@ -20,6 +20,7 @@ namespace eae6320
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();
 		bool ShutDown();
+
 	}
 }
 
