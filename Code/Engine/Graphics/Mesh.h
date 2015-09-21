@@ -4,7 +4,8 @@
 // Header Files
 //=============
 #include "d3d9.h"
-#include <gl/GLU.h>
+//#include <gl/GLU.h>
+
 #include <cstdint>
 #include "../Windows/WindowsIncludes.h"
 
