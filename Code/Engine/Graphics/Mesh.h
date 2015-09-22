@@ -3,7 +3,10 @@
 
 // Header Files
 //=============
+//Made the platform preprocessor for Direct3D as mentioned by John Paul and Duncan
+#ifdef EAE6320_PLATFORM_D3D
 #include "d3d9.h"
+#endif
 //#include <gl/GLU.h>
 
 #include <cstdint>
@@ -37,10 +40,10 @@ namespace eae6320
 			IDirect3DVertexBuffer9* s_vertexBuffer;
 			IDirect3DIndexBuffer9* s_indexBuffer;
 			IDirect3DVertexDeclaration9* s_vertexDeclaration;
-			IDirect3DDevice9* s_direct3dDevice;
+			
 
 		public:
-
+			IDirect3DDevice9* s_direct3dDevice;
 			Mesh(IDirect3DVertexBuffer9* i_vertexBuffer, IDirect3DIndexBuffer9* i_indexBuffer, IDirect3DVertexDeclaration9* i_vertexDeclaration):
 				s_vertexBuffer(i_vertexBuffer),
 				s_indexBuffer(i_indexBuffer),
@@ -59,17 +62,37 @@ namespace eae6320
 				// COLOR0
 				// 4 uint8_ts == 4 bytes
 				// Offset = 8
+
+//Seperate platform for OpenGl and Direct3D as mentioned by John Paul.
+#if defined EAE6320_PLATFORM_D3D
 				uint8_t b, g, r, a;	// Direct3D expects the byte layout of a color to be different from what you might expect
+#elif defined EAE6320_PLATFORM_GL
+				uint8_t r, g, b, a;
+#endif
+
 			};
 
-			sVertex* vertexData;
+			//sVertex* vertexData;
 
-			sVertex* GetVertexData()
-			{
-				return vertexData;
-			}
+			//sVertex* GetVertexData()
+			//{
+			//	return vertexData;
+			//}
 
+			bool LoadMesh(const char* const i_path);
 			void DrawMesh();
+
+			bool CreateIndexBuffer();
+			bool CreateVertexBuffer();
+			HRESULT GetVertexProcessingUsage(DWORD& o_usage);
+
+			unsigned int m_vertexCount;
+			unsigned int m_indexCount;
+			sVertex *m_vertexData;
+			uint32_t *m_indexData;
+
+		private:
+			bool LoadGraphicsMeshData();
 
 		};
 	}

@@ -27,6 +27,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="OpenGL\Graphics.gl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -131,7 +132,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>UserOutput.lib;OpenGlExtensions.lib;glu32.lib;Opengl32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Windows.lib;UserOutput.lib;Lua.lib;UserOutput.lib;OpenGlExtensions.lib;glu32.lib;Opengl32.lib</AdditionalDependencies>
       <AdditionalOptions>/ignore:4006,4221 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
@@ -149,7 +150,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>Windows.lib;UserOutput.lib;d3dx9.lib;d3d9.lib</AdditionalDependencies>
+      <AdditionalDependencies>Windows.lib;UserOutput.lib;Lua.lib;Windows.lib;UserOutput.lib;d3dx9.lib;d3d9.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(LibDir);$(DXSDK_DIR)Lib\x64\</AdditionalLibraryDirectories>
@@ -174,7 +175,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>UserOutput.lib;OpenGlExtensions.lib;glu32.lib;Opengl32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Windows.lib;UserOutput.lib;Lua.lib;UserOutput.lib;OpenGlExtensions.lib;glu32.lib;Opengl32.lib</AdditionalDependencies>
       <AdditionalOptions>/ignore:4006,4221 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
@@ -196,7 +197,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>Windows.lib;UserOutput.lib;d3dx9.lib;d3d9.lib</AdditionalDependencies>
+      <AdditionalDependencies>Windows.lib;UserOutput.lib;Lua.lib;Windows.lib;UserOutput.lib;d3dx9.lib;d3d9.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(LibDir);$(DXSDK_DIR)Lib\x64\</AdditionalLibraryDirectories>
