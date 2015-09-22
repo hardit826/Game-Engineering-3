@@ -92,8 +92,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_renderingWindow = i_renderingWindow;
 	
 	//new
-	s_Mesh = new Mesh(s_vertexBuffer, s_indexBuffer, s_vertexDeclaration);
-	s_Mesh->s_direct3dDevice = s_direct3dDevice;
+	//s_Mesh->s_direct3dDevice = s_direct3dDevice;
 
 	// Initialize the interface to the Direct3D9 library
 	if ( !CreateInterface() )
@@ -105,6 +104,8 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	{
 		goto OnError;
 	}
+
+	s_Mesh = new Mesh(s_vertexBuffer, s_indexBuffer, s_vertexDeclaration);
 
 	// Initialize the graphics objects
 

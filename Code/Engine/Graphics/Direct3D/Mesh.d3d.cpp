@@ -38,12 +38,12 @@ void eae6320::Graphics::Mesh::DrawMesh()
 		const unsigned int bufferOffset = 0;
 		// The "stride" defines how large a single vertex is in the stream of data
 		const unsigned int bufferStride = sizeof(sVertex);
-		result = o_direct3dDevice->SetStreamSource(streamIndex, s_vertexBuffer, bufferOffset, bufferStride);
+		result = o_direct3dDevice->SetStreamSource(streamIndex, o_vertexBuffer, bufferOffset, bufferStride);
 		assert(SUCCEEDED(result));
 	}
 	// Bind a specific index buffer to the device as a data source
 	{
-		result = o_direct3dDevice->SetIndices(s_indexBuffer);
+		result = o_direct3dDevice->SetIndices(o_indexBuffer);
 		assert(SUCCEEDED(result));
 	}
 	// Render objects from the current streams
