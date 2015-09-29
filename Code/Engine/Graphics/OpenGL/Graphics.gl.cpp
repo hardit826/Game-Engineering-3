@@ -24,7 +24,8 @@ namespace
 	HWND s_renderingWindow = NULL;
 	HDC s_deviceContext = NULL;
 	HGLRC s_openGlRenderingContext = NULL;
-	eae6320::Graphics::Mesh *s_Mesh = NULL;
+	eae6320::Graphics::Mesh *s_Mesh_Rectangle = NULL;
+	eae6320::Graphics::Mesh *s_Mesh_Triangle  = NULL;
 
 
 	//// This struct determines the layout of the data that the CPU will send to the GPU
@@ -94,7 +95,8 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 {
 	s_renderingWindow = i_renderingWindow;
 
-	s_Mesh = new eae6320::Graphics::Mesh(s_vertexArrayId);
+	s_Mesh_Rectangle = new eae6320::Graphics::Mesh(s_vertexArrayId);
+	s_Mesh_Triangle = new eae6320::Graphics::Mesh(s_vertexArrayId);
 	// Create an OpenGL rendering context
 	if ( !CreateRenderingContext() )
 	{
@@ -112,7 +114,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	}
 
 	// Initialize the graphics objects
-	if ( !s_Mesh->LoadMesh("data/rectangle.mesh")|| !s_Mesh->LoadMesh("data/triangle.mesh"))
+	if ( !s_Mesh_Rectangle->LoadMesh("data/rectangle.mesh")|| !s_Mesh_Triangle->LoadMesh("data/triangle.mesh"))
 	{
 		goto OnError;
 	}
@@ -155,7 +157,8 @@ void eae6320::Graphics::Render()
 			assert( glGetError() == GL_NO_ERROR );
 		}
 		
-		s_Mesh->DrawMesh();
+		s_Mesh_Rectangle->DrawMesh();
+		s_Mesh_Triangle->DrawMesh();
 
 		//// Bind a specific vertex buffer to the device as a data source
 		//{
