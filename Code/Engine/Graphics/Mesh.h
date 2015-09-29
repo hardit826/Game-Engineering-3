@@ -37,17 +37,17 @@ namespace eae6320
 
 #if defined EAE6320_PLATFORM_D3D
 			//Parameterized constructor for Mesh
-			IDirect3DVertexBuffer9* s_vertexBuffer;
-			IDirect3DIndexBuffer9* s_indexBuffer;
-			IDirect3DVertexDeclaration9* s_vertexDeclaration;
+			IDirect3DVertexBuffer9* m_vertexBuffer;
+			IDirect3DIndexBuffer9* m_indexBuffer;
+			IDirect3DVertexDeclaration9* m_vertexDeclaration;
 			
 
 		public:
 			IDirect3DDevice9* s_direct3dDevice;
 			Mesh(IDirect3DVertexBuffer9* i_vertexBuffer, IDirect3DIndexBuffer9* i_indexBuffer, IDirect3DVertexDeclaration9* i_vertexDeclaration):
-				s_vertexBuffer(i_vertexBuffer),
-				s_indexBuffer(i_indexBuffer),
-				s_vertexDeclaration(i_vertexDeclaration){}
+				m_vertexBuffer(i_vertexBuffer),
+				m_indexBuffer(i_indexBuffer),
+				m_vertexDeclaration(i_vertexDeclaration){}
 
 
 #endif //EAE6320_PLATFORM_D3D

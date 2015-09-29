@@ -41,7 +41,8 @@ namespace
 	// (i.e. it defines the vertex connectivity)
 	IDirect3DIndexBuffer9* s_indexBuffer = NULL;
 
-	eae6320::Graphics::Mesh *s_Mesh;
+	eae6320::Graphics::Mesh *s_Mesh_Rectangle = NULL;
+	eae6320::Graphics::Mesh *s_Mesh_Triangle = NULL;
 
 	// The vertex shader is a program that operates on vertices.
 	// Its input comes from a C/C++ "draw call" and is:
@@ -82,10 +83,10 @@ namespace
 // Interface
 //==========
 
-IDirect3DDevice9* eae6320::Graphics::GetLocalDirect3dDevice()
-{
-	return s_direct3dDevice;
-}
+//IDirect3DDevice9* eae6320::Graphics::GetLocalDirect3dDevice()
+//{
+//	return s_direct3dDevice;
+//}
 
 bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 {
@@ -105,7 +106,8 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 		goto OnError;
 	}
 
-	s_Mesh = new Mesh(s_vertexBuffer, s_indexBuffer, s_vertexDeclaration);
+	s_Mesh_Rectangle = new Mesh(s_vertexBuffer, s_indexBuffer, s_vertexDeclaration);
+	s_Mesh_Triangle = new Mesh(s_vertexBuffer, s_indexBuffer, s_vertexDeclaration);
 
 	// Initialize the graphics objects
 
@@ -122,7 +124,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 		goto OnError;
 	}
 
-	if (!s_Mesh->LoadMesh("data/rectangle.mesh"))
+	if (!s_Mesh_Rectangle->LoadMesh("data/rectangle.mesh")|| !s_Mesh_Triangle->LoadMesh("data/triangle.mesh"))
 	{
 		goto OnError;
 	}
@@ -170,7 +172,8 @@ void eae6320::Graphics::Render()
 			}
 			/*s_Mesh = new Mesh(s_vertexBuffer, s_indexBuffer, s_vertexDeclaration);
 			s_Mesh->s_direct3dDevice = s_direct3dDevice;*/
-			s_Mesh->DrawMesh();
+			s_Mesh_Rectangle->DrawMesh();
+			s_Mesh_Triangle->DrawMesh();
 			// Bind a specific vertex buffer to the device as a data source
 			//{
 			//	// There can be multiple streams of data feeding the display adaptor at the same time
@@ -270,10 +273,10 @@ bool eae6320::Graphics::ShutDown()
 
 	return !wereThereErrors;
 }
-//IDirect3DDevice9* eae6320::Graphics::GetLocalDirect3dDevice()
-//{
-//	return s_direct3dDevice;
-//}
+IDirect3DDevice9* eae6320::Graphics::GetLocalDirect3dDevice()
+{
+	return s_direct3dDevice;
+}
 
 // Helper Function Definitions
 //============================

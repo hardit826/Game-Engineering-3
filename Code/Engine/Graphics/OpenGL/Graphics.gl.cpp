@@ -112,7 +112,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	}
 
 	// Initialize the graphics objects
-	if ( !s_Mesh->LoadMesh("data/rectangle.mesh") )
+	if ( !s_Mesh->LoadMesh("data/rectangle.mesh")|| !s_Mesh->LoadMesh("data/triangle.mesh"))
 	{
 		goto OnError;
 	}
