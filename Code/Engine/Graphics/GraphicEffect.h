@@ -33,6 +33,17 @@ namespace eae6320
 		public:
 			//constructor for GraphicEffect GL
 			GraphicEffect(GLuint i_programID) : o_programID(i_programID){}
+
+		private:
+
+			struct sLogInfo
+			{
+				GLchar* memory;
+				sLogInfo(const size_t i_size) { memory = reinterpret_cast<GLchar*>(malloc(i_size)); }
+				~sLogInfo() { if (memory) free(memory); }
+			};
+
+			bool eae6320::Graphics::GraphicEffect::LoadAndAllocateShaderProgram(const char* i_path, void*& o_shader, size_t& o_size, std::string* o_errorMessage);
 		
 #endif
 		private:
@@ -43,7 +54,7 @@ namespace eae6320
 
 
 		public:
-			bool LoadShaders(char* i_vertexShaderPath, char* i_fragmentShaderPath);
+			bool LoadShaders(char* const i_vertexShaderPath, char* const i_fragmentShaderPath);
 			void SetPath();
 
 

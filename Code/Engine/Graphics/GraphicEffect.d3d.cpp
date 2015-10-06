@@ -5,7 +5,7 @@
 #include "../UserOutput/UserOutput.h"
 #include "../Graphics/Graphics.h"
 
-bool eae6320::Graphics::GraphicEffect::LoadShaders(char* i_vertexShaderPath, char* i_fragmentShaderPath)
+bool eae6320::Graphics::GraphicEffect::LoadShaders(char* const i_vertexShaderPath, char* const i_fragmentShaderPath)
 {
 	o_vertexShaderPath = i_vertexShaderPath;
 	o_fragmentShaderPath = i_fragmentShaderPath;
