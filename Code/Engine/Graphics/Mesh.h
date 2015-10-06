@@ -89,11 +89,15 @@ namespace eae6320
 			unsigned int m_vertexCount;
 			unsigned int m_indexCount;
 			sVertex *m_vertexData;
+
 			uint32_t *m_indexData;
 
-		private:
-			bool LoadGraphicsMeshData();
+			char * m_tempBinReadBuffer;
 
+		private:
+			bool ReadBinMeshFile(const char* const i_path);
+			bool LoadGraphicsMeshData();
+			
 		};
 	}
 }
