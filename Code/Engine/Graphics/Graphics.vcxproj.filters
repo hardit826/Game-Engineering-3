@@ -22,9 +22,16 @@
       <Filter>OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="GraphicEffect.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicEffect.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="GraphicEffect.h" />
   </ItemGroup>
 </Project>
