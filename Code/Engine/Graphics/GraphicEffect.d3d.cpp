@@ -5,11 +5,18 @@
 #include "../UserOutput/UserOutput.h"
 #include "../Graphics/Graphics.h"
 
-bool eae6320::Graphics::GraphicEffect::LoadShaders(char* const i_vertexShaderPath, char* const i_fragmentShaderPath)
+eae6320::Graphics::GraphicEffect::GraphicEffect(char* const i_vertexShaderPath, char* const i_fragmentShaderPath)
 {
+	o_vertexShader = NULL;
+	o_fragmentShader = NULL;
 	o_vertexShaderPath = i_vertexShaderPath;
 	o_fragmentShaderPath = i_fragmentShaderPath;
 	s_direct3dDevice = Graphics::GetLocalDirect3dDevice();
+}
+
+bool eae6320::Graphics::GraphicEffect::LoadShaders()
+{
+	
 	if (!LoadVertexShader())
 	{
 		return false;
@@ -30,6 +37,17 @@ void eae6320::Graphics::GraphicEffect::SetPath()
 	assert(SUCCEEDED(result));
 }
 
+void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cVector i_offset)
+{
+	HRESULT result;
+	{
+		float floatCount = 2;
+		float floatArray[] = { i_offset.x , i_offset.y };
+		result = o_vertexShaderConstantTable->SetFloatArray(eae6320::Graphics::GetLocalDirect3dDevice(),o_d3dHandle,floatArray,floatCount);
+		assert(SUCCEEDED(result));
+	}
+}
+
 bool eae6320::Graphics::GraphicEffect::LoadVertexShader()
 {
 	// Load the source code from file and compile it
@@ -46,9 +64,13 @@ bool eae6320::Graphics::GraphicEffect::LoadVertexShader()
 		const char* profile = "vs_3_0";
 		const DWORD noFlags = 0;
 		ID3DXBuffer* errorMessages = NULL;
-		ID3DXConstantTable** noConstants = NULL;
+		//ID3DXConstantTable** noConstants = NULL;
 		HRESULT result = D3DXCompileShaderFromFile(o_vertexShaderPath, defines, noIncludes, entryPoint, profile, noFlags,
-			&compiledShader, &errorMessages, noConstants);
+			&compiledShader, &errorMessages, &o_vertexShaderConstantTable);
+
+		o_d3dHandle = o_vertexShaderConstantTable->GetConstantByName(NULL, "g_position_offset");
+
+
 		if (SUCCEEDED(result))
 		{
 			if (errorMessages)
@@ -148,5 +170,19 @@ bool eae6320::Graphics::GraphicEffect::LoadFragmentShader()
 		compiledShader->Release();
 	}
 	return !wereThereErrors;
+}
+
+void eae6320::Graphics::GraphicEffect::ReleaseEffect()
+{
+	if (o_fragmentShader)
+	{
+		o_fragmentShader->Release();
+		o_fragmentShader = NULL;
+	}
+	if (o_vertexShader)
+	{
+		o_vertexShader->Release();
+		o_vertexShader = NULL;
+	}
 }
 

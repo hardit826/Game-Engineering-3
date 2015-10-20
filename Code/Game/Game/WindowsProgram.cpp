@@ -13,7 +13,10 @@
 // WindowsFunctions.h contains convenience functionality for Windows features;
 // in this example program we just use it to get error messages
 #include "Windows/WindowsFunctions.h"
-
+#include "../../Engine/Time/Time.h"
+#include "../../Engine/Math/cVector.h"
+#include "../../Engine/Graphics/Graphics.h"
+#include "../../Engine/UserInput/UserInput.h"
 // Static Data Initialization
 //===========================
 
@@ -448,6 +451,46 @@ bool UnregisterMainWindowClass( const HINSTANCE i_thisInstanceOfTheProgram )
 	}
 }
 
+bool UpdateEntities_vector()
+{
+	bool wereThereErrors = false;
+
+	eae6320::Math::cVector offset(0.0f, 0.0f);
+	{
+		// Get the direction
+		{
+			if (eae6320::UserInput::IsKeyPressed(VK_LEFT))
+			{
+				offset.x -= 1.0f;
+			}
+			if (eae6320::UserInput::IsKeyPressed(VK_RIGHT))
+			{
+				offset.x += 1.0f;
+			}
+			if (eae6320::UserInput::IsKeyPressed(VK_UP))
+			{
+				offset.y += 1.0f;
+			}
+			if (eae6320::UserInput::IsKeyPressed(VK_DOWN))
+			{
+				offset.y -= 1.0f;
+			}
+		}
+		// Get the speed
+		const float unitsPerSecond = 1.0f;	// This is arbitrary
+		const float unitsToMove = unitsPerSecond * eae6320::Time::GetSecondsElapsedThisFrame();	// This makes the speed frame-rate-independent
+																								// Normalize the offset
+		offset *= unitsToMove;
+	}
+	// The following line assumes there is some "entity" for the rectangle that the game code controls
+	// that encapsulates a mesh, an effect, and a position offset.
+	// You don't have to do it this way for your assignment!
+	// You just need a way to update the position offset associated with the colorful rectangle.
+	eae6320::Graphics::s_rectangle_object->UpdatePosition(offset);
+
+	return !wereThereErrors;
+}
+
 bool WaitForMainWindowToClose( int& o_exitCode )
 {
 	// Any time something happens that Windows cares about, it will send the main window a message.
@@ -486,6 +529,10 @@ bool WaitForMainWindowToClose( int& o_exitCode )
 			// A real game might have something like the following:
 			//	someGameClass.OnNewFrame();
 			// or similar, though.)
+
+			eae6320::Time::OnNewFrame();
+			
+			UpdateEntities_vector();
 			eae6320::Graphics::Render();
 
 		}

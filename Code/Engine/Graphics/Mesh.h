@@ -31,7 +31,7 @@ namespace eae6320
 			GLuint s_vertexArrayId;
 			//Parameterized constructor for Mesh
 		public:
-			Mesh(GLuint i_vertexArrayId): s_vertexArrayId(i_vertexArrayId){}
+			//Mesh(GLuint i_vertexArrayId): s_vertexArrayId(i_vertexArrayId){}
 
 #endif //EAE6320_PLATFORM_GL
 
@@ -44,10 +44,10 @@ namespace eae6320
 
 		public:
 			IDirect3DDevice9* s_direct3dDevice;
-			Mesh(IDirect3DVertexBuffer9* i_vertexBuffer, IDirect3DIndexBuffer9* i_indexBuffer, IDirect3DVertexDeclaration9* i_vertexDeclaration):
+			/*Mesh(IDirect3DVertexBuffer9* i_vertexBuffer, IDirect3DIndexBuffer9* i_indexBuffer, IDirect3DVertexDeclaration9* i_vertexDeclaration):
 				m_vertexBuffer(i_vertexBuffer),
 				m_indexBuffer(i_indexBuffer),
-				m_vertexDeclaration(i_vertexDeclaration){}
+				m_vertexDeclaration(i_vertexDeclaration){}*/
 
 
 #endif //EAE6320_PLATFORM_D3D
@@ -79,21 +79,25 @@ namespace eae6320
 			//	return vertexData;
 			//}
 
-			bool LoadMesh(const char* const i_path);
-			void DrawMesh();
+		private:
+			uint32_t m_vertexCount;
+			uint32_t m_indexCount;
+			uint32_t *m_indexData;
+			sVertex *m_vertexData;
+			char * m_tempBinReadBuffer;
+			char* m_mesh_path;
 
+		private:
 			bool CreateIndexBuffer();
 			bool CreateVertexBuffer();
 			HRESULT GetVertexProcessingUsage(DWORD& o_usage);
 
-			unsigned int m_vertexCount;
-			unsigned int m_indexCount;
-			sVertex *m_vertexData;
-
-			uint32_t *m_indexData;
-
-			char * m_tempBinReadBuffer;
-
+		public:
+			Mesh(char* i_mesh_path);
+			bool LoadMesh();
+			void DrawMesh();
+			void ReleaseMesh();
+		
 		private:
 			bool ReadBinMeshFile(const char* const i_path);
 			bool LoadGraphicsMeshData();

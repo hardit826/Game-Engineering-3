@@ -14,9 +14,14 @@
 #include "../../Windows/WindowsFunctions.h"
 #include "../../../External/OpenGlExtensions/OpenGlExtensions.h"
 #include "../../Graphics/Mesh.h"
+#include "../GameObject.h"
 
 // Static Data Initialization
 //===========================
+
+eae6320::Graphics::GameObject* eae6320::Graphics::s_rectangle_object = NULL;
+eae6320::Graphics::GameObject* eae6320::Graphics::s_leftTriangle_object = NULL;
+eae6320::Graphics::GameObject* eae6320::Graphics::s_rightTriangle_object = NULL;
 
 namespace
 {
@@ -96,8 +101,8 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 {
 	s_renderingWindow = i_renderingWindow;
 
-	s_Mesh_Rectangle = new eae6320::Graphics::Mesh(s_vertexArrayId);
-	s_Mesh_Triangle = new eae6320::Graphics::Mesh(s_vertexArrayId);
+	s_Mesh_Rectangle = new Mesh("data/retangle.mesh");
+	s_Mesh_Triangle = new Mesh("data/triangle.mesh");
 	// Create an OpenGL rendering context
 	if ( !CreateRenderingContext() )
 	{
@@ -114,13 +119,21 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 		}
 	}
 
+	s_leftTriangle_object = new GameObject(*s_effect, *s_Mesh_Rectangle);
+	s_rightTriangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
+	s_rectangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
+
 	// Initialize the graphics objects
-	if ( !s_Mesh_Rectangle->LoadMesh("data/rectangle.mesh")|| !s_Mesh_Triangle->LoadMesh("data/triangle.mesh"))
+	/*if ( !s_Mesh_Rectangle->LoadMesh("data/rectangle.mesh")|| !s_Mesh_Triangle->LoadMesh("data/triangle.mesh"))
 	{
 		goto OnError;
 	}
 	if ( !CreateProgram() )
 	{
+		goto OnError;
+	}*/
+	if(!s_rectangle_object->LoadObject()||s_leftTriangle_object->LoadObject()||s_rightTriangle_object->LoadObject())
+	{ 
 		goto OnError;
 	}
 
@@ -296,8 +309,9 @@ namespace
 		{
 			return false;
 		}*/
-		s_effect = new eae6320::Graphics::GraphicEffect(s_programId);
-		if (!s_effect->LoadShaders("data/vertex.shader", "data/fragment.shader"))
+		s_effect = new eae6320::Graphics::GraphicEffect("data/vertex.shader","data/fragment.shader");
+	
+		if (!s_effect->LoadShaders())
 		{
 			return false;
 		}

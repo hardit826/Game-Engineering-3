@@ -9,9 +9,10 @@
 namespace
 {
 	IDirect3DDevice9* o_direct3dDevice = NULL;
-	IDirect3DVertexDeclaration9* o_vertexDeclaration = NULL;
-	IDirect3DVertexBuffer9* o_vertexBuffer = NULL;
-	IDirect3DIndexBuffer9* o_indexBuffer = NULL;
+	//IDirect3DVertexDeclaration9* o_vertexDeclaration = NULL;
+	//IDirect3DVertexBuffer9* o_vertexBuffer = NULL;
+	//IDirect3DIndexBuffer9* o_indexBuffer = NULL;
+
 
 	//eae6320::Graphics::Mesh::sVertex *o_vertexData;
 	//uint32_t *o_indexData;
@@ -24,8 +25,14 @@ namespace
 	//HRESULT GetVertexProcessingUsage(DWORD& o_usage);
 }
 
-//Interfaces
-//===========================
+eae6320::Graphics::Mesh::Mesh(char* i_mesh_path)
+{
+	m_vertexBuffer = NULL;
+	m_indexBuffer = NULL;
+	m_vertexDeclaration = NULL;
+	m_mesh_path = i_mesh_path;
+}
+
 void eae6320::Graphics::Mesh::DrawMesh()
 {
 	//o_direct3dDevice = eae6320::Graphics::GetLocalDirect3dDevice();
@@ -65,13 +72,33 @@ void eae6320::Graphics::Mesh::DrawMesh()
 	}
 }
 
+void eae6320::Graphics::Mesh::ReleaseMesh()
+{
+	if (m_indexBuffer)
+	{
+		m_indexBuffer->Release();
+		m_indexBuffer = NULL;
+	}
+	if (m_vertexBuffer)
+	{
+		m_vertexBuffer->Release();
+		m_vertexBuffer = NULL;
+	}
+	if (m_vertexDeclaration)
+	{
+		Graphics::GetLocalDirect3dDevice()->SetVertexDeclaration(NULL);
+		m_vertexDeclaration->Release();
+		m_vertexDeclaration = NULL;
+	}
+}
+
 bool eae6320::Graphics::Mesh::LoadGraphicsMeshData()
 {
 	o_direct3dDevice = eae6320::Graphics::GetLocalDirect3dDevice();
 
-	o_vertexDeclaration = m_vertexDeclaration;
-	o_vertexBuffer = m_vertexBuffer;
-	o_indexBuffer = m_indexBuffer;
+	//o_vertexDeclaration = m_vertexDeclaration;
+	//o_vertexBuffer = m_vertexBuffer;
+	//o_indexBuffer = m_indexBuffer;
 
 	//o_vertexData = m_vertexData;
 	//o_indexData = m_indexData;
@@ -91,8 +118,6 @@ bool eae6320::Graphics::Mesh::LoadGraphicsMeshData()
 	return true;
 }
 
-//Helper Functions
-//===========================
 bool eae6320::Graphics::Mesh::CreateIndexBuffer()
 {
 		// The usage tells Direct3D how this vertex buffer will be used
@@ -230,10 +255,10 @@ bool eae6320::Graphics::Mesh::CreateVertexBuffer()
 				// The following marker signals the end of the vertex declaration
 				D3DDECL_END()
 			};
-			HRESULT result = o_direct3dDevice->CreateVertexDeclaration(vertexElements, &o_vertexDeclaration);
+			HRESULT result = o_direct3dDevice->CreateVertexDeclaration(vertexElements, &m_vertexDeclaration);
 			if (SUCCEEDED(result))
 			{
-				result = o_direct3dDevice->SetVertexDeclaration(o_vertexDeclaration);
+				result = o_direct3dDevice->SetVertexDeclaration(m_vertexDeclaration);
 				if (FAILED(result))
 				{
 					eae6320::UserOutput::Print("Direct3D failed to set the vertex declaration");

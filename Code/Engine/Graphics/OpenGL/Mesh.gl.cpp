@@ -7,7 +7,11 @@
 #include <sstream>
 #include "../../UserOutput/UserOutput.h"
 
-
+eae6320::Graphics::Mesh::Mesh(char *i_meshPath)
+{
+	m_mesh_path = i_meshPath;
+	s_vertexArrayId = 0;
+}
 void eae6320::Graphics::Mesh::DrawMesh()
 {  
 	// Bind a specific vertex buffer to the device as a data source

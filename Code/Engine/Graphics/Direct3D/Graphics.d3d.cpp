@@ -14,6 +14,10 @@
 // Static Data Initialization
 //===========================
 
+eae6320::Graphics::GameObject* eae6320::Graphics::s_rectangle_object = NULL;
+eae6320::Graphics::GameObject* eae6320::Graphics::s_leftTriangle_object = NULL;
+eae6320::Graphics::GameObject* eae6320::Graphics::s_rightTriangle_object = NULL;
+
 namespace
 {
 
@@ -34,13 +38,13 @@ namespace
 	//	// Offset = 8
 	//	uint8_t b, g, r, a;	// Direct3D expects the byte layout of a color to be different from what you might expect
 	//};
-	IDirect3DVertexDeclaration9* s_vertexDeclaration = NULL;
+	//IDirect3DVertexDeclaration9* s_vertexDeclaration = NULL;
 
 	// The vertex buffer holds the data for each vertex
-	IDirect3DVertexBuffer9* s_vertexBuffer = NULL;
+	//IDirect3DVertexBuffer9* s_vertexBuffer = NULL;
 	// An index buffer describes how to make triangles with the vertices
 	// (i.e. it defines the vertex connectivity)
-	IDirect3DIndexBuffer9* s_indexBuffer = NULL;
+	//IDirect3DIndexBuffer9* s_indexBuffer = NULL;
 
 	eae6320::Graphics::Mesh *s_Mesh_Rectangle = NULL;
 	eae6320::Graphics::Mesh *s_Mesh_Triangle = NULL;
@@ -93,9 +97,9 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 {
 	s_renderingWindow = i_renderingWindow;
 	
-	s_effect = new GraphicEffect(s_vertexShader, s_fragmentShader);
-	//new
-	//s_Mesh->s_direct3dDevice = s_direct3dDevice;
+	s_effect = new GraphicEffect("data/vertex.shader", "data/fragment.shader");
+	
+	
 
 	// Initialize the interface to the Direct3D9 library
 	if ( !CreateInterface() )
@@ -107,25 +111,25 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	{
 		goto OnError;
 	}
+	s_effect->s_direct3dDevice = s_direct3dDevice;
 
-	s_Mesh_Rectangle = new Mesh(s_vertexBuffer, s_indexBuffer, s_vertexDeclaration);
-	s_Mesh_Triangle = new Mesh(s_vertexBuffer, s_indexBuffer, s_vertexDeclaration);
+	s_Mesh_Rectangle = new Mesh("data/rectangle.mesh");
+	s_Mesh_Triangle = new Mesh("data/triangle.mesh");
 
+	s_rectangle_object = new GameObject(*s_effect, *s_Mesh_Rectangle);
+	s_leftTriangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
+	s_rightTriangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
 	// Initialize the graphics objects
 
 	/*if ( !CreateIndexBuffer() )
 	{
 		goto OnError;
 	}*/
+	if (!s_rectangle_object->LoadGameObject() || !s_leftTriangle_object->LoadGameObject() || !s_rightTriangle_object->LoadGameObject())
+	{
+		goto OnError;
+	}
 	
-	if (!s_Mesh_Rectangle->LoadMesh("data/rectangle.mesh")|| !s_Mesh_Triangle->LoadMesh("data/triangle.mesh"))
-	{
-		goto OnError;
-	}
-	if (!s_effect->LoadShaders("data/vertex.shader", "data/fragment.shader"))
-	{
-		goto OnError;
-	}
 	return true;
 
 
@@ -171,10 +175,18 @@ void eae6320::Graphics::Render()
 			}
 			/*s_Mesh = new Mesh(s_vertexBuffer, s_indexBuffer, s_vertexDeclaration);
 			s_Mesh->s_direct3dDevice = s_direct3dDevice;*/
-			s_effect->SetPath();
 
-			s_Mesh_Rectangle->DrawMesh();
-			s_Mesh_Triangle->DrawMesh();
+			//s_effect->SetPath();
+			
+			
+			//s_Mesh_Rectangle->DrawMesh();
+			//s_Mesh_Triangle->DrawMesh();
+
+			s_rectangle_object->DrawGameObject();
+			s_leftTriangle_object->o_offset.x = -0.3f;
+			s_leftTriangle_object->DrawGameObject();
+			s_rightTriangle_object->o_offset.x = 0.3f;
+			s_rightTriangle_object->DrawGameObject();
 			// Bind a specific vertex buffer to the device as a data source
 			//{
 			//	// There can be multiple streams of data feeding the display adaptor at the same time
@@ -235,7 +247,17 @@ bool eae6320::Graphics::ShutDown()
 	{
 		if ( s_direct3dDevice )
 		{
-			if ( s_vertexShader )
+			if (s_effect)
+			{
+				s_effect->ReleaseEffect();
+			}
+
+			if (s_Mesh_Rectangle)
+			{
+				s_Mesh_Rectangle->ReleaseMesh();
+				s_Mesh_Rectangle = NULL;
+			}
+		/*	if ( s_vertexShader )
 			{
 				s_vertexShader->Release();
 				s_vertexShader = NULL;
@@ -244,9 +266,9 @@ bool eae6320::Graphics::ShutDown()
 			{
 				s_fragmentShader->Release();
 				s_fragmentShader = NULL;
-			}
+			}*/
 
-			if ( s_vertexBuffer )
+			/*if ( s_vertexBuffer )
 			{
 				s_vertexBuffer->Release();
 				s_vertexBuffer = NULL;
@@ -261,7 +283,7 @@ bool eae6320::Graphics::ShutDown()
 				s_direct3dDevice->SetVertexDeclaration( NULL );
 				s_vertexDeclaration->Release();
 				s_vertexDeclaration = NULL;
-			}
+			}*/
 
 			s_direct3dDevice->Release();
 			s_direct3dDevice = NULL;

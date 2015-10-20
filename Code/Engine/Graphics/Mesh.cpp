@@ -28,7 +28,7 @@ namespace
 // Interface
 //==========
 
-bool eae6320::Graphics::Mesh::LoadMesh(const char* const i_path)
+bool eae6320::Graphics::Mesh::LoadMesh()
 {
 	
 	// The LoadAsset() function does _exactly_ what was shown
@@ -38,9 +38,9 @@ bool eae6320::Graphics::Mesh::LoadMesh(const char* const i_path)
 	// so that is the function you should pay attention to.
 	
 
-	if (!ReadBinMeshFile(i_path))
+	if (!ReadBinMeshFile(m_mesh_path))
 	{ 
-		eae6320::UserOutput::Print("There was a problem reading binary file "+std::string(i_path));
+		eae6320::UserOutput::Print("There was a problem reading binary file "+std::string(m_mesh_path));
 		return false;
 	}
 

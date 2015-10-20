@@ -1,8 +1,10 @@
 #ifndef _GRAPHIC_EFFECT_H
 #define _GRAPHIC_EFFECT_H
 
+#include "../Math/cVector.h"
 #if defined(EAE6320_PLATFORM_D3D)
 #include <d3dx9shader.h>
+#include <d3d9.h>
 #elif defined(EAE6320_PLATFORM_GL)
 #include "../Windows/WindowsIncludes.h"
 #include <gl/GL.h>
@@ -20,12 +22,17 @@ namespace eae6320
 		private:
 			IDirect3DVertexShader9* o_vertexShader;
 			IDirect3DPixelShader9* o_fragmentShader;
+			D3DXHANDLE o_d3dHandle;
+			ID3DXConstantTable* o_vertexShaderConstantTable;
+			ID3DXConstantTable* o_fragmentShaderConstantTable;
+
 			//constructor for GraphicEffect D3D
 		public:
+		
 			IDirect3DDevice9* s_direct3dDevice;
 			
-			GraphicEffect(IDirect3DVertexShader9* i_vertexShader, IDirect3DPixelShader9* i_fragmentShader):
-				o_vertexShader(i_vertexShader),o_fragmentShader(i_fragmentShader){}
+		/*	GraphicEffect(IDirect3DVertexShader9* i_vertexShader, IDirect3DPixelShader9* i_fragmentShader):
+				o_vertexShader(i_vertexShader),o_fragmentShader(i_fragmentShader){}*/
 
 #elif defined(EAE6320_PLATFORM_GL)
 		private:
@@ -54,10 +61,11 @@ namespace eae6320
 
 
 		public:
-			bool LoadShaders(char* const i_vertexShaderPath, char* const i_fragmentShaderPath);
+			GraphicEffect(char* const i_vertexShaderPath, char* const i_fragmentShaderPath);
+			bool LoadShaders();
 			void SetPath();
-
-
+			void SetDrawCallUniforms(eae6320::Math::cVector i_offset);
+			void ReleaseEffect();
 		};
 	}
 }

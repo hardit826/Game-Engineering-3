@@ -10,7 +10,7 @@
 #ifdef EAE6320_PLATFORM_D3D
 #include <d3d9.h>
 #endif
-
+#include "GameObject.h"
 #include "../Windows/WindowsIncludes.h"
 
 // Interface
@@ -20,6 +20,11 @@ namespace eae6320
 {
 	namespace Graphics
 	{
+		//Creating 3 GameObjects for now , List will be better in future
+		extern GameObject* s_rectangle_object;
+		extern GameObject* s_leftTriangle_object;
+		extern GameObject* s_rightTriangle_object;
+
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();
 		bool ShutDown();
