@@ -101,8 +101,12 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 {
 	s_renderingWindow = i_renderingWindow;
 
-	s_Mesh_Rectangle = new Mesh("data/retangle.mesh");
+	s_effect = new GraphicEffect("data/vertex.shader", "data/fragment.shader");
+
+	s_Mesh_Rectangle = new Mesh("data/rectangle.mesh");
 	s_Mesh_Triangle = new Mesh("data/triangle.mesh");
+
+
 	// Create an OpenGL rendering context
 	if ( !CreateRenderingContext() )
 	{
@@ -118,21 +122,24 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 			goto OnError;
 		}
 	}
-
-	s_leftTriangle_object = new GameObject(*s_effect, *s_Mesh_Rectangle);
-	s_rightTriangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
-	s_rectangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
+ 
+	
 
 	// Initialize the graphics objects
 	/*if ( !s_Mesh_Rectangle->LoadMesh("data/rectangle.mesh")|| !s_Mesh_Triangle->LoadMesh("data/triangle.mesh"))
 	{
 		goto OnError;
-	}
+	}*/
+
 	if ( !CreateProgram() )
 	{
 		goto OnError;
-	}*/
-	if(!s_rectangle_object->LoadObject()||s_leftTriangle_object->LoadObject()||s_rightTriangle_object->LoadObject())
+	}
+	s_leftTriangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
+	s_rightTriangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
+	s_rectangle_object = new GameObject(*s_effect, *s_Mesh_Rectangle);
+
+	if(!s_rectangle_object->LoadGameObject()||!s_leftTriangle_object->LoadGameObject()||!s_rightTriangle_object->LoadGameObject())
 	{ 
 		goto OnError;
 	}
@@ -172,10 +179,11 @@ void eae6320::Graphics::Render()
 			assert( glGetError() == GL_NO_ERROR );
 		}
 
-		s_effect->SetPath();
-		
-		s_Mesh_Rectangle->DrawMesh();
-		s_Mesh_Triangle->DrawMesh();
+		s_rectangle_object->DrawGameObject();
+		s_leftTriangle_object->o_offset.x = -0.3f;
+		s_leftTriangle_object->DrawGameObject();
+		s_rightTriangle_object->o_offset.x = 0.3f;
+		s_rightTriangle_object->DrawGameObject();
 
 		//// Bind a specific vertex buffer to the device as a data source
 		//{
@@ -310,7 +318,8 @@ namespace
 			return false;
 		}*/
 		s_effect = new eae6320::Graphics::GraphicEffect("data/vertex.shader","data/fragment.shader");
-	
+		s_effect->o_programID = s_programId;
+
 		if (!s_effect->LoadShaders())
 		{
 			return false;
@@ -391,6 +400,7 @@ namespace
 				return false;
 			}
 		}
+		s_effect->o_uniformLocation = glGetUniformLocation(s_programId, "g_position_offset");
 
 		return true;
 	}
@@ -458,6 +468,7 @@ namespace
 				return false;
 			}
 		}
+		
 
 		return true;
 	}

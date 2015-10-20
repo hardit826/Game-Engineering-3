@@ -25,6 +25,8 @@ bool eae6320::Graphics::GraphicEffect::LoadShaders()
 	{
 		return false;
 	}
+
+	return true;
 }
 
 void eae6320::Graphics::GraphicEffect::SetPath()

@@ -6,11 +6,16 @@
 #include "../UserOutput/UserOutput.h"
 #include "../Windows/WindowsFunctions.h"
 
-
-bool eae6320::Graphics::GraphicEffect::LoadShaders(char* const i_vertexShaderPath, char* const i_fragmentShaderPath)
+eae6320::Graphics::GraphicEffect::GraphicEffect(char* const i_path_vertexShader, char* const i_path_fragmentShader)
 {
-	o_vertexShaderPath = i_vertexShaderPath;
-	o_fragmentShaderPath = i_fragmentShaderPath;
+	o_programID = 0;
+	o_vertexShaderPath = i_path_vertexShader;
+	o_fragmentShaderPath = i_path_fragmentShader;
+}
+bool eae6320::Graphics::GraphicEffect::LoadShaders()
+{
+	//o_vertexShaderPath = i_vertexShaderPath;
+	//o_fragmentShaderPath = i_fragmentShaderPath;
 
 	if (!LoadVertexShader())
 	{
@@ -27,6 +32,13 @@ void eae6320::Graphics::GraphicEffect::SetPath()
 {
 	glUseProgram(o_programID);
 	assert(glGetError() == GL_NO_ERROR);
+}
+
+void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cVector i_position_offset)
+{
+	float floatArray[] = { i_position_offset.x,i_position_offset.y };
+	float uniformCount = 1;
+	glUniform2fv(o_uniformLocation, uniformCount, floatArray);
 }
 
 bool eae6320::Graphics::GraphicEffect::LoadVertexShader()

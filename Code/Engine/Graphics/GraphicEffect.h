@@ -35,11 +35,11 @@ namespace eae6320
 				o_vertexShader(i_vertexShader),o_fragmentShader(i_fragmentShader){}*/
 
 #elif defined(EAE6320_PLATFORM_GL)
-		private:
-			GLuint o_programID;
 		public:
+			GLuint o_programID;
+			GLuint o_uniformLocation;
 			//constructor for GraphicEffect GL
-			GraphicEffect(GLuint i_programID) : o_programID(i_programID){}
+			//GraphicEffect(GLuint i_programID) : o_programID(i_programID){}
 
 		private:
 
