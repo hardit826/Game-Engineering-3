@@ -6,16 +6,21 @@
 #include "../UserOutput/UserOutput.h"
 #include "../Windows/WindowsFunctions.h"
 
-eae6320::Graphics::GraphicEffect::GraphicEffect(char* const i_path_vertexShader, char* const i_path_fragmentShader)
+eae6320::Graphics::GraphicEffect::GraphicEffect(char* const i_path_effect)
 {
+	o_path_effect = i_path_effect;
 	o_programID = 0;
-	o_vertexShaderPath = i_path_vertexShader;
-	o_fragmentShaderPath = i_path_fragmentShader;
+	o_vertexShaderPath = NULL;
+	o_fragmentShaderPath = NULL;
 }
 bool eae6320::Graphics::GraphicEffect::LoadShaders()
 {
 	//o_vertexShaderPath = i_vertexShaderPath;
 	//o_fragmentShaderPath = i_fragmentShaderPath;
+	if (!ReadFromBinEffectFile())
+	{
+		return false;
+	}
 
 	if (!LoadVertexShader())
 	{

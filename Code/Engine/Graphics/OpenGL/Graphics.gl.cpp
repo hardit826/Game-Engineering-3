@@ -101,7 +101,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 {
 	s_renderingWindow = i_renderingWindow;
 
-	s_effect = new GraphicEffect("data/vertex.shader", "data/fragment.shader");
+	s_effect = new GraphicEffect("data/effect.lua");
 
 	s_Mesh_Rectangle = new Mesh("data/rectangle.mesh");
 	s_Mesh_Triangle = new Mesh("data/triangle.mesh");
@@ -317,7 +317,7 @@ namespace
 		{
 			return false;
 		}*/
-		s_effect = new eae6320::Graphics::GraphicEffect("data/vertex.shader","data/fragment.shader");
+		s_effect = new eae6320::Graphics::GraphicEffect("data/effect.lua");
 		s_effect->o_programID = s_programId;
 
 		if (!s_effect->LoadShaders())

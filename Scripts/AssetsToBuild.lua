@@ -22,4 +22,14 @@ return
 			"fragment.shader",
 		},
 	},
+	effect = 
+	{
+		source = "",
+		target = "",
+		tool = "EffectBuilder.exe",
+		assets =
+		{
+			"effect.lua",
+		},
+	},
 }

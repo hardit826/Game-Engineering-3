@@ -29,6 +29,7 @@
       <Filter>Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GraphicEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics.h" />

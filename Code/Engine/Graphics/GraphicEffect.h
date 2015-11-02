@@ -54,14 +54,18 @@ namespace eae6320
 		
 #endif
 		private:
+			char* o_binReadBuffer;
 			char* o_vertexShaderPath;
 			char* o_fragmentShaderPath;
 			bool LoadFragmentShader();
 			bool LoadVertexShader();
+			bool ReadFromBinEffectFile();
+			char* o_path_effect;
 
 
 		public:
-			GraphicEffect(char* const i_vertexShaderPath, char* const i_fragmentShaderPath);
+			GraphicEffect(char* const i_path_effect);
+			
 			bool LoadShaders();
 			void SetPath();
 			void SetDrawCallUniforms(eae6320::Math::cVector i_offset);

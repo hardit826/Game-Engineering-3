@@ -97,8 +97,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 {
 	s_renderingWindow = i_renderingWindow;
 	
-	s_effect = new GraphicEffect("data/vertex.shader", "data/fragment.shader");
-	
+	s_effect = new GraphicEffect("data/effect.lua");
 	
 
 	// Initialize the interface to the Direct3D9 library

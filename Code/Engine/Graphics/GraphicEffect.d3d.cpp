@@ -5,18 +5,24 @@
 #include "../UserOutput/UserOutput.h"
 #include "../Graphics/Graphics.h"
 
-eae6320::Graphics::GraphicEffect::GraphicEffect(char* const i_vertexShaderPath, char* const i_fragmentShaderPath)
+eae6320::Graphics::GraphicEffect::GraphicEffect(char* const i_path_effect)
 {
+	o_path_effect = i_path_effect;
+	
+
 	o_vertexShader = NULL;
 	o_fragmentShader = NULL;
-	o_vertexShaderPath = i_vertexShaderPath;
-	o_fragmentShaderPath = i_fragmentShaderPath;
+	o_vertexShaderPath = NULL;
+	o_fragmentShaderPath = NULL;
 	s_direct3dDevice = Graphics::GetLocalDirect3dDevice();
 }
 
 bool eae6320::Graphics::GraphicEffect::LoadShaders()
 {
-	
+	if (!ReadFromBinEffectFile())
+	{
+		return false;
+	}
 	if (!LoadVertexShader())
 	{
 		return false;
