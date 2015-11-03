@@ -183,10 +183,10 @@ bool eae6320::Graphics::ShowBuffer()
 	{
 		// Set the vertex and fragment shaders
 
-		{
+		/*{
 			glUseProgram( s_programId );
 			assert( glGetError() == GL_NO_ERROR );
-		}
+		}*/
 
 		/*s_rectangle_object->DrawGameObject();
 		s_leftTriangle_object->o_offset.x = -0.3f;

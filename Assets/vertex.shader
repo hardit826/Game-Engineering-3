@@ -85,7 +85,7 @@ void main()
 #if defined( EAE6320_PLATFORM_D3D )
 		o_position 
 #elif defined( EAE6320_PLATFORM_GL )
-		gl_position
+		gl_Position
 #endif
     	= vec4(i_position + g_position_offset, 0.0, 1.0);
 		// Or, equivalently:
