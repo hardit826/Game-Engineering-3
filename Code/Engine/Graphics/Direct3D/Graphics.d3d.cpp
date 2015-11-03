@@ -17,10 +17,9 @@
 eae6320::Graphics::GameObject* eae6320::Graphics::s_rectangle_object = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_leftTriangle_object = NULL;
 eae6320::Graphics::GameObject* eae6320::Graphics::s_rightTriangle_object = NULL;
-
 namespace
 {
-
+	
 	HWND s_renderingWindow = NULL;
 	IDirect3D9* s_direct3dInterface = NULL;
 	IDirect3DDevice9* s_direct3dDevice = NULL;
