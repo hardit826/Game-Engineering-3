@@ -161,6 +161,7 @@ bool eae6320::cEffectBuilder::LoadPath_Values(lua_State& io_luaState)
 	if (lua_isnil(&io_luaState, -1))
 	{
 		wereThereErrors = true;
+		lua_pop(&io_luaState, 1);
 		std::stringstream errorMessage;
 		errorMessage << "Asset file must not return NULL.\n";
 		eae6320::OutputErrorMessage(errorMessage.str().c_str());
@@ -174,6 +175,7 @@ bool eae6320::cEffectBuilder::LoadPath_Values(lua_State& io_luaState)
 		if (!lua_isstring(&io_luaState, -1))
 		{
 			wereThereErrors = true;
+			lua_pop(&io_luaState, 1);
 			std::stringstream errMsg;
 			//std::cerr << "Asset files must return a table (instead of a " <<
 			//	luaL_typename(luaState, -1) << ")\n";
@@ -201,6 +203,7 @@ bool eae6320::cEffectBuilder::LoadPath_Values(lua_State& io_luaState)
 		if (!lua_isstring(&io_luaState, -1))
 		{
 			wereThereErrors = true;
+			lua_pop(&io_luaState, 1);
 			std::stringstream errMsg;
 			//std::cerr << "Asset files must return a table (instead of a " <<
 			//	luaL_typename(luaState, -1) << ")\n";
@@ -222,7 +225,6 @@ bool eae6320::cEffectBuilder::LoadPath_Values(lua_State& io_luaState)
 	}
 
 OnExit:
-	lua_pop(&io_luaState, 1);
 
 	return !wereThereErrors;
 }

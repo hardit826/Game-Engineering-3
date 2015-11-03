@@ -11,15 +11,24 @@ return
             "triangle.mesh",
 		},
 	},
-	shaders = 
+	vertexShaders = 
 	{
 		source = "",
 		target = "",
-		tool = "GenericBuilder.exe",
+		tool = "VertexShaderBuilder.exe",
 		assets =
 		{
-			"vertex.shader",
-			"fragment.shader",
+			"vertex.shader"
+		},
+	},
+	fragmentShaders = 
+	{
+		source = "",
+		target = "",
+		tool = "FragmentShaderBuilder.exe",
+		assets =
+		{
+			"fragment.shader"
 		},
 	},
 	effect = 

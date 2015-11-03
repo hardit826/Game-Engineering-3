@@ -32,11 +32,7 @@ void eae6320::Graphics::Mesh::DrawMesh()
 		const GLenum indexType = GL_UNSIGNED_INT;
 		// It is possible to start rendering in the middle of an index buffer
 		const GLvoid* const offset = 0;
-		// We are drawing a square
-		//const GLsizei primitiveCountToRender = 2;	// How many triangles will be drawn?
-		//const GLsizei vertexCountPerTriangle = 3;
-		const GLsizei vertexCountToRender = m_indexCount;
-		glDrawElements(mode, vertexCountToRender, indexType, offset);
+		glDrawElements(mode, m_indexCount, indexType, offset);
 		assert(glGetError() == GL_NO_ERROR);
 	}
 }
@@ -301,34 +297,8 @@ bool eae6320::Graphics::Mesh::LoadGraphicsMeshData()
 	}
 	// Allocate space and copy the triangle data into the index buffer
 	{
-		// We are drawing a square
-		const unsigned int triangleCount = 2;	// How many triangles does a square have?
-		const unsigned int vertexCountPerTriangle = 3;
-		uint32_t indexData[triangleCount * vertexCountPerTriangle];
-		// Fill in the data for the triangle
-		{
-			// EAE6320_TODO:
-			// You will need to fill in 3 indices for each triangle that needs to be drawn.
-			// Each index will be a 32-bit unsigned integer,
-			// and will index into the vertex buffer array that you have created.
-			// The order of indices is important, but the correct order will depend on
-			// which vertex you have assigned to which spot in your vertex buffer
-			// (also remember to maintain the correct handedness for the triangle winding order).
-
-			// Triangle 0
-			indexData[0] = 0;
-			indexData[1] = 2;
-			indexData[2] = 1;
-
-			// Triangle 1
-			indexData[3] = 0;
-			indexData[4] = 3;
-			indexData[5] = 2;
-			// etc...
-		}
-
-		const GLsizeiptr bufferSize = triangleCount * vertexCountPerTriangle * sizeof(uint32_t);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, reinterpret_cast<const GLvoid*>(indexData),
+		const GLsizeiptr bufferSize = m_indexCount * sizeof(uint32_t);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize, reinterpret_cast<const GLvoid*>(m_indexData),
 			// Our code will only ever write to the buffer
 			GL_STATIC_DRAW);
 		const GLenum errorCode = glGetError();

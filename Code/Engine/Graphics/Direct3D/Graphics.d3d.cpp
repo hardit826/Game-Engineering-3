@@ -249,6 +249,7 @@ bool eae6320::Graphics::ShutDown()
 			if (s_effect)
 			{
 				s_effect->ReleaseEffect();
+				s_effect = NULL;
 			}
 
 			if (s_Mesh_Rectangle)

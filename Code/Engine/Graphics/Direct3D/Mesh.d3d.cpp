@@ -64,7 +64,8 @@ void eae6320::Graphics::Mesh::DrawMesh()
 		const unsigned int indexOfFirstIndexToUse = 0;
 		// We are drawing a square
 		const unsigned int vertexCountToRender = m_vertexCount;	// How vertices from the vertex buffer will be used?
-		const unsigned int primitiveCountToRender = m_vertexCount * sizeof(eae6320::Graphics::Mesh::sVertex);	// How many triangles will be drawn?
+		const unsigned int indexTriangle = 3;
+		const unsigned int primitiveCountToRender = m_indexCount/ indexTriangle;	// How many triangles will be drawn?
 		result = o_direct3dDevice->DrawIndexedPrimitive(primitiveType,
 			indexOfFirstVertexToRender, indexOfFirstVertexToRender, vertexCountToRender,
 			indexOfFirstIndexToUse, primitiveCountToRender);
@@ -273,10 +274,8 @@ bool eae6320::Graphics::Mesh::CreateVertexBuffer()
 		}
 
 		// Create a vertex buffer
+		const unsigned int bufferSize = m_vertexCount * sizeof(eae6320::Graphics::Mesh::sVertex);
 		{
-			// We are drawing one square
-			const unsigned int vertexCount = 4;	// What is the minimum number of vertices a square needs (so that no data is duplicated)?
-			const unsigned int bufferSize = vertexCount * sizeof(eae6320::Graphics::Mesh::sVertex);
 			// We will define our own vertex format
 			const DWORD useSeparateVertexDeclaration = 0;
 			// Place the vertex buffer into memory that Direct3D thinks is the most appropriate
@@ -362,10 +361,7 @@ bool eae6320::Graphics::Mesh::CreateVertexBuffer()
 			//	vertexData[3].a = 255;
 			//}
 			{
-				for (unsigned int i = 0; i <= m_vertexCount; ++i)
-				{
-					vertexData[i] = m_vertexData[i];
-				}
+				memcpy(vertexData, m_vertexData, bufferSize);
 			}
 			// The buffer must be "unlocked" before it can be used
 			{

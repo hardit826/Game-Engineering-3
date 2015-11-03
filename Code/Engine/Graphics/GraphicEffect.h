@@ -25,6 +25,8 @@ namespace eae6320
 			D3DXHANDLE o_d3dHandle;
 			ID3DXConstantTable* o_vertexShaderConstantTable;
 			ID3DXConstantTable* o_fragmentShaderConstantTable;
+			char* o_bufferShader;
+			bool ReadFromBinaryShaderFile(char* i_path_shader);
 
 			//constructor for GraphicEffect D3D
 		public:

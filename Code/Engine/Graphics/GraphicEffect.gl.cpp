@@ -21,7 +21,6 @@ bool eae6320::Graphics::GraphicEffect::LoadShaders()
 	{
 		return false;
 	}
-
 	if (!LoadVertexShader())
 	{
 		return false;
@@ -99,11 +98,10 @@ bool eae6320::Graphics::GraphicEffect::LoadVertexShader()
 		}
 		// Set the source code into the shader
 		{
-			const GLsizei shaderSourceCount = 3;
+			const GLsizei shaderSourceCount = 1;
 			const GLchar* shaderSources[] =
 			{
-				"#version 330\n",
-				"#define EAE6320_PLATFORM_GL\n",
+			
 				reinterpret_cast<GLchar*>(shaderSource)
 			};
 			const GLint* sourcesAreNullTerminated = NULL;
@@ -297,11 +295,10 @@ bool eae6320::Graphics::GraphicEffect::LoadFragmentShader()
 		}
 		// Set the source code into the shader
 		{
-			const GLsizei shaderSourceCount = 3;
+			const GLsizei shaderSourceCount = 1;
 			const GLchar* shaderSources[] =
 			{
-				"#version 330\n",
-				"#define EAE6320_PLATFORM_GL\n",
+
 				reinterpret_cast<GLchar*>(shaderSource)
 			};
 			const GLint* sourcesAreNullTerminated = NULL;
