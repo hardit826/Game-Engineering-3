@@ -137,7 +137,7 @@ OnError:
 	return false;
 }
 
-void eae6320::Graphics::Render()
+bool eae6320::Graphics::Clear()
 {
 	// Every frame an entirely new image will be created.
 	// Before drawing anything, then, the previous image will be erased
@@ -149,91 +149,64 @@ void eae6320::Graphics::Render()
 		D3DCOLOR clearColor;
 		{
 			// Black is usually used:
-			clearColor = D3DCOLOR_XRGB( 0, 0, 0 );
+			clearColor = D3DCOLOR_XRGB(0, 0, 0);
 		}
 		const float noZBuffer = 0.0f;
 		const DWORD noStencilBuffer = 0;
-		HRESULT result = s_direct3dDevice->Clear( subRectangleCount, subRectanglesToClear,
-			clearTheRenderTarget, clearColor, noZBuffer, noStencilBuffer );
-		assert( SUCCEEDED( result ) );
+		HRESULT result = s_direct3dDevice->Clear(subRectangleCount, subRectanglesToClear,
+			clearTheRenderTarget, clearColor, noZBuffer, noStencilBuffer);
+		assert(SUCCEEDED(result));
 	}
-
+	return true;
+}
+bool eae6320::Graphics::BeginDraw()
+{
 	// The actual function calls that draw geometry must be made between paired calls to
 	// BeginScene() and EndScene()
-	{
+	
 		HRESULT result = s_direct3dDevice->BeginScene();
-		assert( SUCCEEDED( result ) );
-		{
-			// Set the shaders
-			{
-				result = s_direct3dDevice->SetVertexShader( s_vertexShader );
-				assert( SUCCEEDED( result ) );
-				result = s_direct3dDevice->SetPixelShader( s_fragmentShader );
-				assert( SUCCEEDED( result ) );
-			}
-			/*s_Mesh = new Mesh(s_vertexBuffer, s_indexBuffer, s_vertexDeclaration);
-			s_Mesh->s_direct3dDevice = s_direct3dDevice;*/
+		assert(SUCCEEDED(result));
 
-			//s_effect->SetPath();
-			
-			
-			//s_Mesh_Rectangle->DrawMesh();
-			//s_Mesh_Triangle->DrawMesh();
+		//// Set the shaders
+		//{
+		//	result = s_direct3dDevice->SetVertexShader(s_vertexShader);
+		//	assert(SUCCEEDED(result));
+		//	result = s_direct3dDevice->SetPixelShader(s_fragmentShader);
+		//	assert(SUCCEEDED(result));
+		//}
 
-			s_rectangle_object->DrawGameObject();
-			s_leftTriangle_object->o_offset.x = -0.3f;
-			s_leftTriangle_object->DrawGameObject();
-			s_rightTriangle_object->o_offset.x = 0.3f;
-			s_rightTriangle_object->DrawGameObject();
-			// Bind a specific vertex buffer to the device as a data source
-			//{
-			//	// There can be multiple streams of data feeding the display adaptor at the same time
-			//	const unsigned int streamIndex = 0;
-			//	// It's possible to start streaming data in the middle of a vertex buffer
-			//	const unsigned int bufferOffset = 0;
-			//	// The "stride" defines how large a single vertex is in the stream of data
-			//	const unsigned int bufferStride = sizeof( sVertex );
-			//	result = s_direct3dDevice->SetStreamSource( streamIndex, s_vertexBuffer, bufferOffset, bufferStride );
-			//	assert( SUCCEEDED( result ) );
-			//}
-			//// Bind a specific index buffer to the device as a data source
-			//{
-			//	result = s_direct3dDevice->SetIndices( s_indexBuffer );
-			//	assert( SUCCEEDED( result ) );
-			//}
-			//// Render objects from the current streams
-			//{
-			//	// We are using triangles as the "primitive" type,
-			//	// and we have defined the vertex buffer as a triangle list
-			//	// (meaning that every triangle is defined by three vertices)
-			//	const D3DPRIMITIVETYPE primitiveType = D3DPT_TRIANGLELIST;
-			//	// It's possible to start rendering primitives in the middle of the stream
-			//	const unsigned int indexOfFirstVertexToRender = 0;
-			//	const unsigned int indexOfFirstIndexToUse = 0;
-			//	// We are drawing a square
-			//	const unsigned int vertexCountToRender = 4;	// How vertices from the vertex buffer will be used?
-			//	const unsigned int primitiveCountToRender = 2;	// How many triangles will be drawn?
-			//	result = s_direct3dDevice->DrawIndexedPrimitive( primitiveType,
-			//		indexOfFirstVertexToRender, indexOfFirstVertexToRender, vertexCountToRender,
-			//		indexOfFirstIndexToUse, primitiveCountToRender );
-			//	assert( SUCCEEDED( result ) );
-			//}
-		}
-		result = s_direct3dDevice->EndScene();
+	return true;
+}
+			//s_rectangle_object->DrawGameObject();
+			//s_leftTriangle_object->o_offset.x = -0.3f;
+			//s_leftTriangle_object->DrawGameObject();
+			//s_rightTriangle_object->o_offset.x = 0.3f;
+			//s_rightTriangle_object->DrawGameObject();
+
+
+bool eae6320::Graphics::EndDraw()
+{
+		HRESULT result = s_direct3dDevice->EndScene();
 		assert( SUCCEEDED( result ) );
-	}
+
+		return true;
+}
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
 	// In order to display it, the contents of the back buffer must be "presented"
 	// (to the front buffer)
+bool eae6320::Graphics::ShowBuffer()
+{
 	{
 		const RECT* noSourceRectangle = NULL;
 		const RECT* noDestinationRectangle = NULL;
 		const HWND useDefaultWindow = NULL;
 		const RGNDATA* noDirtyRegion = NULL;
-		HRESULT result = s_direct3dDevice->Present( noSourceRectangle, noDestinationRectangle, useDefaultWindow, noDirtyRegion );
-		assert( SUCCEEDED( result ) );
+		HRESULT result = s_direct3dDevice->Present(noSourceRectangle, noDestinationRectangle, useDefaultWindow, noDirtyRegion);
+		assert(SUCCEEDED(result));
 	}
+	return true;
+	
 }
 
 
@@ -256,33 +229,6 @@ bool eae6320::Graphics::ShutDown()
 				s_Mesh_Rectangle->ReleaseMesh();
 				s_Mesh_Rectangle = NULL;
 			}
-		/*	if ( s_vertexShader )
-			{
-				s_vertexShader->Release();
-				s_vertexShader = NULL;
-			}
-			if ( s_fragmentShader )
-			{
-				s_fragmentShader->Release();
-				s_fragmentShader = NULL;
-			}*/
-
-			/*if ( s_vertexBuffer )
-			{
-				s_vertexBuffer->Release();
-				s_vertexBuffer = NULL;
-			}
-			if ( s_indexBuffer )
-			{
-				s_indexBuffer->Release();
-				s_indexBuffer = NULL;
-			}
-			if ( s_vertexDeclaration )
-			{
-				s_direct3dDevice->SetVertexDeclaration( NULL );
-				s_vertexDeclaration->Release();
-				s_vertexDeclaration = NULL;
-			}*/
 
 			s_direct3dDevice->Release();
 			s_direct3dDevice = NULL;

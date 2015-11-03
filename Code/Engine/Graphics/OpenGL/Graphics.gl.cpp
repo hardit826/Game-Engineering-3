@@ -152,24 +152,33 @@ OnError:
 	return false;
 }
 
-void eae6320::Graphics::Render()
+bool eae6320::Graphics::Clear()
 {
-
-
 	// Every frame an entirely new image will be created.
 	// Before drawing anything, then, the previous image will be erased
 	// by "clearing" the image buffer (filling it with a solid color)
 	{
 		// Black is usually used
-		glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-		assert( glGetError() == GL_NO_ERROR );
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		assert(glGetError() == GL_NO_ERROR);
 		// In addition to the color, "depth" and "stencil" can also be cleared,
 		// but for now we only care about color
 		const GLbitfield clearColor = GL_COLOR_BUFFER_BIT;
-		glClear( clearColor );
-		assert( glGetError() == GL_NO_ERROR );
+		glClear(clearColor);
+		assert(glGetError() == GL_NO_ERROR);
 	}
-
+	return true;
+}
+bool eae6320::Graphics::BeginDraw()
+{
+	return true;
+}
+bool eae6320::Graphics::EndDraw()
+{
+	return true;
+}
+bool eae6320::Graphics::ShowBuffer()
+{
 	// The actual function calls that draw geometry
 	{
 		// Set the vertex and fragment shaders
@@ -179,11 +188,11 @@ void eae6320::Graphics::Render()
 			assert( glGetError() == GL_NO_ERROR );
 		}
 
-		s_rectangle_object->DrawGameObject();
+		/*s_rectangle_object->DrawGameObject();
 		s_leftTriangle_object->o_offset.x = -0.3f;
 		s_leftTriangle_object->DrawGameObject();
 		s_rightTriangle_object->o_offset.x = 0.3f;
-		s_rightTriangle_object->DrawGameObject();
+		s_rightTriangle_object->DrawGameObject();*/
 
 		//// Bind a specific vertex buffer to the device as a data source
 		//{
@@ -210,13 +219,11 @@ void eae6320::Graphics::Render()
 		//}
 	}
 
-	// Everything has been drawn to the "back buffer", which is just an image in memory.
-	// In order to display it, the contents of the back buffer must be swapped with the "front buffer"
-	// (which is what the user sees)
 	{
 		BOOL result = SwapBuffers( s_deviceContext );
 		assert( result != FALSE );
 	}
+	return true;
 }
 
 bool eae6320::Graphics::ShutDown()

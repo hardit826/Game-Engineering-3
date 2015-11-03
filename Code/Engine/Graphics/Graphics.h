@@ -31,6 +31,10 @@ namespace eae6320
 #ifdef EAE6320_PLATFORM_D3D
 		IDirect3DDevice9* GetLocalDirect3dDevice();
 #endif
+		bool Clear();
+		bool BeginDraw();
+		bool EndDraw();
+		bool ShowBuffer();
 	}
 
 }

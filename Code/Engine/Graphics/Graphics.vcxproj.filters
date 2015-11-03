@@ -30,6 +30,7 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicEffect.cpp" />
+    <ClCompile Include="Graphics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics.h" />

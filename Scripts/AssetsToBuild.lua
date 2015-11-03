@@ -10,6 +10,9 @@ return
 			"rectangle.mesh",
             "triangle.mesh",
 		},
+		dependencies = 
+		{
+		},
 	},
 	vertexShaders = 
 	{
@@ -18,7 +21,11 @@ return
 		tool = "VertexShaderBuilder.exe",
 		assets =
 		{
-			"vertex.shader"
+			"vertex.shader",
+		},
+		dependencies = 
+		{
+			"shaders.inc",
 		},
 	},
 	fragmentShaders = 
@@ -28,7 +35,11 @@ return
 		tool = "FragmentShaderBuilder.exe",
 		assets =
 		{
-			"fragment.shader"
+			"fragment.shader",
+		},
+		dependencies =
+		{
+			"shaders.inc",
 		},
 	},
 	effect = 
@@ -39,6 +50,9 @@ return
 		assets =
 		{
 			"effect.lua",
+		},
+		dependencies =
+		{
 		},
 	},
 }

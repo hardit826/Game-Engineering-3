@@ -41,7 +41,7 @@ end
 --=====================
 
 
-local function BuildAsset( i_sourceRelativePath, i_targetRelativePath, i_builderFileName )
+local function BuildAsset( i_sourceRelativePath, i_targetRelativePath, i_builderFileName ,i_dependenciesList)
 	-- Get the absolute paths to the source and target
 	local path_source = s_AuthoredAssetDir .. i_sourceRelativePath
 	local path_target = s_BuiltAssetDir .. i_targetRelativePath
@@ -78,9 +78,23 @@ local function BuildAsset( i_sourceRelativePath, i_targetRelativePath, i_builder
 			-- Even if the target exists it may be out-of-date.
 			-- If the source has been modified more recently than the target
 			-- then the target should be re-built.
+			
+			local lastDependencyWriteTime = 0
+			local lastDependencyWritePreviousTime = 0
+			
+			for dependencyKey, dependencyValue in ipairs(i_dependenciesList) do 
+				if dependencyValue then
+					local dependencySource = s_AuthoredAssetDir .. dependencyValue
+					lastDependencyWriteTime = math.max(GetLastWriteTime(dependencySource),lastDependencyWritePreviousTime)
+					lastDependencyWritePreviousTime = GetLastWriteTime(dependencySource)
+				else
+					lastDependencyWriteTime = 0
+				end
+			end
+			
 			local lastWriteTime_source = GetLastWriteTime( path_source )
 			local lastWriteTime_target = GetLastWriteTime( path_target )
-			shouldTargetBeBuilt = lastWriteTime_source > lastWriteTime_target
+			shouldTargetBeBuilt = math.max(lastDependencyWriteTime,lastWriteTime_source) > lastWriteTime_target
 			if not shouldTargetBeBuilt then
 				-- Even if the target was built from the current source
 				-- the builder may have changed which could cause different output
@@ -161,8 +175,9 @@ local function BuildAssets( i_assetsToBuild )
 		local sourcePath = assetInfo_singleType.source
 		local targetPath = assetInfo_singleType.target
 		local assets = assetInfo_singleType.assets
+		local dependenciesList = assetInfo_singleType.dependencies
 		for j, assetInfo in ipairs( assets ) do
-			if not BuildAsset( sourcePath..assetInfo, targetPath..assetInfo, builderFileName) then
+			if not BuildAsset( sourcePath..assetInfo, targetPath..assetInfo, builderFileName,dependenciesList) then
 				-- If there's an error then the asset build should fail,
 				-- but we can still try to build any remaining assets
 				wereThereErrors = true
