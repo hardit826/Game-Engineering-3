@@ -110,7 +110,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	}
 	s_effect->s_direct3dDevice = s_direct3dDevice;
 
-	s_Mesh_Rectangle = new Mesh("data/rectangle.mesh");
+	s_Mesh_Rectangle = new Mesh("data/box.mesh");
 
 	o_cube = new Renderable(*s_effect, *s_Mesh_Rectangle);
 	
