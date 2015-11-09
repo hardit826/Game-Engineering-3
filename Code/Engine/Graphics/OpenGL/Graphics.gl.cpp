@@ -14,14 +14,12 @@
 #include "../../Windows/WindowsFunctions.h"
 #include "../../../External/OpenGlExtensions/OpenGlExtensions.h"
 #include "../../Graphics/Mesh.h"
-#include "../GameObject.h"
+#include "../Renderable.h"
 
 // Static Data Initialization
 //===========================
 
-eae6320::Graphics::GameObject* eae6320::Graphics::s_rectangle_object = NULL;
-eae6320::Graphics::GameObject* eae6320::Graphics::s_leftTriangle_object = NULL;
-eae6320::Graphics::GameObject* eae6320::Graphics::s_rightTriangle_object = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_cube = NULL;
 
 namespace
 {
@@ -31,8 +29,6 @@ namespace
 	HGLRC s_openGlRenderingContext = NULL;
 	eae6320::Graphics::GraphicEffect* s_effect;
 	eae6320::Graphics::Mesh *s_Mesh_Rectangle = NULL;
-	eae6320::Graphics::Mesh *s_Mesh_Triangle  = NULL;
-
 
 	//// This struct determines the layout of the data that the CPU will send to the GPU
 	//struct sVertex
@@ -102,10 +98,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_renderingWindow = i_renderingWindow;
 
 	s_effect = new GraphicEffect("data/effect.lua");
-
-	s_Mesh_Rectangle = new Mesh("data/rectangle.mesh");
-	s_Mesh_Triangle = new Mesh("data/triangle.mesh");
-
+	s_Mesh_Rectangle = new Mesh("data/box.mesh");
 
 	// Create an OpenGL rendering context
 	if ( !CreateRenderingContext() )
@@ -135,11 +128,12 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	{
 		goto OnError;
 	}
-	s_leftTriangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
-	s_rightTriangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
-	s_rectangle_object = new GameObject(*s_effect, *s_Mesh_Rectangle);
 
-	if(!s_rectangle_object->LoadGameObject()||!s_leftTriangle_object->LoadGameObject()||!s_rightTriangle_object->LoadGameObject())
+	glEnable(GL_CULL_FACE);
+
+	o_cube = new Renderable(*s_effect, *s_Mesh_Rectangle);
+
+	if(!o_cube->LoadRenderable())
 	{ 
 		goto OnError;
 	}
@@ -408,7 +402,9 @@ namespace
 			}
 		}
 		s_effect->o_uniformLocation = glGetUniformLocation(s_programId, "g_position_offset");
-
+		s_effect->g_transform_localToWorld = glGetUniformLocation(s_programId, "g_transform_localToWorld");
+		s_effect->g_transform_worldToView = glGetUniformLocation(s_programId, "g_transform_worldToView");
+		s_effect->g_transform_viewToScreen = glGetUniformLocation(s_programId, "g_transform_viewToScreen");
 		return true;
 	}
 

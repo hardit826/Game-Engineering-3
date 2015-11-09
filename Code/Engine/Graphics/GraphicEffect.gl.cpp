@@ -2,7 +2,9 @@
 #include "../Graphics/GraphicEffect.h"
 #include <cassert>
 #include <gl/GLU.h>
+#include "../Math/Functions.h"
 #include <sstream>
+#include "../Math/cMatrix_transformation.h"
 #include "../UserOutput/UserOutput.h"
 #include "../Windows/WindowsFunctions.h"
 
@@ -38,11 +40,34 @@ void eae6320::Graphics::GraphicEffect::SetPath()
 	assert(glGetError() == GL_NO_ERROR);
 }
 
-void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cVector i_position_offset)
+void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation)
 {
-	float floatArray[] = { i_position_offset.x,i_position_offset.y };
-	float uniformCount = 1;
-	glUniform2fv(o_uniformLocation, uniformCount, floatArray);
+
+	const float aspectRatio = (float)4 / 3;
+	Math::cVector cameraPosition = Math::cVector(0, 0, 10);
+	Math::cQuaternion cameraRotation = Math::cQuaternion();
+
+	const float z_nearPlane = 0.1f;
+	const float z_farPlane = 100.0f;
+	const float fieldOfView = Math::ConvertDegreesToRadians(60); //60 degree field of view
+
+	Math::cMatrix_transformation g_matrix_worldToView = Math::cMatrix_transformation::cMatrix_transformation::
+		CreateWorldToViewTransform(cameraRotation, cameraPosition);
+
+	Math::cMatrix_transformation g_matrix_viewToScreen = Math::cMatrix_transformation::cMatrix_transformation::
+		CreateViewToScreenTransform(fieldOfView, aspectRatio, z_nearPlane, z_farPlane);
+
+	const GLboolean dontTranspose = false; // Matrices are already in the correct format
+	const GLsizei uniformCountToSet = 1;
+
+	glUniformMatrix4fv(g_transform_localToWorld, uniformCountToSet, dontTranspose,
+		reinterpret_cast<const GLfloat*>(&i_mvpMatrixTransformation));
+
+	glUniformMatrix4fv(g_transform_worldToView, uniformCountToSet, dontTranspose,
+		reinterpret_cast<const GLfloat*>(&g_matrix_worldToView));
+
+	glUniformMatrix4fv(g_transform_viewToScreen, uniformCountToSet, dontTranspose,
+		reinterpret_cast<const GLfloat*>(&g_matrix_viewToScreen));
 }
 
 bool eae6320::Graphics::GraphicEffect::LoadVertexShader()

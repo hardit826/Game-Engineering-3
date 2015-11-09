@@ -10,13 +10,13 @@
 #include <sstream>
 #include "../../UserOutput/UserOutput.h"
 #include "../Mesh.h"
+#include <list>
 
 // Static Data Initialization
 //===========================
 
-eae6320::Graphics::GameObject* eae6320::Graphics::s_rectangle_object = NULL;
-eae6320::Graphics::GameObject* eae6320::Graphics::s_leftTriangle_object = NULL;
-eae6320::Graphics::GameObject* eae6320::Graphics::s_rightTriangle_object = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_cube = NULL;
+
 namespace
 {
 	
@@ -46,7 +46,6 @@ namespace
 	//IDirect3DIndexBuffer9* s_indexBuffer = NULL;
 
 	eae6320::Graphics::Mesh *s_Mesh_Rectangle = NULL;
-	eae6320::Graphics::Mesh *s_Mesh_Triangle = NULL;
 
 	// The vertex shader is a program that operates on vertices.
 	// Its input comes from a C/C++ "draw call" and is:
@@ -112,18 +111,15 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_effect->s_direct3dDevice = s_direct3dDevice;
 
 	s_Mesh_Rectangle = new Mesh("data/rectangle.mesh");
-	s_Mesh_Triangle = new Mesh("data/triangle.mesh");
 
-	s_rectangle_object = new GameObject(*s_effect, *s_Mesh_Rectangle);
-	s_leftTriangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
-	s_rightTriangle_object = new GameObject(*s_effect, *s_Mesh_Triangle);
-	// Initialize the graphics objects
+	o_cube = new Renderable(*s_effect, *s_Mesh_Rectangle);
+	
 
 	/*if ( !CreateIndexBuffer() )
 	{
 		goto OnError;
 	}*/
-	if (!s_rectangle_object->LoadGameObject() || !s_leftTriangle_object->LoadGameObject() || !s_rightTriangle_object->LoadGameObject())
+	if (!o_cube->LoadRenderable())
 	{
 		goto OnError;
 	}

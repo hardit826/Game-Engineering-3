@@ -190,7 +190,7 @@ bool eae6320::Graphics::Mesh::LoadGraphicsMeshData()
 		// Offset = 0
 		{
 			const GLuint vertexElementLocation = 0;
-			const GLint elementCount = 2;
+			const GLint elementCount = 3;
 			const GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
 			glVertexAttribPointer(vertexElementLocation, elementCount, GL_FLOAT, notNormalized, stride, offset);
 			const GLenum errorCode = glGetError();

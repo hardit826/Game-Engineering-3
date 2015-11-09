@@ -486,7 +486,7 @@ bool UpdateEntities_vector()
 	// that encapsulates a mesh, an effect, and a position offset.
 	// You don't have to do it this way for your assignment!
 	// You just need a way to update the position offset associated with the colorful rectangle.
-	eae6320::Graphics::s_rectangle_object->UpdatePosition(offset);
+	eae6320::Graphics::o_cube->UpdatePosition(offset);
 
 	return !wereThereErrors;
 }

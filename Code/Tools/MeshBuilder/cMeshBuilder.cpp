@@ -294,6 +294,13 @@ bool eae6320::cMeshBuilder::Table_Vertices_Pos(lua_State& io_luaState, int i_ver
 		lua_gettable(&io_luaState, -2);
 		o_vertexData[i_vertexIndex].y = (float)lua_tonumber(&io_luaState, -1);
 		lua_pop(&io_luaState, 1);
+
+		//for z position
+		lua_pushinteger(&io_luaState, 3);
+		lua_gettable(&io_luaState, -2);
+		o_vertexData[i_vertexIndex].z = (float)lua_tonumber(&io_luaState, -1);
+		lua_pop(&io_luaState, 1);
+
 	}
 	else
 	{

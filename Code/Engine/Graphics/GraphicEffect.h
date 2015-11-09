@@ -28,6 +28,11 @@ namespace eae6320
 			char* o_bufferShader;
 			bool ReadFromBinaryShaderFile(char* i_path_shader);
 
+			//Three handles for the Transform Matrices
+			D3DXHANDLE g_transform_localToWorld;
+			D3DXHANDLE g_transform_worldToView;
+			D3DXHANDLE g_transform_viewToScreen;
+
 			//constructor for GraphicEffect D3D
 		public:
 		
@@ -40,10 +45,13 @@ namespace eae6320
 		public:
 			GLuint o_programID;
 			GLuint o_uniformLocation;
+			GLuint g_transform_localToWorld;
+			GLuint g_transform_worldToView;
+			GLuint g_transform_viewToScreen;
 			//constructor for GraphicEffect GL
 			//GraphicEffect(GLuint i_programID) : o_programID(i_programID){}
 
-		private:
+
 
 			struct sLogInfo
 			{
@@ -70,7 +78,7 @@ namespace eae6320
 			
 			bool LoadShaders();
 			void SetPath();
-			void SetDrawCallUniforms(eae6320::Math::cVector i_offset);
+			void SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation);
 			void ReleaseEffect();
 		};
 	}

@@ -27,7 +27,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Renderable.cpp" />
     <ClCompile Include="GraphicEffect.cpp" />
     <ClCompile Include="GraphicEffect.d3d.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -51,7 +51,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Renderable.h" />
     <ClInclude Include="GraphicEffect.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Mesh.h" />

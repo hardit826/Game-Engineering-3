@@ -33,14 +33,14 @@ namespace eae6320
 #ifdef EAE6320_PLATFORM_D3D
 		struct sVertex
 		{
-			float x, y;
+			float x, y ,z;
 			uint8_t b, g, r, a;
 		};
 #endif
 #ifdef EAE6320_PLATFORM_GL
 		struct sVertex
 		{
-			float x, y;
+			float x, y ,z;
 			uint8_t r,g,b,a;
 		};
 #endif
