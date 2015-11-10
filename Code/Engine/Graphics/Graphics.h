@@ -22,6 +22,7 @@ namespace eae6320
 	{
 		//Creating 3 GameObjects for now , List will be better in future
 		extern Renderable* o_cube;
+		extern Renderable* o_floor;
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();
 		bool ShutDown();

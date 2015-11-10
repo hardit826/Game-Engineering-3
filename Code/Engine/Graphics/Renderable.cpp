@@ -4,7 +4,8 @@
 
 void eae6320::Graphics::Renderable::UpdatePosition(Math::cVector i_offset)
 {
-	o_position = o_position + i_offset;
+	const float SPEED = 2.0f;
+	o_position = o_position + i_offset * SPEED;
 }
 
 bool eae6320::Graphics::Renderable::LoadRenderable()

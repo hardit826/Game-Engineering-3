@@ -9,7 +9,8 @@ return
 		{
 			"rectangle.mesh",
             "triangle.mesh",
-			"box.mesh"
+			"box.mesh",
+			"floor.mesh",
 		},
 		dependencies = 
 		{

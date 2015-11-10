@@ -53,7 +53,7 @@ void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatri
 	g_transform_worldToView = o_vertexShaderConstantTable->GetConstantByName(NULL, "g_transform_worldToView");
 	g_transform_viewToScreen = o_vertexShaderConstantTable->GetConstantByName(NULL, "g_transform_viewToScreen");
 
-	const float aspectRatio = (float)4 / 3;
+	const float aspectRatio = (float)4/3;
 	Math::cVector cameraPosition = Math::cVector(0, 0, 10);
 	Math::cQuaternion cameraRotation = Math::cQuaternion();
 

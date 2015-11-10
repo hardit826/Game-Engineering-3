@@ -14,4 +14,6 @@ void eae6320::Graphics::DrawRenderableList()
 {
 	//cube mesh
 	o_cube->DrawRenderable();
+	//floor mesh
+	o_floor->DrawRenderable();
 }

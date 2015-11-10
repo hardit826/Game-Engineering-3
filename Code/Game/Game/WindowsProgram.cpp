@@ -454,7 +454,7 @@ bool UnregisterMainWindowClass( const HINSTANCE i_thisInstanceOfTheProgram )
 bool UpdateEntities_vector()
 {
 	bool wereThereErrors = false;
-
+	
 	eae6320::Math::cVector offset(0.0f, 0.0f);
 	{
 		// Get the direction

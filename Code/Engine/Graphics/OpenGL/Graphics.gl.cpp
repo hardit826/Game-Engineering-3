@@ -20,6 +20,7 @@
 //===========================
 
 eae6320::Graphics::Renderable* eae6320::Graphics::o_cube = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
 
 namespace
 {
@@ -28,8 +29,8 @@ namespace
 	HDC s_deviceContext = NULL;
 	HGLRC s_openGlRenderingContext = NULL;
 	eae6320::Graphics::GraphicEffect* s_effect;
-	eae6320::Graphics::Mesh *s_Mesh_Rectangle = NULL;
-
+	eae6320::Graphics::Mesh *s_box = NULL;
+	eae6320::Graphics::Mesh *s_floor = NULL;
 	//// This struct determines the layout of the data that the CPU will send to the GPU
 	//struct sVertex
 	//{
@@ -98,7 +99,8 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_renderingWindow = i_renderingWindow;
 
 	s_effect = new GraphicEffect("data/effect.lua");
-	s_Mesh_Rectangle = new Mesh("data/box.mesh");
+	s_box = new Mesh("data/box.mesh");
+	s_floor = new Mesh("data/floor.mesh");
 
 	// Create an OpenGL rendering context
 	if ( !CreateRenderingContext() )
@@ -130,13 +132,18 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	}
 
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glDepthFunc(GL_LEQUAL);
 
-	o_cube = new Renderable(*s_effect, *s_Mesh_Rectangle);
+	o_cube = new Renderable(*s_effect, *s_box);
+	o_floor = new Renderable(*s_effect, *s_floor);
 
-	if(!o_cube->LoadRenderable())
+	if(!o_cube->LoadRenderable()||!o_floor->LoadRenderable())
 	{ 
 		goto OnError;
 	}
+
 
 	return true;
 
@@ -157,7 +164,7 @@ bool eae6320::Graphics::Clear()
 		assert(glGetError() == GL_NO_ERROR);
 		// In addition to the color, "depth" and "stencil" can also be cleared,
 		// but for now we only care about color
-		const GLbitfield clearColor = GL_COLOR_BUFFER_BIT;
+		const GLbitfield clearColor = GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT;
 		glClear(clearColor);
 		assert(glGetError() == GL_NO_ERROR);
 	}
@@ -431,6 +438,7 @@ namespace
 					desiredPixelFormat.iPixelType = PFD_TYPE_RGBA;
 					desiredPixelFormat.cColorBits = 32;
 					desiredPixelFormat.iLayerType = PFD_MAIN_PLANE ;
+					desiredPixelFormat.cDepthBits = 16;
 				}
 				// Get the ID of the desired pixel format
 				int pixelFormatId;

@@ -16,6 +16,7 @@
 //===========================
 
 eae6320::Graphics::Renderable* eae6320::Graphics::o_cube = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
 
 namespace
 {
@@ -45,7 +46,9 @@ namespace
 	// (i.e. it defines the vertex connectivity)
 	//IDirect3DIndexBuffer9* s_indexBuffer = NULL;
 
-	eae6320::Graphics::Mesh *s_Mesh_Rectangle = NULL;
+	eae6320::Graphics::Mesh *s_box = NULL;
+	eae6320::Graphics::Mesh *s_floor = NULL;
+
 
 	// The vertex shader is a program that operates on vertices.
 	// Its input comes from a C/C++ "draw call" and is:
@@ -110,20 +113,26 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	}
 	s_effect->s_direct3dDevice = s_direct3dDevice;
 
-	s_Mesh_Rectangle = new Mesh("data/box.mesh");
+	HRESULT result;
+	result = s_direct3dDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+	result = s_direct3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	result = s_direct3dDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
-	o_cube = new Renderable(*s_effect, *s_Mesh_Rectangle);
+	s_box = new Mesh("data/box.mesh");
+	s_floor = new Mesh("data/floor.mesh");
+
+	o_cube = new Renderable(*s_effect, *s_box);
+	o_floor = new Renderable(*s_effect, *s_floor);
 	
 
 	/*if ( !CreateIndexBuffer() )
 	{
 		goto OnError;
 	}*/
-	if (!o_cube->LoadRenderable())
+	if (!o_cube->LoadRenderable()||!o_floor->LoadRenderable())
 	{
 		goto OnError;
 	}
-	
 	return true;
 
 
@@ -141,13 +150,13 @@ bool eae6320::Graphics::Clear()
 	{
 		const D3DRECT* subRectanglesToClear = NULL;
 		const DWORD subRectangleCount = 0;
-		const DWORD clearTheRenderTarget = D3DCLEAR_TARGET;
+		const DWORD clearTheRenderTarget = D3DCLEAR_TARGET| D3DCLEAR_ZBUFFER;
 		D3DCOLOR clearColor;
 		{
 			// Black is usually used:
 			clearColor = D3DCOLOR_XRGB(0, 0, 0);
 		}
-		const float noZBuffer = 0.0f;
+		const float noZBuffer = 1.0f;
 		const DWORD noStencilBuffer = 0;
 		HRESULT result = s_direct3dDevice->Clear(subRectangleCount, subRectanglesToClear,
 			clearTheRenderTarget, clearColor, noZBuffer, noStencilBuffer);
@@ -220,10 +229,10 @@ bool eae6320::Graphics::ShutDown()
 				s_effect = NULL;
 			}
 
-			if (s_Mesh_Rectangle)
+			if (s_box)
 			{
-				s_Mesh_Rectangle->ReleaseMesh();
-				s_Mesh_Rectangle = NULL;
+				s_box->ReleaseMesh();
+				s_box = NULL;
 			}
 
 			s_direct3dDevice->Release();
@@ -265,7 +274,8 @@ namespace
 			presentationParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
 			presentationParameters.hDeviceWindow = s_renderingWindow;
 			presentationParameters.Windowed = TRUE;
-			presentationParameters.EnableAutoDepthStencil = FALSE;
+			presentationParameters.AutoDepthStencilFormat = D3DFMT_D16;
+			presentationParameters.EnableAutoDepthStencil = TRUE;
 			presentationParameters.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
 		}
 		HRESULT result = s_direct3dInterface->CreateDevice( useDefaultDevice, useHardwareRendering,
