@@ -29,6 +29,7 @@ namespace eae6320
 			bool LoadRenderable();
 			void DrawRenderable();
 			void UpdatePosition(Math::cVector i_offset);
+			void UpdateRotation();
 		};
 	}
 }

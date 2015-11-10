@@ -6,7 +6,6 @@
 //=============
 
 #include "WindowsProgram.h"
-
 // Resource.h contains the #defines for the icon resources
 // that the main window will use
 #include "Resources/Resource.h"
@@ -15,6 +14,7 @@
 #include "Windows/WindowsFunctions.h"
 #include "../../Engine/Time/Time.h"
 #include "../../Engine/Math/cVector.h"
+#include "../../Engine/Math/Functions.h"
 #include "../../Engine/Graphics/Graphics.h"
 #include "../../Engine/UserInput/UserInput.h"
 // Static Data Initialization
@@ -476,6 +476,7 @@ bool UpdateEntities_vector()
 				offset.y -= 1.0f;
 			}
 		}
+		
 		// Get the speed
 		const float unitsPerSecond = 1.0f;	// This is arbitrary
 		const float unitsToMove = unitsPerSecond * eae6320::Time::GetSecondsElapsedThisFrame();	// This makes the speed frame-rate-independent
@@ -487,6 +488,15 @@ bool UpdateEntities_vector()
 	// You don't have to do it this way for your assignment!
 	// You just need a way to update the position offset associated with the colorful rectangle.
 	eae6320::Graphics::o_cube->UpdatePosition(offset);
+	eae6320::Graphics::o_cube->UpdateRotation();
+
+	return !wereThereErrors;
+}
+bool CameraControls()
+{
+	bool wereThereErrors = false;
+	
+	eae6320::Graphics::o_cam->CameraControls();
 
 	return !wereThereErrors;
 }
@@ -533,6 +543,7 @@ bool WaitForMainWindowToClose( int& o_exitCode )
 			eae6320::Time::OnNewFrame();
 			
 			UpdateEntities_vector();
+			CameraControls();
 			eae6320::Graphics::Render();
 
 		}

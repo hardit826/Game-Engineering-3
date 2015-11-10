@@ -46,14 +46,14 @@ void eae6320::Graphics::GraphicEffect::SetPath()
 	assert(SUCCEEDED(result));
 }
 
-void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation)
+void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation,Camera i_camera)
 {
 	HRESULT result;
 	g_transform_localToWorld = o_vertexShaderConstantTable->GetConstantByName(NULL, "g_transform_localToWorld");
 	g_transform_worldToView = o_vertexShaderConstantTable->GetConstantByName(NULL, "g_transform_worldToView");
 	g_transform_viewToScreen = o_vertexShaderConstantTable->GetConstantByName(NULL, "g_transform_viewToScreen");
 
-	const float aspectRatio = (float)4/3;
+	const float aspectRatio = (float)800 / 600;
 	Math::cVector cameraPosition = Math::cVector(0, 0, 10);
 	Math::cQuaternion cameraRotation = Math::cQuaternion();
 
@@ -62,7 +62,7 @@ void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatri
 	const float fieldOfView = Math::ConvertDegreesToRadians(60); //60 degree field of view
 
 	Math::cMatrix_transformation g_matrix_worldToView = Math::cMatrix_transformation::cMatrix_transformation::
-		CreateWorldToViewTransform(cameraRotation, cameraPosition);
+		CreateWorldToViewTransform(i_camera.camRotation, i_camera.camPosition);
 
 	Math::cMatrix_transformation g_matrix_viewToScreen = Math::cMatrix_transformation::cMatrix_transformation::
 		CreateViewToScreenTransform(fieldOfView, aspectRatio, z_nearPlane, z_farPlane);

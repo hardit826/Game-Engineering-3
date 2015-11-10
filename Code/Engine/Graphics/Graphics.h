@@ -13,6 +13,7 @@
 #include "Renderable.h"
 #include "../Windows/WindowsIncludes.h"
 #include <list>
+#include "Camera.h"
 // Interface
 //==========
 
@@ -23,6 +24,7 @@ namespace eae6320
 		//Creating 3 GameObjects for now , List will be better in future
 		extern Renderable* o_cube;
 		extern Renderable* o_floor;
+		extern Camera* o_cam;
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();
 		bool ShutDown();

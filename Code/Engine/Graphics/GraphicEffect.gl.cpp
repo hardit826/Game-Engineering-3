@@ -40,7 +40,7 @@ void eae6320::Graphics::GraphicEffect::SetPath()
 	assert(glGetError() == GL_NO_ERROR);
 }
 
-void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation)
+void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation,Camera i_camera)
 {
 
 	const float aspectRatio = (float)4 / 3;
@@ -52,7 +52,7 @@ void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatri
 	const float fieldOfView = Math::ConvertDegreesToRadians(60); //60 degree field of view
 
 	Math::cMatrix_transformation g_matrix_worldToView = Math::cMatrix_transformation::cMatrix_transformation::
-		CreateWorldToViewTransform(cameraRotation, cameraPosition);
+		CreateWorldToViewTransform(i_camera.camRotation, i_camera.camPosition);
 
 	Math::cMatrix_transformation g_matrix_viewToScreen = Math::cMatrix_transformation::cMatrix_transformation::
 		CreateViewToScreenTransform(fieldOfView, aspectRatio, z_nearPlane, z_farPlane);

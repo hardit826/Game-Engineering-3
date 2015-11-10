@@ -31,11 +31,13 @@
     <ClCompile Include="GraphicEffect.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Renderable.cpp" />
+    <ClCompile Include="Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="GraphicEffect.h" />
     <ClInclude Include="Renderable.h" />
+    <ClInclude Include="Camera.h" />
   </ItemGroup>
 </Project>

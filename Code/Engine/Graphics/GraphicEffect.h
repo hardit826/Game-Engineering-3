@@ -2,6 +2,7 @@
 #define _GRAPHIC_EFFECT_H
 
 #include "../Math/cVector.h"
+#include "Camera.h"
 #if defined(EAE6320_PLATFORM_D3D)
 #include <d3dx9shader.h>
 #include <d3d9.h>
@@ -78,7 +79,7 @@ namespace eae6320
 			
 			bool LoadShaders();
 			void SetPath();
-			void SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation);
+			void SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation,Camera i_cam);
 			void ReleaseEffect();
 		};
 	}

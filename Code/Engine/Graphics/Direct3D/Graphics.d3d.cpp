@@ -17,7 +17,7 @@
 
 eae6320::Graphics::Renderable* eae6320::Graphics::o_cube = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
-
+eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 namespace
 {
 	
@@ -99,7 +99,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_renderingWindow = i_renderingWindow;
 	
 	s_effect = new GraphicEffect("data/effect.lua");
-	
+	o_cam = new Camera();
 
 	// Initialize the interface to the Direct3D9 library
 	if ( !CreateInterface() )

@@ -21,6 +21,7 @@
 
 eae6320::Graphics::Renderable* eae6320::Graphics::o_cube = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
+eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 
 namespace
 {
@@ -101,6 +102,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_effect = new GraphicEffect("data/effect.lua");
 	s_box = new Mesh("data/box.mesh");
 	s_floor = new Mesh("data/floor.mesh");
+	o_cam = new Camera();
 
 	// Create an OpenGL rendering context
 	if ( !CreateRenderingContext() )
