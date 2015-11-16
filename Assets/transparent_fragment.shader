@@ -5,8 +5,6 @@ This is an example of a fragment shader
 // Platform-specific setup
 #include "shaders.inc"
 
-float transparencyValue =0.5f;
-
 #if defined( EAE6320_PLATFORM_D3D )
 
 // Entry Point
@@ -62,6 +60,6 @@ void main()
 	}
 	//Modify the alpha channel to have transparency effect
 	{
-		o_color.a *= transparencyValue;
+		o_color.a *= 0.5;
 	}
 }
