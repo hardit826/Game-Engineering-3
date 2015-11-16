@@ -21,9 +21,10 @@ namespace eae6320
 {
 	namespace Graphics
 	{
-		//Creating 3 GameObjects for now , List will be better in future
-		extern Renderable* o_cube;
+		extern Renderable* o_man;
 		extern Renderable* o_floor;
+		extern Renderable* o_house;
+		extern Renderable* o_sphere;
 		extern Camera* o_cam;
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();

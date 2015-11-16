@@ -15,8 +15,10 @@
 // Static Data Initialization
 //===========================
 
-eae6320::Graphics::Renderable* eae6320::Graphics::o_cube = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_man = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_house = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_sphere = NULL;
 eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 namespace
 {
@@ -46,8 +48,10 @@ namespace
 	// (i.e. it defines the vertex connectivity)
 	//IDirect3DIndexBuffer9* s_indexBuffer = NULL;
 
-	eae6320::Graphics::Mesh *s_box = NULL;
+	eae6320::Graphics::Mesh *s_man = NULL;
 	eae6320::Graphics::Mesh *s_floor = NULL;
+	eae6320::Graphics::Mesh *s_house = NULL;
+	eae6320::Graphics::Mesh *s_sphere = NULL;
 
 
 	// The vertex shader is a program that operates on vertices.
@@ -118,18 +122,22 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
-	s_box = new Mesh("data/box.mesh");
-	s_floor = new Mesh("data/floor.mesh");
+	s_man = new Mesh("data/man.mesh");
+	s_floor = new Mesh("data/floorMaya.mesh");
+	s_house = new Mesh("data/house.mesh");
+	s_sphere = new Mesh("data/sphere.mesh");
 
-	o_cube = new Renderable(*s_effect, *s_box);
+	o_man = new Renderable(*s_effect, *s_man);
+	o_house = new Renderable(*s_effect, *s_house);
 	o_floor = new Renderable(*s_effect, *s_floor);
+	o_sphere = new Renderable(*s_effect, *s_sphere);
 	
 
 	/*if ( !CreateIndexBuffer() )
 	{
 		goto OnError;
 	}*/
-	if (!o_cube->LoadRenderable()||!o_floor->LoadRenderable())
+	if (!o_man->LoadRenderable()||!o_floor->LoadRenderable()||!o_house->LoadRenderable()||!o_sphere->LoadRenderable())
 	{
 		goto OnError;
 	}
@@ -229,10 +237,10 @@ bool eae6320::Graphics::ShutDown()
 				s_effect = NULL;
 			}
 
-			if (s_box)
+			if (s_man)
 			{
-				s_box->ReleaseMesh();
-				s_box = NULL;
+				s_man->ReleaseMesh();
+				s_man = NULL;
 			}
 
 			s_direct3dDevice->Release();

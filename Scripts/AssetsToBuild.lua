@@ -11,6 +11,10 @@ return
             "triangle.mesh",
 			"box.mesh",
 			"floor.mesh",
+			"floorMaya.mesh",
+			"house.mesh",
+			"man.mesh",
+			"sphere.mesh",
 		},
 		dependencies = 
 		{

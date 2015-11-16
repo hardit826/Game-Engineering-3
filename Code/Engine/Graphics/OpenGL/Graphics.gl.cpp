@@ -19,8 +19,10 @@
 // Static Data Initialization
 //===========================
 
-eae6320::Graphics::Renderable* eae6320::Graphics::o_cube = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_man = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_house = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_sphere = NULL;
 eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 
 namespace
@@ -30,8 +32,13 @@ namespace
 	HDC s_deviceContext = NULL;
 	HGLRC s_openGlRenderingContext = NULL;
 	eae6320::Graphics::GraphicEffect* s_effect;
-	eae6320::Graphics::Mesh *s_box = NULL;
+
+
+	eae6320::Graphics::Mesh *s_man = NULL;
 	eae6320::Graphics::Mesh *s_floor = NULL;
+	eae6320::Graphics::Mesh *s_house = NULL;
+	eae6320::Graphics::Mesh *s_sphere = NULL;
+
 	//// This struct determines the layout of the data that the CPU will send to the GPU
 	//struct sVertex
 	//{
@@ -100,8 +107,12 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_renderingWindow = i_renderingWindow;
 
 	s_effect = new GraphicEffect("data/effect.lua");
-	s_box = new Mesh("data/box.mesh");
-	s_floor = new Mesh("data/floor.mesh");
+
+	s_man = new Mesh("data/man.mesh");
+	s_floor = new Mesh("data/floorMaya.mesh");
+	s_house = new Mesh("data/house.mesh");
+	s_sphere = new Mesh("data/sphere.mesh");
+	
 	o_cam = new Camera();
 
 	// Create an OpenGL rendering context
@@ -138,10 +149,12 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
 
-	o_cube = new Renderable(*s_effect, *s_box);
+	o_man = new Renderable(*s_effect, *s_man);
+	o_house = new Renderable(*s_effect, *s_house);
 	o_floor = new Renderable(*s_effect, *s_floor);
+	o_sphere = new Renderable(*s_effect, *s_sphere);
 
-	if(!o_cube->LoadRenderable()||!o_floor->LoadRenderable())
+	if(!o_man->LoadRenderable()||!o_floor->LoadRenderable()||!o_house->LoadRenderable()||!o_sphere->LoadRenderable())
 	{ 
 		goto OnError;
 	}

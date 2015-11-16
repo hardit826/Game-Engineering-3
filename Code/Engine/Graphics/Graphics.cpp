@@ -12,8 +12,12 @@ void eae6320::Graphics::Render()
 
 void eae6320::Graphics::DrawRenderableList()
 {
-	//cube mesh
-	o_cube->DrawRenderable();
+	//man mesh
+	o_man->DrawRenderable();
 	//floor mesh
 	o_floor->DrawRenderable();
+	//house mesh
+	o_house->DrawRenderable();
+	//sphere mesh
+	o_sphere->DrawRenderable();
 }

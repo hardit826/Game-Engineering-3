@@ -34,7 +34,7 @@ namespace eae6320
 
 		public:
 			Camera() :
-				camPosition(Math::cVector(0, 0, 10)),
+				camPosition(Math::cVector(0, 4, 13)),
 				camRotation(Math::cQuaternion())
 			{};
 		};
