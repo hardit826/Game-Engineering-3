@@ -19,6 +19,7 @@ eae6320::Graphics::Renderable* eae6320::Graphics::o_man = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_house = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_sphere = NULL;
+//eae6320::Graphics::Renderable* eae6320::Graphics::o_bigbox = NULL;
 eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 namespace
 {
@@ -28,6 +29,7 @@ namespace
 	IDirect3DDevice9* s_direct3dDevice = NULL;
 
 	eae6320::Graphics::GraphicEffect* s_effect = NULL;
+	eae6320::Graphics::GraphicEffect* s_effect_transparent = NULL;
 	// This struct determines the layout of the data that the CPU will send to the GPU
 	//struct sVertex
 	//{
@@ -52,6 +54,7 @@ namespace
 	eae6320::Graphics::Mesh *s_floor = NULL;
 	eae6320::Graphics::Mesh *s_house = NULL;
 	eae6320::Graphics::Mesh *s_sphere = NULL;
+	//eae6320::Graphics::Mesh *s_bigbox = NULL;
 
 
 	// The vertex shader is a program that operates on vertices.
@@ -103,6 +106,8 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_renderingWindow = i_renderingWindow;
 	
 	s_effect = new GraphicEffect("data/effect.lua");
+	s_effect_transparent = new GraphicEffect("data/effect_transparent.lua");
+
 	o_cam = new Camera();
 
 	// Initialize the interface to the Direct3D9 library
@@ -116,22 +121,24 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 		goto OnError;
 	}
 	s_effect->s_direct3dDevice = s_direct3dDevice;
+	s_effect_transparent->s_direct3dDevice = s_direct3dDevice;
 
-	HRESULT result;
+	/*HRESULT result;
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-	result = s_direct3dDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+	result = s_direct3dDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);*/
 
 	s_man = new Mesh("data/man.mesh");
 	s_floor = new Mesh("data/floorMaya.mesh");
 	s_house = new Mesh("data/house.mesh");
 	s_sphere = new Mesh("data/sphere.mesh");
+	//s_bigbox = new Mesh("data/BigBox.mesh");
 
 	o_man = new Renderable(*s_effect, *s_man);
 	o_house = new Renderable(*s_effect, *s_house);
 	o_floor = new Renderable(*s_effect, *s_floor);
-	o_sphere = new Renderable(*s_effect, *s_sphere);
-	
+	o_sphere = new Renderable(*s_effect_transparent, *s_sphere);
+	//o_bigbox = new Renderable(*s_effect, *s_bigbox);
 
 	/*if ( !CreateIndexBuffer() )
 	{

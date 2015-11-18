@@ -8,6 +8,12 @@
 #include "../Math/cQuaternion.h"
 #include "../Math/cMatrix_transformation.h"
 #include<fstream>
+
+#define Alpha_Transparency 0
+#define Depth_Testing 1
+#define Depth_Writing 2
+#define Face_Culling 3
+
 eae6320::Graphics::GraphicEffect::GraphicEffect(char* const i_path_effect)
 {
 	o_path_effect = i_path_effect;
@@ -44,6 +50,8 @@ void eae6320::Graphics::GraphicEffect::SetPath()
 	assert(SUCCEEDED(result));
 	result = Graphics::GetLocalDirect3dDevice()->SetPixelShader(o_fragmentShader);
 	assert(SUCCEEDED(result));
+
+	SetRenderState();
 }
 
 void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation,Camera i_camera)
@@ -159,6 +167,49 @@ bool eae6320::Graphics::GraphicEffect::LoadFragmentShader()
 		delete[] o_bufferShader;
 	}
 	return !wereThereErrors;
+}
+
+void eae6320::Graphics::GraphicEffect::SetRenderState()
+{
+	//Alpha_Transparency 
+	if ((*render_state_value >> Alpha_Transparency) & 1)
+	{
+		s_direct3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		s_direct3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		s_direct3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	}
+	else
+	{
+		s_direct3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+	}
+	//Depth_Testing 
+	if ((*render_state_value >> Depth_Testing) & 1)
+	{
+		s_direct3dDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+		s_direct3dDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+	}
+	else
+	{
+		s_direct3dDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
+	}
+	//Depth_Writing 
+	if ((*render_state_value >> Depth_Writing) & 1)
+	{
+		s_direct3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	}
+	else
+	{
+		s_direct3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	}
+	//Face_Culling 
+	if ((*render_state_value >> Face_Culling) & 1)
+	{
+		s_direct3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	}
+	else
+	{
+		s_direct3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	}
 }
 
 void eae6320::Graphics::GraphicEffect::ReleaseEffect()

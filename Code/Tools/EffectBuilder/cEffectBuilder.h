@@ -32,9 +32,11 @@ namespace eae6320
 	private:
 		char* m_fragmentPath;
 		char* m_vertexPath;
+		uint8_t render_states_values;
 
 	private:
 		bool LoadAsset(const char* i_path);
+		bool LoadRenderStates_Values(lua_State& io_luaState);
 		bool LoadPath_Values(lua_State& io_luaState);
 		bool CreateEffectBinaryFile();
 

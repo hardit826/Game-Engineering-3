@@ -3,7 +3,7 @@ return
 	fragmentShaderPath = "data/fragment.shader";
 	vertexShaderPath = "data/vertex.shader";
 	
-	render_states = 
+		render_states =
 	{
 		alpha_transparency = false;
 		depth_testing = true;

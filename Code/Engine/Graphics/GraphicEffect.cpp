@@ -21,6 +21,8 @@ bool eae6320::Graphics::GraphicEffect::ReadFromBinEffectFile()
 		{
 			o_vertexShaderPath = o_binReadBuffer;
 			o_fragmentShaderPath = o_binReadBuffer + std::strlen(o_vertexShaderPath) + 1;
+			render_state_value = reinterpret_cast<uint8_t*>
+				(o_binReadBuffer + std::strlen(o_vertexShaderPath) + 1 + std::strlen(o_fragmentShaderPath) + 1);
 		}
 		return true;
 	}

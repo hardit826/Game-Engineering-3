@@ -20,4 +20,5 @@ void eae6320::Graphics::DrawRenderableList()
 	o_house->DrawRenderable();
 	//sphere mesh
 	o_sphere->DrawRenderable();
+	//o_bigbox->DrawRenderable();
 }

@@ -8,6 +8,11 @@
 #include "../UserOutput/UserOutput.h"
 #include "../Windows/WindowsFunctions.h"
 
+#define Alpha_Transparency 0
+#define Depth_Testing 1
+#define Depth_Writing 2
+#define Face_Culling 3
+
 eae6320::Graphics::GraphicEffect::GraphicEffect(char* const i_path_effect)
 {
 	o_path_effect = i_path_effect;
@@ -19,6 +24,11 @@ bool eae6320::Graphics::GraphicEffect::LoadShaders()
 {
 	//o_vertexShaderPath = i_vertexShaderPath;
 	//o_fragmentShaderPath = i_fragmentShaderPath;
+
+	if (!CreateProgram())
+	{
+		return false;
+	}
 	if (!ReadFromBinEffectFile())
 	{
 		return false;
@@ -31,6 +41,16 @@ bool eae6320::Graphics::GraphicEffect::LoadShaders()
 	{
 		return false;
 	}
+	if (!LinkProgram())
+	{
+		return false;
+	}
+
+	o_uniformLocation = glGetUniformLocation(o_programID, "g_position_offset");
+	g_transform_localToWorld = glGetUniformLocation(o_programID, "g_transform_localToWorld");
+	g_transform_worldToView = glGetUniformLocation(o_programID, "g_transform_worldToView");
+	g_transform_viewToScreen = glGetUniformLocation(o_programID, "g_transform_viewToScreen");
+	assert(glGetError() == GL_NO_ERROR);
 	return true;
 }
 
@@ -38,6 +58,113 @@ void eae6320::Graphics::GraphicEffect::SetPath()
 {
 	glUseProgram(o_programID);
 	assert(glGetError() == GL_NO_ERROR);
+
+	SetRenderState();
+}
+
+bool eae6320::Graphics::GraphicEffect::CreateProgram()
+{
+	// Create a program
+	{
+		o_programID = glCreateProgram();
+		const GLenum errorCode = glGetError();
+		if (errorCode != GL_NO_ERROR)
+		{
+			std::stringstream errorMessage;
+			errorMessage << "OpenGL failed to create a program: " <<
+				reinterpret_cast<const char*>(gluErrorString(errorCode));
+			eae6320::UserOutput::Print(errorMessage.str());
+			return false;
+		}
+		else if (o_programID == 0)
+		{
+			eae6320::UserOutput::Print("OpenGL failed to create a program");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool eae6320::Graphics::GraphicEffect::LinkProgram()
+{
+	// Link the program
+	{
+		glLinkProgram(o_programID);
+		GLenum errorCode = glGetError();
+		if (errorCode == GL_NO_ERROR)
+		{
+			// Get link info
+			// (this won't be used unless linking fails
+			// but it can be useful to look at when debugging)
+			std::string linkInfo;
+			{
+				GLint infoSize;
+				glGetProgramiv(o_programID, GL_INFO_LOG_LENGTH, &infoSize);
+				errorCode = glGetError();
+				if (errorCode == GL_NO_ERROR)
+				{
+					sLogInfo info(static_cast<size_t>(infoSize));
+					GLsizei* dontReturnLength = NULL;
+					glGetProgramInfoLog(o_programID, static_cast<GLsizei>(infoSize), dontReturnLength, info.memory);
+					errorCode = glGetError();
+					if (errorCode == GL_NO_ERROR)
+					{
+						linkInfo = info.memory;
+					}
+					else
+					{
+						std::stringstream errorMessage;
+						errorMessage << "OpenGL failed to get link info of the program: " <<
+							reinterpret_cast<const char*>(gluErrorString(errorCode));
+						eae6320::UserOutput::Print(errorMessage.str());
+						return false;
+					}
+				}
+				else
+				{
+					std::stringstream errorMessage;
+					errorMessage << "OpenGL failed to get the length of the program link info: " <<
+						reinterpret_cast<const char*>(gluErrorString(errorCode));
+					eae6320::UserOutput::Print(errorMessage.str());
+					return false;
+				}
+			}
+			// Check to see if there were link errors
+			GLint didLinkingSucceed;
+			{
+				glGetProgramiv(o_programID, GL_LINK_STATUS, &didLinkingSucceed);
+				errorCode = glGetError();
+				if (errorCode == GL_NO_ERROR)
+				{
+					if (didLinkingSucceed == GL_FALSE)
+					{
+						std::stringstream errorMessage;
+						errorMessage << "The program failed to link:\n" << linkInfo;
+						eae6320::UserOutput::Print(errorMessage.str());
+						return false;
+					}
+				}
+				else
+				{
+					std::stringstream errorMessage;
+					errorMessage << "OpenGL failed to find out if linking of the program succeeded: " <<
+						reinterpret_cast<const char*>(gluErrorString(errorCode));
+					eae6320::UserOutput::Print(errorMessage.str());
+					return false;
+				}
+			}
+		}
+		else
+		{
+			std::stringstream errorMessage;
+			errorMessage << "OpenGL failed to link the program: " <<
+				reinterpret_cast<const char*>(gluErrorString(errorCode));
+			eae6320::UserOutput::Print(errorMessage.str());
+			return false;
+		}
+	}
+	return true;
 }
 
 void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation,Camera i_camera)
@@ -68,6 +195,8 @@ void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatri
 
 	glUniformMatrix4fv(g_transform_viewToScreen, uniformCountToSet, dontTranspose,
 		reinterpret_cast<const GLfloat*>(&g_matrix_viewToScreen));
+
+	assert(glGetError() == GL_NO_ERROR);
 }
 
 bool eae6320::Graphics::GraphicEffect::LoadVertexShader()
@@ -462,6 +591,49 @@ OnExit:
 	}
 
 	return !wereThereErrors;
+}
+
+void eae6320::Graphics::GraphicEffect::SetRenderState()
+{
+	//Alpha_Transparency 
+	if ((*render_state_value >> Alpha_Transparency) & 1)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	else
+	{
+		glDisable(GL_BLEND);
+	}
+	//Depth_Testing 
+	if ((*render_state_value >> Depth_Testing) & 1)
+	{
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+	}
+	else
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
+	//Depth_Writing 
+	if ((*render_state_value >> Depth_Writing) & 1)
+	{
+		glDepthMask(GL_TRUE);
+	}
+	else
+	{
+		glDepthMask(GL_FALSE);
+	}
+	//Face_Culling 
+	if ((*render_state_value >> Face_Culling) & 1)
+	{
+		glEnable(GL_CULL_FACE);
+		glFrontFace(GL_CCW);
+	}
+	else
+	{
+		glDisable(GL_CULL_FACE);
+	}
 }
 
 bool eae6320::Graphics::GraphicEffect::LoadAndAllocateShaderProgram(const char* i_path, void*& o_shader, size_t& o_size, std::string* o_errorMessage)

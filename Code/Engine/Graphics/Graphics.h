@@ -25,6 +25,7 @@ namespace eae6320
 		extern Renderable* o_floor;
 		extern Renderable* o_house;
 		extern Renderable* o_sphere;
+		//extern Renderable* o_bigbox;
 		extern Camera* o_cam;
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();

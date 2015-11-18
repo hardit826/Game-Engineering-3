@@ -61,6 +61,8 @@ namespace eae6320
 				~sLogInfo() { if (memory) free(memory); }
 			};
 
+			bool CreateProgram();
+			bool LinkProgram();
 			bool eae6320::Graphics::GraphicEffect::LoadAndAllocateShaderProgram(const char* i_path, void*& o_shader, size_t& o_size, std::string* o_errorMessage);
 		
 #endif
@@ -71,7 +73,9 @@ namespace eae6320
 			bool LoadFragmentShader();
 			bool LoadVertexShader();
 			bool ReadFromBinEffectFile();
+			void SetRenderState();
 			char* o_path_effect;
+			uint8_t* render_state_value;
 
 
 		public:

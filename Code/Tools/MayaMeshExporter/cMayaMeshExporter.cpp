@@ -746,8 +746,11 @@ namespace
 				for (std::vector<sVertex_maya>::size_type i = 0; i != i_vertexBuffer.size(); ++i)
 				{
 					fout << "\t\t{\n";
-					fout <<"\t\t\tpos = {"<<i_vertexBuffer[i].x<<","<<i_vertexBuffer[i].y<<","<<i_vertexBuffer[i].z<<"}"<<",\n" ;
-					fout <<"\t\t\tcolor = {" << i_vertexBuffer[i].r << "," << i_vertexBuffer[i].g << "," << i_vertexBuffer[i].b << "," << i_vertexBuffer[i].a<<"}"<<",\n";
+					fout <<"\t\t\tpos = {"<<i_vertexBuffer[i].x
+						<<","<<i_vertexBuffer[i].y
+						<<","<<i_vertexBuffer[i].z<<"}"<<",\n" ;
+					fout <<"\t\t\tcolor = {" << i_vertexBuffer[i].r << "," << i_vertexBuffer[i].g 
+						<< "," << i_vertexBuffer[i].b << "," << i_vertexBuffer[i].a<<"}"<<",\n";
 					fout << "\t\t},\n";
 				}
 				fout << "\t},\n";

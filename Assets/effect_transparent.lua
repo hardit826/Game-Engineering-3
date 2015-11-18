@@ -1,6 +1,6 @@
 return
 {
-	fragmentShaderPath = "data/transparentFragment.shader";
+	fragmentShaderPath = "data/transparent_fragment.shader";
 	vertexShaderPath = "data/vertex.shader";
 	
 	render_states =

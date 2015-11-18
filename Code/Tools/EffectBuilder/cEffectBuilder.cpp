@@ -7,6 +7,11 @@
 #include <sstream>
 #include "../../Engine/Windows/WindowsFunctions.h"
 
+#define Alpha_Transparency 0
+#define Depth_Testing 1
+#define Depth_Writing 2
+#define Face_Culling 3
+
 // Interface
 //==========
 
@@ -96,7 +101,7 @@ bool eae6320::cEffectBuilder::LoadAsset(const char* i_path)
 					//	luaL_typename(luaState, -1) << ")\n";
 					// Pop the returned non-table value
 					errMsg << "Asset files must return a table (instead of a " <<
-							luaL_typename(luaState, -1) << ")\n";
+						luaL_typename(luaState, -1) << ")\n";
 					eae6320::OutputErrorMessage(errMsg.str().c_str());
 					lua_pop(luaState, 1);
 					goto OnExit;
@@ -134,7 +139,10 @@ bool eae6320::cEffectBuilder::LoadAsset(const char* i_path)
 	{
 		wereThereErrors = true;
 	}
-
+	if (!LoadRenderStates_Values(*luaState))
+	{
+		wereThereErrors;
+	}
 	// Pop the table
 	lua_pop(luaState, 1);
 
@@ -229,6 +237,77 @@ OnExit:
 	return !wereThereErrors;
 }
 
+bool eae6320::cEffectBuilder::LoadRenderStates_Values(lua_State& io_luaState)
+{
+	bool wereThereErrors = false;
+
+	const char* const key = "render_states";
+	lua_pushstring(&io_luaState, key);
+	lua_gettable(&io_luaState, -2);
+	{
+		if (!lua_istable(&io_luaState, -1))
+		{
+			lua_pop(&io_luaState, 1);
+			wereThereErrors = true;
+			std::stringstream errMsg;
+			errMsg << "Render states must return table instead of " << luaL_typename(&io_luaState, -1) << "\n";
+			eae6320::OutputErrorMessage(errMsg.str().c_str());
+			goto OnExit;
+		}
+		//alpha_transparency
+		{
+			const char* const key = "alpha_transparency";
+			lua_pushstring(&io_luaState, key);
+			lua_gettable(&io_luaState, -2);
+
+			if (lua_toboolean(&io_luaState, -1))
+				render_states_values = 1 << Alpha_Transparency;
+			else 
+				render_states_values = 0 << Alpha_Transparency;
+
+			lua_pop(&io_luaState, 1);
+		}
+		//depth_testing 
+		{
+			const char* const key = "depth_testing";
+			lua_pushstring(&io_luaState, key);
+			lua_gettable(&io_luaState, -2);
+
+
+			if (lua_toboolean(&io_luaState, -1))
+				render_states_values |= 1 << Depth_Testing;
+		
+			lua_pop(&io_luaState, 1);
+		}
+		//depth_writing
+		{
+			const char* const key = "depth_writing";
+			lua_pushstring(&io_luaState, key);
+			lua_gettable(&io_luaState, -2);
+
+			if (lua_toboolean(&io_luaState, -1))
+				render_states_values |= 1 << Depth_Writing;
+			
+			lua_pop(&io_luaState, 1);
+		}
+		//face_culling 
+		{
+			const char* const key = "face_culling";
+			lua_pushstring(&io_luaState, key);
+			lua_gettable(&io_luaState, -2);
+
+			if (lua_toboolean(&io_luaState, -1))
+				render_states_values |= 1 << Face_Culling;
+			
+			lua_pop(&io_luaState, 1);
+		}
+		lua_pop(&io_luaState, 1);
+	}
+
+OnExit:
+	return !wereThereErrors;
+}
+
 bool eae6320::cEffectBuilder::CreateEffectBinaryFile()
 {
 	std::ofstream outputBinEffectFile(m_path_target, std::ofstream::binary);
@@ -238,6 +317,9 @@ bool eae6320::cEffectBuilder::CreateEffectBinaryFile()
 	
 	outputBinEffectFile.write(m_fragmentPath, std::strlen(m_fragmentPath));
 	outputBinEffectFile.write("\0", 1);
+
+	char* o_render_states = reinterpret_cast<char*>(&render_states_values);
+	outputBinEffectFile.write(o_render_states, sizeof(uint8_t));
 
 	outputBinEffectFile.close();
 

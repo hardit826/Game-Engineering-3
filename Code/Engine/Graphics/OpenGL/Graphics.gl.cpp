@@ -32,6 +32,7 @@ namespace
 	HDC s_deviceContext = NULL;
 	HGLRC s_openGlRenderingContext = NULL;
 	eae6320::Graphics::GraphicEffect* s_effect;
+	eae6320::Graphics::GraphicEffect* s_effect_transparent;
 
 
 	eae6320::Graphics::Mesh *s_man = NULL;
@@ -82,7 +83,6 @@ namespace
 
 namespace
 {
-	bool CreateProgram();
 	bool CreateRenderingContext();
 	//bool CreateVertexArray();
 	//bool LoadAndAllocateShaderProgram( const char* i_path, void*& o_shader, size_t& o_size, std::string* o_errorMessage );
@@ -107,6 +107,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_renderingWindow = i_renderingWindow;
 
 	s_effect = new GraphicEffect("data/effect.lua");
+	s_effect_transparent = new GraphicEffect("data/effect_transparent.lua");
 
 	s_man = new Mesh("data/man.mesh");
 	s_floor = new Mesh("data/floorMaya.mesh");
@@ -131,7 +132,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 		}
 	}
  
-	
+	assert(glGetError() == GL_NO_ERROR);
 
 	// Initialize the graphics objects
 	/*if ( !s_Mesh_Rectangle->LoadMesh("data/rectangle.mesh")|| !s_Mesh_Triangle->LoadMesh("data/triangle.mesh"))
@@ -139,27 +140,23 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 		goto OnError;
 	}*/
 
-	if ( !CreateProgram() )
-	{
-		goto OnError;
-	}
 
-	glEnable(GL_CULL_FACE);
+	/*glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
+	glDepthFunc(GL_LEQUAL);*/
 
 	o_man = new Renderable(*s_effect, *s_man);
 	o_house = new Renderable(*s_effect, *s_house);
 	o_floor = new Renderable(*s_effect, *s_floor);
-	o_sphere = new Renderable(*s_effect, *s_sphere);
+	o_sphere = new Renderable(*s_effect_transparent, *s_sphere);
 
 	if(!o_man->LoadRenderable()||!o_floor->LoadRenderable()||!o_house->LoadRenderable()||!o_sphere->LoadRenderable())
-	{ 
+	{
 		goto OnError;
 	}
 
-
+	assert(glGetError() == GL_NO_ERROR);
 	return true;
 
 OnError:
@@ -176,9 +173,12 @@ bool eae6320::Graphics::Clear()
 	{
 		// Black is usually used
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		int errorcode = glGetError();
 		assert(glGetError() == GL_NO_ERROR);
 		// In addition to the color, "depth" and "stencil" can also be cleared,
 		// but for now we only care about color
+		glDepthMask(GL_TRUE);
+
 		const GLbitfield clearColor = GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT;
 		glClear(clearColor);
 		assert(glGetError() == GL_NO_ERROR);
@@ -311,124 +311,6 @@ bool eae6320::Graphics::ShutDown()
 
 namespace
 {
-	bool CreateProgram()
-	{
-		// Create a program
-		{
-			s_programId = glCreateProgram();
-			const GLenum errorCode = glGetError();
-			if ( errorCode != GL_NO_ERROR )
-			{
-				std::stringstream errorMessage;
-				errorMessage << "OpenGL failed to create a program: " <<
-					reinterpret_cast<const char*>( gluErrorString( errorCode ) );
-				eae6320::UserOutput::Print( errorMessage.str() );
-				return false;
-			}
-			else if ( s_programId == 0 )
-			{
-				eae6320::UserOutput::Print( "OpenGL failed to create a program" );
-				return false;
-			}
-		}
-		// Load and attach the shaders
-		/*if ( !LoadVertexShader( s_programId ) )
-		{
-			return false;
-		}
-		if ( !LoadFragmentShader( s_programId ) )
-		{
-			return false;
-		}*/
-		s_effect = new eae6320::Graphics::GraphicEffect("data/effect.lua");
-		s_effect->o_programID = s_programId;
-
-		if (!s_effect->LoadShaders())
-		{
-			return false;
-		}
-		// Link the program
-		{
-			glLinkProgram( s_programId );
-			GLenum errorCode = glGetError();
-			if ( errorCode == GL_NO_ERROR )
-			{
-				// Get link info
-				// (this won't be used unless linking fails
-				// but it can be useful to look at when debugging)
-				std::string linkInfo;
-				{
-					GLint infoSize;
-					glGetProgramiv( s_programId, GL_INFO_LOG_LENGTH, &infoSize );
-					errorCode = glGetError();
-					if ( errorCode == GL_NO_ERROR )
-					{
-						sLogInfo info( static_cast<size_t>( infoSize ) );
-						GLsizei* dontReturnLength = NULL;
-						glGetProgramInfoLog( s_programId, static_cast<GLsizei>( infoSize ), dontReturnLength, info.memory );
-						errorCode = glGetError();
-						if ( errorCode == GL_NO_ERROR )
-						{
-							linkInfo = info.memory;
-						}
-						else
-						{
-							std::stringstream errorMessage;
-							errorMessage << "OpenGL failed to get link info of the program: " <<
-								reinterpret_cast<const char*>( gluErrorString( errorCode ) );
-							eae6320::UserOutput::Print( errorMessage.str() );
-							return false;
-						}
-					}
-					else
-					{
-						std::stringstream errorMessage;
-						errorMessage << "OpenGL failed to get the length of the program link info: " <<
-							reinterpret_cast<const char*>( gluErrorString( errorCode ) );
-						eae6320::UserOutput::Print( errorMessage.str() );
-						return false;
-					}
-				}
-				// Check to see if there were link errors
-				GLint didLinkingSucceed;
-				{
-					glGetProgramiv( s_programId, GL_LINK_STATUS, &didLinkingSucceed );
-					errorCode = glGetError();
-					if ( errorCode == GL_NO_ERROR )
-					{
-						if ( didLinkingSucceed == GL_FALSE )
-						{
-							std::stringstream errorMessage;
-							errorMessage << "The program failed to link:\n" << linkInfo;
-							eae6320::UserOutput::Print( errorMessage.str() );
-							return false;
-						}
-					}
-					else
-					{
-						std::stringstream errorMessage;
-						errorMessage << "OpenGL failed to find out if linking of the program succeeded: " <<
-							reinterpret_cast<const char*>( gluErrorString( errorCode ) );
-						eae6320::UserOutput::Print( errorMessage.str() );
-						return false;
-					}
-				}
-			}
-			else
-			{
-				std::stringstream errorMessage;
-				errorMessage << "OpenGL failed to link the program: " <<
-					reinterpret_cast<const char*>( gluErrorString( errorCode ) );
-				eae6320::UserOutput::Print( errorMessage.str() );
-				return false;
-			}
-		}
-		s_effect->o_uniformLocation = glGetUniformLocation(s_programId, "g_position_offset");
-		s_effect->g_transform_localToWorld = glGetUniformLocation(s_programId, "g_transform_localToWorld");
-		s_effect->g_transform_worldToView = glGetUniformLocation(s_programId, "g_transform_worldToView");
-		s_effect->g_transform_viewToScreen = glGetUniformLocation(s_programId, "g_transform_viewToScreen");
-		return true;
-	}
 
 	bool CreateRenderingContext()
 	{

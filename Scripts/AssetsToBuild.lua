@@ -15,6 +15,7 @@ return
 			"house.mesh",
 			"man.mesh",
 			"sphere.mesh",
+			"BigBox.mesh",
 		},
 		dependencies = 
 		{
@@ -42,6 +43,7 @@ return
 		assets =
 		{
 			"fragment.shader",
+			"transparent_fragment.shader",
 		},
 		dependencies =
 		{
@@ -56,6 +58,7 @@ return
 		assets =
 		{
 			"effect.lua",
+			"effect_transparent.lua",
 		},
 		dependencies =
 		{
