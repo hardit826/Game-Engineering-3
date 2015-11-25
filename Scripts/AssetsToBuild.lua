@@ -64,4 +64,17 @@ return
 		{
 		},
 	},
+	material = 
+	{
+		source = "",
+		target = "",
+		tool = "MaterialBuilder.exe",
+		assets =
+		{
+			"materialBlueTransparent.lua",
+		},
+		dependencies =
+		{
+		},
+	},
 }

@@ -11,6 +11,7 @@
 #include "../../UserOutput/UserOutput.h"
 #include "../Mesh.h"
 #include <list>
+#include "../Material.h"
 
 // Static Data Initialization
 //===========================
@@ -28,8 +29,12 @@ namespace
 	IDirect3D9* s_direct3dInterface = NULL;
 	IDirect3DDevice9* s_direct3dDevice = NULL;
 
-	eae6320::Graphics::GraphicEffect* s_effect = NULL;
-	eae6320::Graphics::GraphicEffect* s_effect_transparent = NULL;
+	//eae6320::Graphics::GraphicEffect* s_effect = NULL;
+	//eae6320::Graphics::GraphicEffect* s_effect_transparent = NULL;
+
+
+	eae6320::Graphics::Material* s_material = NULL;
+
 	// This struct determines the layout of the data that the CPU will send to the GPU
 	//struct sVertex
 	//{
@@ -105,8 +110,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 {
 	s_renderingWindow = i_renderingWindow;
 	
-	s_effect = new GraphicEffect("data/effect.lua");
-	s_effect_transparent = new GraphicEffect("data/effect_transparent.lua");
+	s_material = new Material("data/materialBlueTransparent.lua");
 
 	o_cam = new Camera();
 
@@ -120,8 +124,6 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	{
 		goto OnError;
 	}
-	s_effect->s_direct3dDevice = s_direct3dDevice;
-	s_effect_transparent->s_direct3dDevice = s_direct3dDevice;
 
 	/*HRESULT result;
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
@@ -134,20 +136,26 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_sphere = new Mesh("data/sphere.mesh");
 	//s_bigbox = new Mesh("data/BigBox.mesh");
 
-	o_man = new Renderable(*s_effect, *s_man);
-	o_house = new Renderable(*s_effect, *s_house);
-	o_floor = new Renderable(*s_effect, *s_floor);
-	o_sphere = new Renderable(*s_effect_transparent, *s_sphere);
+	o_man = new Renderable(*s_material, *s_man);
+	o_house = new Renderable(*s_material, *s_house);
+	o_floor = new Renderable(*s_material, *s_floor);
+	o_sphere = new Renderable(*s_material, *s_sphere);
 	//o_bigbox = new Renderable(*s_effect, *s_bigbox);
 
 	/*if ( !CreateIndexBuffer() )
 	{
 		goto OnError;
 	}*/
+
+	s_direct3dDevice = Graphics::GetLocalDirect3dDevice();
+
 	if (!o_man->LoadRenderable()||!o_floor->LoadRenderable()||!o_house->LoadRenderable()||!o_sphere->LoadRenderable())
 	{
 		goto OnError;
 	}
+
+	
+
 	return true;
 
 
@@ -238,11 +246,11 @@ bool eae6320::Graphics::ShutDown()
 	{
 		if ( s_direct3dDevice )
 		{
-			if (s_effect)
+		/*	if (s_effect)
 			{
 				s_effect->ReleaseEffect();
 				s_effect = NULL;
-			}
+			}*/
 
 			if (s_man)
 			{

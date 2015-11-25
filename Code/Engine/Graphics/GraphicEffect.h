@@ -66,6 +66,32 @@ namespace eae6320
 			bool eae6320::Graphics::GraphicEffect::LoadAndAllocateShaderProgram(const char* i_path, void*& o_shader, size_t& o_size, std::string* o_errorMessage);
 		
 #endif
+
+			typedef
+#if defined( EAE6320_PLATFORM_D3D )
+				// This is conceptually a D3DXHANDLE but is defined this way
+				// so that external files aren't required to specify the #include path to the DirectX SDK
+				const char*
+#elif defined( EAE6320_PLATFORM_GL )
+				GLint
+#endif
+				tUniformHandle;
+
+		public:
+			enum ShaderTypes
+			{
+				vertexShader,
+				fragmentShader,
+			};
+			struct UniformData
+			{
+				tUniformHandle uniformHandle;
+				ShaderTypes shaderType;
+				float values[4];
+				uint32_t valueCountToSet;
+			};
+
+
 		private:
 			char* o_binReadBuffer;
 			char* o_vertexShaderPath;
@@ -84,6 +110,9 @@ namespace eae6320
 			bool LoadShaders();
 			void SetPath();
 			void SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation,Camera i_cam);
+			void SetUniformHandle(UniformData i_uniformData, bool i_fromVertexShader);
+			tUniformHandle GetUniformHandle(const char* i_uniformName, bool i_fromVertexShader);
+
 			void ReleaseEffect();
 		};
 	}

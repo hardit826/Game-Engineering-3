@@ -30,7 +30,7 @@ void eae6320::Graphics::Renderable::UpdateRotation()
 
 bool eae6320::Graphics::Renderable::LoadRenderable()
 {
-	if (!o_effect.LoadShaders())
+	if (!o_material.LoadMaterial())
 	{
 		return false;
 	}
@@ -43,8 +43,9 @@ bool eae6320::Graphics::Renderable::LoadRenderable()
 
 void eae6320::Graphics::Renderable::DrawRenderable()
 {
-	o_effect.SetPath();
-	o_effect.SetDrawCallUniforms(Math::cMatrix_transformation(o_quaternion,o_position),*eae6320::Graphics::o_cam);
+	o_material.SetMaterial();
+	o_material.SetMaterialUniform();
+	o_material.SetEngineUniforms(Math::cMatrix_transformation(o_quaternion,o_position),*eae6320::Graphics::o_cam);
 	o_mesh.DrawMesh();
 }
 

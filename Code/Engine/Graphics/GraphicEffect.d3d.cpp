@@ -53,7 +53,22 @@ void eae6320::Graphics::GraphicEffect::SetPath()
 
 	SetRenderState();
 }
+void eae6320::Graphics::GraphicEffect::SetUniformHandle(UniformData i_uniformData, bool i_fromVertexShader)
+{
+	HRESULT result;
+	ID3DXConstantTable * shaderConstantTable = i_fromVertexShader ? o_vertexShaderConstantTable:o_fragmentShaderConstantTable;
+	result = shaderConstantTable->SetFloatArray(s_direct3dDevice, i_uniformData.uniformHandle, i_uniformData.values, i_uniformData.valueCountToSet);
+	assert(SUCCEEDED(result));
+}
+D3DXHANDLE eae6320::Graphics::GraphicEffect::GetUniformHandle(const char* i_uniformName, bool i_fromVertexShader)
+{
+	ID3DXConstantTable* shaderConstantTable;
+	if (i_fromVertexShader)
+		return o_vertexShaderConstantTable->GetConstantByName(NULL, i_uniformName);
+	else
+		return o_fragmentShaderConstantTable->GetConstantByName(NULL, i_uniformName);
 
+}
 void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation,Camera i_camera)
 {
 	HRESULT result;
