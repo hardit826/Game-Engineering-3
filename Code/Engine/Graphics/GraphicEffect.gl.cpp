@@ -751,3 +751,33 @@ OnExit:
 	return !wereThereErrors;
 }
 
+GLint eae6320::Graphics::GraphicEffect::GetUniformHandle(int i_vertexOrFragmentShader, const char* i_uniformName)
+{
+	return glGetUniformLocation(o_programID, i_uniformName);
+}
+
+void eae6320::Graphics::GraphicEffect::SetUniformHandle(int o_vertexOrFragmentShader, UniformData i_uniformData)
+{
+	int uniformCount = 1;
+
+	switch (i_uniformData.valueCountToSet)
+	{
+	case 1:
+		glUniform1fv(i_uniformData.uniformHandle, uniformCount, i_uniformData.values);
+		break;
+
+	case 2:
+		glUniform2fv(i_uniformData.uniformHandle, uniformCount, i_uniformData.values);
+		break;
+
+	case 3:
+		glUniform3fv(i_uniformData.uniformHandle, uniformCount, i_uniformData.values);
+		break;
+
+	case 4:
+		glUniform4fv(i_uniformData.uniformHandle, uniformCount, i_uniformData.values);
+		break;
+	}
+
+}
+

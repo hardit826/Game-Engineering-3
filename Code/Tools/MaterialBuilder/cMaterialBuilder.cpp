@@ -118,7 +118,7 @@ bool eae6320::cMaterialBuilder::LoadAsset(const char* i_path)
 	{
 		wereThereErrors = true;
 	}
-	if (!LoadUniformData_Values(*luaState))
+	if (!LoadUniformData(*luaState))
 	{
 		wereThereErrors;
 	}
@@ -140,8 +140,6 @@ OnExit:
 
 	return !wereThereErrors;
 }
-
-
 
 bool eae6320::cMaterialBuilder::LoadEffect_Path_Values(lua_State& io_luaState)
 {
@@ -180,81 +178,94 @@ OnExit:
 	return !wereThereErrors;
 }
 
-bool eae6320::cMaterialBuilder::LoadUniformData_Values(lua_State& io_luaState)
+bool eae6320::cMaterialBuilder::LoadUniformData_Names(lua_State& io_luaState, int i)
 {
-		
-		bool wereThereErrors = false;
+	{
+		const char* const key = "name";
+		lua_pushstring(&io_luaState, key);
+		lua_gettable(&io_luaState, -2);
+		uniformName[i - 1] = const_cast<char*>(lua_tostring(&io_luaState, -1));
+		lua_pop(&io_luaState, 1);
+	}
+	return true;
+}
+
+bool eae6320::cMaterialBuilder::LoadUniformData_ShaderType(lua_State& io_luaState, int i)
+{
+	{
+		const char* const key = "shaderType";
+		lua_pushstring(&io_luaState, key);
+		lua_gettable(&io_luaState, -2);
+		std::string shaderTypeName;
+		shaderTypeName = lua_tostring(&io_luaState, -1);
+		if (shaderTypeName.compare("fragment") == true)
+			uniformData[i - 1].shaderType = ShaderTypes::fragmentShader;
+		else
+			uniformData[i - 1].shaderType = ShaderTypes::vertexShader;
+
+		lua_pop(&io_luaState, 1);
+	}
+	return true;
+}
+
+bool eae6320::cMaterialBuilder::LoadUniformData_Values(lua_State& io_luaState, int i)
+{
+	{
+		const char* const key = "values";
+		lua_pushstring(&io_luaState, key);
+		lua_gettable(&io_luaState, -2);
+		uniformData[i - 1].valueCountToSet = luaL_len(&io_luaState, -1);
+		for (unsigned int j = 1; j <= uniformData[i - 1].valueCountToSet; ++j)
 		{
-			const char* const key = "uniform_data";
-			lua_pushstring(&io_luaState, key);
+			lua_pushinteger(&io_luaState, j);
+			lua_gettable(&io_luaState, -2);
+			uniformData[i - 1].values[j - 1] = (float)lua_tonumber(&io_luaState, -1);
+			lua_pop(&io_luaState, 1);
+		}
+		lua_pop(&io_luaState, 1);
+	}
+	return true;
+}
+
+bool eae6320::cMaterialBuilder::LoadUniformData(lua_State& io_luaState)
+{
+
+	bool wereThereErrors = false;
+	{
+		const char* const key = "uniform_data";
+		lua_pushstring(&io_luaState, key);
+		lua_gettable(&io_luaState, -2);
+		uniformData = new eae6320::cMaterialBuilder::UniformData[uniformCount];
+		uniformName = new std::string[uniformCount];
+		uniformCount = luaL_len(&io_luaState, -1);
+		
+		for (auto i = 1; i <= uniformCount; ++i)
+		{
+
+			lua_pushinteger(&io_luaState, i);
 			lua_gettable(&io_luaState, -2);
 
-			uniformCount = luaL_len(&io_luaState, -1);
-			uniformData = new eae6320::cMaterialBuilder::UniformData[uniformCount];
-			uniformName = new std::string[uniformCount];
-	
-
-			for (auto i = 1; i <= uniformCount; ++i)
+			if (lua_istable(&io_luaState, -1))
 			{
-
-				lua_pushinteger(&io_luaState, i);
-				lua_gettable(&io_luaState, -2);
-
-				if (lua_istable(&io_luaState, -1))
 				{
-					{
-						const char* const key = "name";
-						lua_pushstring(&io_luaState, key);
-						lua_gettable(&io_luaState, -2);
-						uniformName[i-1] = const_cast<char*>(lua_tostring(&io_luaState, -1));
-						lua_pop(&io_luaState, 1);
-					}
-					{
-						const char* const key = "shaderType";
-						lua_pushstring(&io_luaState, key);
-						lua_gettable(&io_luaState, -2);
-						std::string shaderTypeName = lua_tostring(&io_luaState, -1);
-						if (shaderTypeName.compare("vertex") == 0)
-							uniformData[i - 1].shaderType = ShaderTypes::vertexShader;
-						else
-							uniformData[i - 1].shaderType = ShaderTypes::fragmentShader;
-						lua_pop(&io_luaState, 1);
-					}
-					{
-						const char* const key = "values";
-						lua_pushstring(&io_luaState, key);
-						lua_gettable(&io_luaState, -2);
-						uniformData[i - 1].valueCountToSet = luaL_len(&io_luaState, -1);
-						for (unsigned int j = 1; j <= uniformData[i - 1].valueCountToSet; ++j)
-						{
-							lua_pushinteger(&io_luaState, 1);
-							lua_gettable(&io_luaState, -2);
-							uniformData[i - 1].values[j - 1] = (float)lua_tonumber(&io_luaState, -1);
-							lua_pop(&io_luaState, 1);
-						}
-						lua_pop(&io_luaState, 1);
-					}
+					LoadUniformData_Names(io_luaState, i);
 				}
-				else
 				{
-					std::stringstream errMsg;
-					errMsg << "Tha value at " << i << "must be a table instead of" << luaL_typename(&io_luaState, -1) << "\n";
-					eae6320::OutputErrorMessage(errMsg.str().c_str());
-					//Pop the values
-					lua_pop(&io_luaState, 1);
-					lua_pop(&io_luaState, 1);
-					goto OnExit;
+					LoadUniformData_ShaderType(io_luaState, i);
 				}
-				lua_pop(&io_luaState, 1);
+				{
+					LoadUniformData_Values(io_luaState, i);
+				}
 			}
 			lua_pop(&io_luaState, 1);
 		}
-	
+		lua_pop(&io_luaState, 1);
+	}
+
 
 OnExit:
 	return !wereThereErrors;
 }
-
 
 bool eae6320::cMaterialBuilder::CreateMaterialBinaryFile()
 {
@@ -262,12 +273,15 @@ bool eae6320::cMaterialBuilder::CreateMaterialBinaryFile()
 
 	outputBinMaterialFile.write(effectPath, std::strlen(effectPath));
 	outputBinMaterialFile.write("\0",1);
+	auto totalUniformStructSize = sizeof(UniformData) * uniformCount;
 
-	outputBinMaterialFile.write((char*)&uniformCount, sizeof(uint32_t));
+	char* o_uniformCount = reinterpret_cast<char*>(&uniformCount);
+	char* o_uniformData = reinterpret_cast<char*>(uniformData);
 
-	outputBinMaterialFile.write((char*)uniformData, sizeof(UniformData)*uniformCount);
+	outputBinMaterialFile.write(o_uniformCount, sizeof(uint32_t));
+	outputBinMaterialFile.write(o_uniformData, totalUniformStructSize);
 
-	for (unsigned int i = 0; i < uniformCount; ++i)
+	for (auto i = 0; i < uniformCount; ++i)
 	{
 		outputBinMaterialFile.write(uniformName[i].c_str(), uniformName[i].size());
 		outputBinMaterialFile.write("\0", 1);
@@ -277,76 +291,3 @@ bool eae6320::cMaterialBuilder::CreateMaterialBinaryFile()
 
 	return true;
 }
-
-
-//bool eae6320::cMaterialBuilder::LoadUniform_Data_Values(lua_State& io_luaState)
-//{
-//	bool wereThereErrors = false;
-//
-//	const char* const key = "render_states";
-//	lua_pushstring(&io_luaState, key);
-//	lua_gettable(&io_luaState, -2);
-//	{
-//		if (!lua_istable(&io_luaState, -1))
-//		{
-//			lua_pop(&io_luaState, 1);
-//			wereThereErrors = true;
-//			std::stringstream errMsg;
-//			errMsg << "Render states must return table instead of " << luaL_typename(&io_luaState, -1) << "\n";
-//			eae6320::OutputErrorMessage(errMsg.str().c_str());
-//			goto OnExit;
-//		}
-//		//alpha_transparency
-//		{
-//			const char* const key = "alpha_transparency";
-//			lua_pushstring(&io_luaState, key);
-//			lua_gettable(&io_luaState, -2);
-//
-//			if (lua_toboolean(&io_luaState, -1))
-//				render_states_values = 1 << Alpha_Transparency;
-//			else 
-//				render_states_values = 0 << Alpha_Transparency;
-//
-//			lua_pop(&io_luaState, 1);
-//		}
-//		//depth_testing 
-//		{
-//			const char* const key = "depth_testing";
-//			lua_pushstring(&io_luaState, key);
-//			lua_gettable(&io_luaState, -2);
-//
-//
-//			if (lua_toboolean(&io_luaState, -1))
-//				render_states_values |= 1 << Depth_Testing;
-//		
-//			lua_pop(&io_luaState, 1);
-//		}
-//		//depth_writing
-//		{
-//			const char* const key = "depth_writing";
-//			lua_pushstring(&io_luaState, key);
-//			lua_gettable(&io_luaState, -2);
-//
-//			if (lua_toboolean(&io_luaState, -1))
-//				render_states_values |= 1 << Depth_Writing;
-//			
-//			lua_pop(&io_luaState, 1);
-//		}
-//		//face_culling 
-//		{
-//			const char* const key = "face_culling";
-//			lua_pushstring(&io_luaState, key);
-//			lua_gettable(&io_luaState, -2);
-//
-//			if (lua_toboolean(&io_luaState, -1))
-//				render_states_values |= 1 << Face_Culling;
-//			
-//			lua_pop(&io_luaState, 1);
-//		}
-//		lua_pop(&io_luaState, 1);
-//	}
-//
-//OnExit:
-//	return !wereThereErrors;
-//}
-//

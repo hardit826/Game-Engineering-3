@@ -6,13 +6,13 @@ return
 	{
 		{
 			name = "colorRGB",
-			values = {1,0,0},
-			shaderType ="transparent_fragment",
+			values = {1,1,0},
+			shaderType ="fragment",
 		},
 		{
 			name = "alphaModifier",
-			values = {0.5},
-			shaderType ="transparent_fragment",
+			values = {0.2},
+			shaderType ="fragment",
 		},
 	},
 }

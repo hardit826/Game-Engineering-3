@@ -43,9 +43,8 @@ bool eae6320::Graphics::Renderable::LoadRenderable()
 
 void eae6320::Graphics::Renderable::DrawRenderable()
 {
-	o_material.SetMaterial();
-	o_material.SetMaterialUniform();
-	o_material.SetEngineUniforms(Math::cMatrix_transformation(o_quaternion,o_position),*eae6320::Graphics::o_cam);
+	o_material.SetUniformDataMaterial();
+	o_material.SetUniformDataEngine(Math::cMatrix_transformation(o_quaternion,o_position),*eae6320::Graphics::o_cam);
 	o_mesh.DrawMesh();
 }
 

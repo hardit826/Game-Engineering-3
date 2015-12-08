@@ -23,6 +23,10 @@ eae6320::Graphics::Renderable* eae6320::Graphics::o_man = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_house = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_sphere = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_box_1 = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_box_2 = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_box_3 = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_box_4 = NULL;
 eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 
 namespace
@@ -31,14 +35,23 @@ namespace
 	HWND s_renderingWindow = NULL;
 	HDC s_deviceContext = NULL;
 	HGLRC s_openGlRenderingContext = NULL;
-	eae6320::Graphics::GraphicEffect* s_effect;
-	eae6320::Graphics::GraphicEffect* s_effect_transparent;
+	//eae6320::Graphics::GraphicEffect* s_effect;
+	//eae6320::Graphics::GraphicEffect* s_effect_transparent;
+	eae6320::Graphics::Material * s_material_default;
+	eae6320::Graphics::Material * s_material_green_opaque;
+	eae6320::Graphics::Material * s_material_red_opaque;
+	eae6320::Graphics::Material * s_material_blue_transparent;
+	eae6320::Graphics::Material * s_material_yellow_transparent;
 
 
 	eae6320::Graphics::Mesh *s_man = NULL;
 	eae6320::Graphics::Mesh *s_floor = NULL;
 	eae6320::Graphics::Mesh *s_house = NULL;
 	eae6320::Graphics::Mesh *s_sphere = NULL;
+	eae6320::Graphics::Mesh *s_box_1 = NULL;
+	eae6320::Graphics::Mesh *s_box_2 = NULL;
+	eae6320::Graphics::Mesh *s_box_3 = NULL;
+	eae6320::Graphics::Mesh *s_box_4 = NULL;
 
 	//// This struct determines the layout of the data that the CPU will send to the GPU
 	//struct sVertex
@@ -106,13 +119,23 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 {
 	s_renderingWindow = i_renderingWindow;
 
-	s_effect = new GraphicEffect("data/effect.lua");
-	s_effect_transparent = new GraphicEffect("data/effect_transparent.lua");
+	//s_effect = new GraphicEffect("data/effect.lua");
+	//s_effect_transparent = new GraphicEffect("data/effect_transparent.lua");
+
+	s_material_default = new Material("data/defaultMaterial.lua");
+	s_material_green_opaque = new Material("data/materialGreenOpaque.lua");
+	s_material_blue_transparent = new Material("data/materialBlueTransparent.lua");
+	s_material_yellow_transparent = new Material("data/materialYellowTransparent.lua");
+	s_material_red_opaque = new Material("data/materialRedOpaque.lua");
 
 	s_man = new Mesh("data/man.mesh");
 	s_floor = new Mesh("data/floorMaya.mesh");
 	s_house = new Mesh("data/house.mesh");
 	s_sphere = new Mesh("data/sphere.mesh");
+	s_box_1 = new Mesh("data/box1.mesh");
+	s_box_2 = new Mesh("data/box2.mesh");
+	s_box_3 = new Mesh("data/box3.mesh");
+	s_box_4 = new Mesh("data/box4.mesh");
 	
 	o_cam = new Camera();
 
@@ -146,12 +169,16 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);*/
 
-	o_man = new Renderable(*s_effect, *s_man);
-	o_house = new Renderable(*s_effect, *s_house);
-	o_floor = new Renderable(*s_effect, *s_floor);
-	o_sphere = new Renderable(*s_effect_transparent, *s_sphere);
+	o_man = new Renderable(*s_material_default, *s_man);
+	o_house = new Renderable(*s_material_default, *s_house);
+	o_floor = new Renderable(*s_material_default, *s_floor);
+	o_sphere = new Renderable(*s_material_blue_transparent, *s_sphere);
+	o_box_1 = new Renderable(*s_material_red_opaque, *s_box_1);
+	o_box_2 = new Renderable(*s_material_green_opaque, *s_box_2);
+	o_box_3 = new Renderable(*s_material_yellow_transparent, *s_box_3);
+	o_box_4 = new Renderable(*s_material_blue_transparent, *s_box_4);
 
-	if(!o_man->LoadRenderable()||!o_floor->LoadRenderable()||!o_house->LoadRenderable()||!o_sphere->LoadRenderable())
+	if (!o_man->LoadRenderable() || !o_floor->LoadRenderable() || !o_house->LoadRenderable() || !o_box_1->LoadRenderable() || !o_box_2->LoadRenderable() || !o_box_3->LoadRenderable() || !o_box_4->LoadRenderable())
 	{
 		goto OnError;
 	}

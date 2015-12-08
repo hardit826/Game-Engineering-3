@@ -110,8 +110,8 @@ namespace eae6320
 			bool LoadShaders();
 			void SetPath();
 			void SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation,Camera i_cam);
-			void SetUniformHandle(UniformData i_uniformData, bool i_fromVertexShader);
-			tUniformHandle GetUniformHandle(const char* i_uniformName, bool i_fromVertexShader);
+			void SetUniformHandle(int o_vertexOrFragmentShader, UniformData i_uniformData);
+			tUniformHandle GetUniformHandle(int o_vertexOrFragmentShader, const char* i_uniformName);
 
 			void ReleaseEffect();
 		};

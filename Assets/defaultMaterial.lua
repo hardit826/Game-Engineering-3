@@ -5,9 +5,9 @@ return
     uniform_data =
 	{
 		{
-			name = "colorRGB"
-			values = {1,1,1}
-			shaderType ="fragment"
+			name = "colorRGB",
+			values = {1,1,1},
+			shaderType ="fragment",
 		},
 	},
 }

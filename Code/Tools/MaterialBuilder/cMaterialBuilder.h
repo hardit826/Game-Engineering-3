@@ -66,7 +66,11 @@ typedef
 		bool LoadAsset(const char* i_path);
 		bool LoadEffect_Path_Values(lua_State& io_luaState);
 
-		bool LoadUniformData_Values(lua_State& io_luaState);
+		bool LoadUniformData_Names(lua_State& io_luaState, int i);
+		bool LoadUniformData_ShaderType(lua_State& io_luaState, int i);
+		bool LoadUniformData_Values(lua_State& io_luaState, int i);
+		bool LoadUniformData(lua_State& io_luaState);
+
 		bool CreateMaterialBinaryFile();
 	};
 }

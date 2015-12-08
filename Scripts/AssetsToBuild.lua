@@ -16,6 +16,10 @@ return
 			"man.mesh",
 			"sphere.mesh",
 			"BigBox.mesh",
+			"box1.mesh",
+			"box2.mesh",
+			"box3.mesh",
+			"box4.mesh",
 		},
 		dependencies = 
 		{
@@ -72,6 +76,10 @@ return
 		assets =
 		{
 			"materialBlueTransparent.lua",
+			"defaultMaterial.lua",
+			"materialGreenOpaque.lua",
+			"materialRedOpaque.lua",
+			"materialYellowTransparent.lua",
 		},
 		dependencies =
 		{

@@ -14,45 +14,39 @@ eae6320::Graphics::Material::Material(char* const i_path_material)
 }
 bool eae6320::Graphics::Material::LoadMaterial()
 {
+
 	if (!effect->LoadShaders())
 	{
 		return false;
 	}
-	for (auto i = 0; i <= uniformCount; ++i)
+	if (!GetUniformHandleForMaterial())
 	{
-		bool fromVertexShader = true;
-
-		if (uniformData[i].shaderType == GraphicEffect::ShaderTypes::fragmentShader)
-			fromVertexShader = false;
-
-		uniformData[i].uniformHandle = effect->GetUniformHandle(uniformNames[i].c_str(), fromVertexShader);
+		return false;
 	}
+
 	return true;
 }
-bool eae6320::Graphics::Material::SetMaterial()
+void eae6320::Graphics::Material::SetUniformDataMaterial()
 {
+	//Set the effect path
 	effect->SetPath();
-	return true;
-}
-void eae6320::Graphics::Material::SetMaterialUniform()
-{
+	
 	for (auto i = 0; i < uniformCount; ++i)
 	{
-		bool fromVertexShader = true;
+		int fromVertexShader = 1;
 
-		if (uniformData[i].shaderType == GraphicEffect::ShaderTypes::fragmentShader)
-			fromVertexShader = false;
+		if (uniformData[i].shaderType == GraphicEffect::ShaderTypes::vertexShader)
+			fromVertexShader = 1;
+		else if (uniformData[i].shaderType == GraphicEffect::ShaderTypes::fragmentShader)
+			fromVertexShader = 0;
 
-		effect->SetUniformHandle(uniformData[i], fromVertexShader);
+		effect->SetUniformHandle(fromVertexShader, uniformData[i]);
 	}
-
 }
-void eae6320::Graphics::Material::SetEngineUniforms(Math::cMatrix_transformation i_localToWorld, Camera i_camera)
+void eae6320::Graphics::Material::SetUniformDataEngine(Math::cMatrix_transformation i_localToWorld, Camera i_camera)
 {
 	effect->SetDrawCallUniforms(i_localToWorld,i_camera);
 }
-
-
 bool eae6320::Graphics::Material::ReadFromBinMaterialFile()
 {
 	std::ifstream ipBinEffectFile(o_path_material, std::istream::binary);
@@ -69,21 +63,34 @@ bool eae6320::Graphics::Material::ReadFromBinMaterialFile()
 		if (ipBinEffectFile)
 		{
 			o_path_effect = o_binReadBuffer;
-			uniformCount = *reinterpret_cast<uint32_t*>(o_binReadBuffer + std::strlen(o_path_effect) + 1);
-			auto path_length = std::strlen(o_path_effect);
-			uniformData = reinterpret_cast<GraphicEffect::UniformData*>(o_binReadBuffer + path_length + 1 + sizeof(uint32_t));
+			auto pathLengthNullTerm = o_binReadBuffer+ std::strlen(o_path_effect) + 1;
+			uniformCount = *reinterpret_cast<uint32_t*>(pathLengthNullTerm);
+			uniformData = reinterpret_cast<GraphicEffect::UniformData*>(pathLengthNullTerm + sizeof(uint32_t));
 			uniformNames = new std::string[uniformCount];
-			
 			unsigned int previousStringSize = 0;
 			for (unsigned int i = 0; i < uniformCount; ++i)
 			{
 				auto totalStructSize = sizeof(GraphicEffect::UniformData);
-				uniformNames[i] = o_binReadBuffer + path_length + 1 + sizeof(uint32_t) + totalStructSize * uniformCount + previousStringSize;
+				uniformNames[i] = pathLengthNullTerm + sizeof(uint32_t) + totalStructSize * uniformCount + previousStringSize;
 				previousStringSize = uniformNames[i].size() + 1;
 			}
-			
 		}
 		return true;
 	}
 	return false;
+}
+bool eae6320::Graphics::Material::GetUniformHandleForMaterial()
+{
+	for (auto i = 0; i < uniformCount; ++i)
+	{
+		int bVertexShader = 1;
+
+		if (uniformData[i].shaderType == GraphicEffect::ShaderTypes::vertexShader)
+			bVertexShader = 1;
+		if (uniformData[i].shaderType == GraphicEffect::ShaderTypes::fragmentShader)
+			bVertexShader = 0;
+
+		uniformData[i].uniformHandle = effect->GetUniformHandle(bVertexShader, uniformNames[i].c_str());
+	}
+	return true;
 }
