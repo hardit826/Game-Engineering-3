@@ -22,7 +22,7 @@
 eae6320::Graphics::Renderable* eae6320::Graphics::o_man = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_house = NULL;
-eae6320::Graphics::Renderable* eae6320::Graphics::o_sphere = NULL;
+//eae6320::Graphics::Renderable* eae6320::Graphics::o_sphere = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_box_1 = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_box_2 = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_box_3 = NULL;
@@ -47,7 +47,7 @@ namespace
 	eae6320::Graphics::Mesh *s_man = NULL;
 	eae6320::Graphics::Mesh *s_floor = NULL;
 	eae6320::Graphics::Mesh *s_house = NULL;
-	eae6320::Graphics::Mesh *s_sphere = NULL;
+	//eae6320::Graphics::Mesh *s_sphere = NULL;
 	eae6320::Graphics::Mesh *s_box_1 = NULL;
 	eae6320::Graphics::Mesh *s_box_2 = NULL;
 	eae6320::Graphics::Mesh *s_box_3 = NULL;
@@ -131,7 +131,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_man = new Mesh("data/man.mesh");
 	s_floor = new Mesh("data/floorMaya.mesh");
 	s_house = new Mesh("data/house.mesh");
-	s_sphere = new Mesh("data/sphere.mesh");
+	//s_sphere = new Mesh("data/sphere.mesh");
 	s_box_1 = new Mesh("data/box1.mesh");
 	s_box_2 = new Mesh("data/box2.mesh");
 	s_box_3 = new Mesh("data/box3.mesh");
@@ -172,7 +172,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	o_man = new Renderable(*s_material_default, *s_man);
 	o_house = new Renderable(*s_material_default, *s_house);
 	o_floor = new Renderable(*s_material_default, *s_floor);
-	o_sphere = new Renderable(*s_material_blue_transparent, *s_sphere);
+	//o_sphere = new Renderable(*s_material_blue_transparent, *s_sphere);
 	o_box_1 = new Renderable(*s_material_red_opaque, *s_box_1);
 	o_box_2 = new Renderable(*s_material_green_opaque, *s_box_2);
 	o_box_3 = new Renderable(*s_material_yellow_transparent, *s_box_3);

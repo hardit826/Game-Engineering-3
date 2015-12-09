@@ -180,50 +180,49 @@ OnExit:
 
 bool eae6320::cMaterialBuilder::LoadUniformData_Names(lua_State& io_luaState, int i)
 {
-	{
-		const char* const key = "name";
-		lua_pushstring(&io_luaState, key);
-		lua_gettable(&io_luaState, -2);
-		uniformName[i - 1] = const_cast<char*>(lua_tostring(&io_luaState, -1));
-		lua_pop(&io_luaState, 1);
-	}
+	
+	const char* const key = "name";
+	lua_pushstring(&io_luaState, key);
+	lua_gettable(&io_luaState, -2);
+	uniformName[i - 1] = const_cast<char*>(lua_tostring(&io_luaState, -1));
+	lua_pop(&io_luaState, 1);
+	
 	return true;
 }
 
 bool eae6320::cMaterialBuilder::LoadUniformData_ShaderType(lua_State& io_luaState, int i)
 {
-	{
-		const char* const key = "shaderType";
-		lua_pushstring(&io_luaState, key);
-		lua_gettable(&io_luaState, -2);
-		std::string shaderTypeName;
-		shaderTypeName = lua_tostring(&io_luaState, -1);
-		if (shaderTypeName.compare("fragment") == true)
-			uniformData[i - 1].shaderType = ShaderTypes::fragmentShader;
-		else
-			uniformData[i - 1].shaderType = ShaderTypes::vertexShader;
-
-		lua_pop(&io_luaState, 1);
-	}
+	
+	const char* const key = "shaderType";
+	lua_pushstring(&io_luaState, key);
+	lua_gettable(&io_luaState, -2);
+	std::string shaderTypeName = lua_tostring(&io_luaState, -1);
+	if (shaderTypeName.compare("vertex") == 0)
+		uniformData[i - 1].shaderType = ShaderTypes::vertexShader;
+	else
+		uniformData[i - 1].shaderType = ShaderTypes::fragmentShader;
+	lua_pop(&io_luaState, 1);
+	
 	return true;
 }
 
 bool eae6320::cMaterialBuilder::LoadUniformData_Values(lua_State& io_luaState, int i)
 {
+	
+	const char* const key = "values";
+	lua_pushstring(&io_luaState, key);
+	lua_gettable(&io_luaState, -2);
+	uniformData[i - 1].valueCountToSet = luaL_len(&io_luaState, -1);
+		
+	for (unsigned int j = 1; j <= uniformData[i - 1].valueCountToSet; ++j)
 	{
-		const char* const key = "values";
-		lua_pushstring(&io_luaState, key);
+		lua_pushinteger(&io_luaState, j);
 		lua_gettable(&io_luaState, -2);
-		uniformData[i - 1].valueCountToSet = luaL_len(&io_luaState, -1);
-		for (unsigned int j = 1; j <= uniformData[i - 1].valueCountToSet; ++j)
-		{
-			lua_pushinteger(&io_luaState, j);
-			lua_gettable(&io_luaState, -2);
-			uniformData[i - 1].values[j - 1] = (float)lua_tonumber(&io_luaState, -1);
-			lua_pop(&io_luaState, 1);
-		}
+		uniformData[i - 1].values[j - 1] = (float)lua_tonumber(&io_luaState, -1);
 		lua_pop(&io_luaState, 1);
 	}
+	lua_pop(&io_luaState, 1);
+	
 	return true;
 }
 
@@ -235,10 +234,12 @@ bool eae6320::cMaterialBuilder::LoadUniformData(lua_State& io_luaState)
 		const char* const key = "uniform_data";
 		lua_pushstring(&io_luaState, key);
 		lua_gettable(&io_luaState, -2);
-		uniformData = new eae6320::cMaterialBuilder::UniformData[uniformCount];
-		uniformName = new std::string[uniformCount];
+
 		uniformCount = luaL_len(&io_luaState, -1);
-		
+
+		uniformName = new std::string[uniformCount];
+		uniformData = new eae6320::cMaterialBuilder::UniformData[uniformCount];
+
 		for (auto i = 1; i <= uniformCount; ++i)
 		{
 
@@ -247,21 +248,14 @@ bool eae6320::cMaterialBuilder::LoadUniformData(lua_State& io_luaState)
 
 			if (lua_istable(&io_luaState, -1))
 			{
-				{
-					LoadUniformData_Names(io_luaState, i);
-				}
-				{
-					LoadUniformData_ShaderType(io_luaState, i);
-				}
-				{
-					LoadUniformData_Values(io_luaState, i);
-				}
+				LoadUniformData_Names(io_luaState, i);
+				LoadUniformData_ShaderType(io_luaState, i);
+				LoadUniformData_Values(io_luaState, i);
 			}
 			lua_pop(&io_luaState, 1);
 		}
 		lua_pop(&io_luaState, 1);
 	}
-
 
 OnExit:
 	return !wereThereErrors;
@@ -281,7 +275,7 @@ bool eae6320::cMaterialBuilder::CreateMaterialBinaryFile()
 	outputBinMaterialFile.write(o_uniformCount, sizeof(uint32_t));
 	outputBinMaterialFile.write(o_uniformData, totalUniformStructSize);
 
-	for (auto i = 0; i < uniformCount; ++i)
+	for (size_t i = 0; i < uniformCount; ++i)
 	{
 		outputBinMaterialFile.write(uniformName[i].c_str(), uniformName[i].size());
 		outputBinMaterialFile.write("\0", 1);

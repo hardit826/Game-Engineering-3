@@ -53,17 +53,29 @@ void eae6320::Graphics::GraphicEffect::SetPath()
 
 	SetRenderState();
 }
-void eae6320::Graphics::GraphicEffect::SetUniformHandle(UniformData i_uniformData, bool i_fromVertexShader)
+
+void eae6320::Graphics::GraphicEffect::SetUniformHandle(int i_vertexOrFragmentShader, UniformData i_uniformData)
 {
 	HRESULT result;
-	ID3DXConstantTable * shaderConstantTable = i_fromVertexShader ? o_vertexShaderConstantTable:o_fragmentShaderConstantTable;
-	result = shaderConstantTable->SetFloatArray(s_direct3dDevice, i_uniformData.uniformHandle, i_uniformData.values, i_uniformData.valueCountToSet);
+	ID3DXConstantTable * shaderConstantTable;
+	//ID3DXConstantTable * shaderConstantTable = i_fromVertexShader ? o_vertexShaderConstantTable:o_fragmentShaderConstantTable;
+
+	if (i_vertexOrFragmentShader)
+		shaderConstantTable = o_vertexShaderConstantTable;
+	else
+		shaderConstantTable = o_fragmentShaderConstantTable;
+
+	result = shaderConstantTable->SetFloatArray
+		(s_direct3dDevice, i_uniformData.uniformHandle, i_uniformData.values, i_uniformData.valueCountToSet);
+
 	assert(SUCCEEDED(result));
 }
-D3DXHANDLE eae6320::Graphics::GraphicEffect::GetUniformHandle(const char* i_uniformName, bool i_fromVertexShader)
+
+D3DXHANDLE eae6320::Graphics::GraphicEffect::GetUniformHandle(int i_vertexOrFragmentShader, const char* i_uniformName)
 {
 	ID3DXConstantTable* shaderConstantTable;
-	if (i_fromVertexShader)
+
+	if (i_vertexOrFragmentShader)
 		return o_vertexShaderConstantTable->GetConstantByName(NULL, i_uniformName);
 	else
 		return o_fragmentShaderConstantTable->GetConstantByName(NULL, i_uniformName);

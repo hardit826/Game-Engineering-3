@@ -19,25 +19,22 @@ namespace eae6320
 			typedef GLint
 #endif
 				tUniformHandle;
-
-		public:
-			explicit Material(){}
-			explicit Material(char* const i_path_material);
-				
+			
 		private:
-			char * o_path_material;
-			char * o_path_effect;
-			uint32_t uniformCount;
+			char * o_path_material,* o_path_effect;
 			std::string * uniformNames;
+			uint32_t uniformCount;
 			GraphicEffect::UniformData* uniformData;
 			GraphicEffect* effect;
 			char* o_binReadBuffer;
 		public:
+			explicit Material() {}
+			explicit Material(char* const o_path_material);
 			bool ReadFromBinMaterialFile();
-			bool GetUniformHandleForMaterial();
-			bool LoadMaterial();
+			bool GetUniformHandleForMaterial();	
 			void SetUniformDataMaterial();
 			void SetUniformDataEngine(Math::cMatrix_transformation i_localToWorld, Camera i_camera);
+			bool LoadMaterial();
 		
 
 		};

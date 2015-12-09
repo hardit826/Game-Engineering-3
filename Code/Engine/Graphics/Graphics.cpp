@@ -19,7 +19,7 @@ void eae6320::Graphics::DrawRenderableList()
 	//house mesh
 	o_house->DrawRenderable();
 	//sphere mesh
-	o_sphere->DrawRenderable();
+	//o_sphere->DrawRenderable();
 	//box leftmost	
 	o_box_1->DrawRenderable();
 	//box middle left

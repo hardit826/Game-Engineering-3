@@ -19,7 +19,12 @@
 eae6320::Graphics::Renderable* eae6320::Graphics::o_man = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_house = NULL;
-eae6320::Graphics::Renderable* eae6320::Graphics::o_sphere = NULL;
+//eae6320::Graphics::Renderable* eae6320::Graphics::o_sphere = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_box_1 = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_box_2 = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_box_3 = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_box_4 = NULL;
+
 //eae6320::Graphics::Renderable* eae6320::Graphics::o_bigbox = NULL;
 eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 namespace
@@ -32,8 +37,11 @@ namespace
 	//eae6320::Graphics::GraphicEffect* s_effect = NULL;
 	//eae6320::Graphics::GraphicEffect* s_effect_transparent = NULL;
 
-
-	eae6320::Graphics::Material* s_material = NULL;
+	eae6320::Graphics::Material * s_material_default;
+	eae6320::Graphics::Material * s_material_green_opaque;
+	eae6320::Graphics::Material * s_material_red_opaque;
+	eae6320::Graphics::Material * s_material_blue_transparent;
+	eae6320::Graphics::Material * s_material_yellow_transparent;
 
 	// This struct determines the layout of the data that the CPU will send to the GPU
 	//struct sVertex
@@ -58,7 +66,11 @@ namespace
 	eae6320::Graphics::Mesh *s_man = NULL;
 	eae6320::Graphics::Mesh *s_floor = NULL;
 	eae6320::Graphics::Mesh *s_house = NULL;
-	eae6320::Graphics::Mesh *s_sphere = NULL;
+	//eae6320::Graphics::Mesh *s_sphere = NULL;
+	eae6320::Graphics::Mesh *s_box_1 = NULL;
+	eae6320::Graphics::Mesh *s_box_2 = NULL;
+	eae6320::Graphics::Mesh *s_box_3 = NULL;
+	eae6320::Graphics::Mesh *s_box_4 = NULL;
 	//eae6320::Graphics::Mesh *s_bigbox = NULL;
 
 
@@ -110,7 +122,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 {
 	s_renderingWindow = i_renderingWindow;
 	
-	s_material = new Material("data/materialBlueTransparent.lua");
+	//s_material = new Material("data/materialBlueTransparent.lua");
 
 	o_cam = new Camera();
 
@@ -125,6 +137,19 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 		goto OnError;
 	}
 
+
+	s_material_default = new Material("data/defaultMaterial.lua");
+	s_material_green_opaque = new Material("data/materialGreenOpaque.lua");
+	s_material_blue_transparent = new Material("data/materialBlueTransparent.lua");
+	s_material_yellow_transparent = new Material("data/materialYellowTransparent.lua");
+	s_material_red_opaque = new Material("data/materialRedOpaque.lua");
+
+	s_material_default->s_direct3dDevice = s_direct3dDevice;
+	s_material_blue_transparent->s_direct3dDevice = s_direct3dDevice;
+	s_material_green_opaque->s_direct3dDevice = s_direct3dDevice;
+	s_material_red_opaque->s_direct3dDevice = s_direct3dDevice;
+	s_material_yellow_transparent->s_direct3dDevice = s_direct3dDevice;
+
 	/*HRESULT result;
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
@@ -133,13 +158,22 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_man = new Mesh("data/man.mesh");
 	s_floor = new Mesh("data/floorMaya.mesh");
 	s_house = new Mesh("data/house.mesh");
-	s_sphere = new Mesh("data/sphere.mesh");
+	//s_sphere = new Mesh("data/sphere.mesh");
+	s_box_1 = new Mesh("data/box1.mesh");
+	s_box_2 = new Mesh("data/box2.mesh");
+	s_box_3 = new Mesh("data/box3.mesh");
+	s_box_4 = new Mesh("data/box4.mesh");
 	//s_bigbox = new Mesh("data/BigBox.mesh");
 
-	o_man = new Renderable(*s_material, *s_man);
-	o_house = new Renderable(*s_material, *s_house);
-	o_floor = new Renderable(*s_material, *s_floor);
-	o_sphere = new Renderable(*s_material, *s_sphere);
+
+	o_man = new Renderable(*s_material_default, *s_man);
+	o_house = new Renderable(*s_material_default, *s_house);
+	o_floor = new Renderable(*s_material_default, *s_floor);
+	//o_sphere = new Renderable(*s_material_blue_transparent, *s_sphere);
+	o_box_1 = new Renderable(*s_material_green_opaque, *s_box_1);
+	o_box_2 = new Renderable(*s_material_red_opaque, *s_box_2);
+	o_box_3 = new Renderable(*s_material_yellow_transparent, *s_box_3);
+	o_box_4 = new Renderable(*s_material_blue_transparent, *s_box_4);
 	//o_bigbox = new Renderable(*s_effect, *s_bigbox);
 
 	/*if ( !CreateIndexBuffer() )
@@ -147,13 +181,12 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 		goto OnError;
 	}*/
 
-	s_direct3dDevice = Graphics::GetLocalDirect3dDevice();
+	//s_direct3dDevice = Graphics::GetLocalDirect3dDevice();
 
-	if (!o_man->LoadRenderable()||!o_floor->LoadRenderable()||!o_house->LoadRenderable()||!o_sphere->LoadRenderable())
+	if (!o_man->LoadRenderable() || !o_floor->LoadRenderable() || !o_house->LoadRenderable() || !o_box_1->LoadRenderable() || !o_box_2->LoadRenderable() || !o_box_3->LoadRenderable() || !o_box_4->LoadRenderable())
 	{
 		goto OnError;
 	}
-
 	
 
 	return true;
