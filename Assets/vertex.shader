@@ -23,7 +23,8 @@ void main(
 	// These values come from one of the sVertex that we filled the vertex buffer with in C code
 	in const float3 i_position_local : POSITION,
 	in const float4 i_color : COLOR,
-
+	in const float2 i_texture_coords : TEXCOORD0,
+	
 	// Output
 	//=======
 
@@ -38,7 +39,10 @@ void main(
 	// The "semantics" are used to match the vertex shader outputs
 	// with the fragment shader inputs
 	// (note that OpenGL uses arbitrarily assignable number IDs to do the same thing).
-	out float4 o_color : COLOR
+	out float4 o_color : COLOR,
+	
+	//Texture coordinates containing UV
+	out float2 o_texture_coords : TEXCOORD0
 
 	)
 
@@ -51,6 +55,7 @@ void main(
 // These values come from one of the sVertex that we filled the vertex buffer with in C code
 layout( location = 0 ) in vec3 i_position_local;
 layout( location = 1 ) in vec4 i_color;
+layout( location = 2 ) in vec2 i_texture_coords;
 
 // Output
 //=======
@@ -67,7 +72,7 @@ layout( location = 1 ) in vec4 i_color;
 // with the fragment shader inputs
 // (note that Direct3D uses arbitrarily assignable "semantics").
 layout( location = 0 ) out vec4 o_color;
-
+layout( location = 1 ) out vec2 o_texture_coords;
 // Entry Point
 //============
 
@@ -94,9 +99,14 @@ void main()
 	float4 position_world = Transform(float4(i_position_local, 1.0), g_transform_localToWorld);
 	float4 position_view = Transform(position_world, g_transform_worldToView);
 	O_POSITION_SCREEN = Transform(position_view, g_transform_viewToScreen);
+	
 	// Pass the input color to the fragment shader unchanged:
 	{
 		o_color = i_color;
+	}
+	//Pass input texture to the fragment shader unchanged
+	{
+		o_texture_coords = i_texture_coords;
 	}
 
 }

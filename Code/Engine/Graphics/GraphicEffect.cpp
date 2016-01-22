@@ -17,7 +17,7 @@ bool eae6320::Graphics::GraphicEffect::ReadFromBinEffectFile()
 		o_binReadBuffer = new char[fileLen];
 		ipBinEffectFile.read(o_binReadBuffer, fileLen);
 		//extract after reading binary
-		if (ipBinEffectFile)
+		if (ipBinEffectFile)	
 		{
 			o_vertexShaderPath = o_binReadBuffer;
 			o_fragmentShaderPath = o_binReadBuffer + std::strlen(o_vertexShaderPath) + 1;

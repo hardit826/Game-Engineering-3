@@ -16,6 +16,7 @@
 #include "../../Engine/Math/cVector.h"
 #include "../../Engine/Math/Functions.h"
 #include "../../Engine/Graphics/Graphics.h"
+#include <math.h>
 #include "../../Engine/UserInput/UserInput.h"
 // Static Data Initialization
 //===========================
@@ -467,13 +468,13 @@ bool UpdateEntities_vector()
 			{
 				offset.x += 1.0f;
 			}
-			if (eae6320::UserInput::IsKeyPressed(VK_UP))
-			{
-				offset.y += 1.0f;
-			}
 			if (eae6320::UserInput::IsKeyPressed(VK_DOWN))
 			{
-				offset.y -= 1.0f;
+				offset.z += 1.0f; 
+			}
+			if (eae6320::UserInput::IsKeyPressed(VK_UP))
+			{
+				offset.z -= 1.0f;
 			}
 		}
 		
@@ -487,11 +488,12 @@ bool UpdateEntities_vector()
 	// that encapsulates a mesh, an effect, and a position offset.
 	// You don't have to do it this way for your assignment!
 	// You just need a way to update the position offset associated with the colorful rectangle.
-	eae6320::Graphics::o_man->UpdatePosition(offset);
-	eae6320::Graphics::o_man->UpdateRotation();
+//	eae6320::Graphics::o_man->UpdatePosition(offset);
+//	eae6320::Graphics::o_man->UpdateRotation();
 
 	return !wereThereErrors;
 }
+
 bool CameraControls()
 {
 	bool wereThereErrors = false;
@@ -541,7 +543,7 @@ bool WaitForMainWindowToClose( int& o_exitCode )
 			// or similar, though.)
 
 			eae6320::Time::OnNewFrame();
-			
+
 			UpdateEntities_vector();
 			CameraControls();
 			eae6320::Graphics::Render();

@@ -120,7 +120,11 @@ bool eae6320::cMaterialBuilder::LoadAsset(const char* i_path)
 	}
 	if (!LoadUniformData(*luaState))
 	{
-		wereThereErrors;
+		wereThereErrors = true;
+	}
+	if (!LoadTextureData(*luaState))
+	{
+		wereThereErrors = true;
 	}
 	// Pop the table
 	lua_pop(luaState, 1);
@@ -261,6 +265,88 @@ OnExit:
 	return !wereThereErrors;
 }
 
+bool eae6320::cMaterialBuilder::LoadTextureData(lua_State& io_luaState)
+{
+	bool wereThereErrors = false;
+
+	{
+		const char* const key = "textureData";
+		lua_pushstring(&io_luaState, key);
+		lua_gettable(&io_luaState, -2);
+
+		if (!lua_istable(&io_luaState, -1))
+		{
+			lua_pop(&io_luaState, 1);
+			wereThereErrors = true;
+			std::stringstream errorMessage;
+			errorMessage << "Texture Data must return a table (instead of a " <<
+				luaL_typename(&io_luaState, -1) << ")\n";
+			eae6320::OutputErrorMessage(errorMessage.str().c_str());
+			goto OnExit;
+		}
+
+		m_textureCount = luaL_len(&io_luaState, -1);
+		m_textureData = new eae6320::cMaterialBuilder::TextureData[m_textureCount];
+
+		for (unsigned int i = 1; i <= m_textureCount; ++i)
+		{
+			lua_pushinteger(&io_luaState, i);
+			lua_gettable(&io_luaState, -2);
+
+			if (lua_istable(&io_luaState, -1))
+			{
+				// Texture uniform name
+				{
+					const char* const key = "name";
+					lua_pushstring(&io_luaState, key);
+					lua_gettable(&io_luaState, -2);
+
+					char* tempBuffer = const_cast<char*>(lua_tostring(&io_luaState, -1));
+					size_t bufferLength = std::strlen(tempBuffer) + 1;
+					m_textureData[i - 1].uniformName = new char[bufferLength];
+					strcpy_s(m_textureData[i - 1].uniformName, bufferLength, tempBuffer);
+					m_textureData[i - 1].uniformName[bufferLength] = '\0';
+
+					lua_pop(&io_luaState, 1);
+				}
+				// Texture path
+				{
+					const char* const key = "path";
+					lua_pushstring(&io_luaState, key);
+					lua_gettable(&io_luaState, -2);
+
+					char* tempBuffer = const_cast<char*>(lua_tostring(&io_luaState, -1));
+					size_t bufferLength = std::strlen(tempBuffer) + 1;
+					m_textureData[i - 1].texturePath = new char[bufferLength];
+					strcpy_s(m_textureData[i - 1].texturePath, bufferLength, tempBuffer);
+					m_textureData[i - 1].texturePath[bufferLength] = '\0';
+
+					lua_pop(&io_luaState, 1);
+				}
+			}
+			else
+			{
+				std::stringstream errorMessage;
+				errorMessage << "The value at \"" << i << "\" must be a table "
+					"(instead of a " << luaL_typename(&io_luaState, -1) << ")\n";
+				eae6320::OutputErrorMessage(errorMessage.str().c_str());
+				// Pop the vertex value table
+				lua_pop(&io_luaState, 1);
+				lua_pop(&io_luaState, 1);
+				goto OnExit;
+			}
+
+			// Pop the Texture value table
+			lua_pop(&io_luaState, 1);
+		}
+
+		lua_pop(&io_luaState, 1);
+	}
+
+OnExit:
+	return !wereThereErrors;
+}
+
 bool eae6320::cMaterialBuilder::CreateMaterialBinaryFile()
 {
 	std::ofstream outputBinMaterialFile(m_path_target, std::ofstream::binary);
@@ -278,6 +364,18 @@ bool eae6320::cMaterialBuilder::CreateMaterialBinaryFile()
 	for (size_t i = 0; i < uniformCount; ++i)
 	{
 		outputBinMaterialFile.write(uniformName[i].c_str(), uniformName[i].size());
+		outputBinMaterialFile.write("\0", 1);
+	}
+	// Texture count
+	outputBinMaterialFile.write((char*)&m_textureCount, sizeof(uint32_t));;
+
+	// Texture data
+	for (unsigned int i = 0; i < m_textureCount; ++i)
+	{
+		outputBinMaterialFile.write(m_textureData[i].uniformName, std::strlen(m_textureData[i].uniformName));
+		outputBinMaterialFile.write("\0", 1);
+
+		outputBinMaterialFile.write(m_textureData[i].texturePath, std::strlen(m_textureData[i].texturePath));
 		outputBinMaterialFile.write("\0", 1);
 	}
 

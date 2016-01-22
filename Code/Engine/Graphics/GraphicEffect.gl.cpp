@@ -175,7 +175,7 @@ void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatri
 	Math::cQuaternion cameraRotation = Math::cQuaternion();
 
 	const float z_nearPlane = 0.1f;
-	const float z_farPlane = 100.0f;
+	const float z_farPlane = 4000.0f;
 	const float fieldOfView = Math::ConvertDegreesToRadians(60); //60 degree field of view
 
 	Math::cMatrix_transformation g_matrix_worldToView = Math::cMatrix_transformation::cMatrix_transformation::
@@ -781,3 +781,14 @@ void eae6320::Graphics::GraphicEffect::SetUniformHandle(int o_vertexOrFragmentSh
 
 }
 
+GLint eae6320::Graphics::GraphicEffect::GetSampler2DID(const char* i_uniformName)
+{
+	return glGetUniformLocation(o_programID, i_uniformName);
+}
+
+void eae6320::Graphics::GraphicEffect::SetSampler2DID(Texture::tSampler2D i_sampler, Texture::tTextureHandle i_textureHandle, tTextureUnit i_textureUnit)
+{
+	glActiveTexture(GL_TEXTURE0 + i_textureUnit);
+	glBindTexture(GL_TEXTURE_2D, i_textureHandle);
+	glUniform1i(i_sampler, i_textureUnit);
+}

@@ -253,6 +253,12 @@ bool eae6320::Graphics::Mesh::CreateVertexBuffer()
 				// Offset = 8
 				{ 0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
 
+				// TEXCOOR0
+				// 2 floats (u and v) - 8 bytes
+				// Offset = 8
+				{0,16, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD,0 },
+
+
 				// The following marker signals the end of the vertex declaration
 				D3DDECL_END()
 			};

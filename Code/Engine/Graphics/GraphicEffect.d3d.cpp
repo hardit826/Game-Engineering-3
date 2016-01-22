@@ -93,7 +93,7 @@ void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatri
 	Math::cQuaternion cameraRotation = Math::cQuaternion();
 
 	const float z_nearPlane = 0.1f;
-	const float z_farPlane = 100.0f;
+	const float z_farPlane = 4000.0f;
 	const float fieldOfView = Math::ConvertDegreesToRadians(60); //60 degree field of view
 
 	Math::cMatrix_transformation g_matrix_worldToView = Math::cMatrix_transformation::cMatrix_transformation::
@@ -283,3 +283,14 @@ bool eae6320::Graphics::GraphicEffect::ReadFromBinaryShaderFile(char* i_path_sha
 	return false;
 }
 
+DWORD eae6320::Graphics::GraphicEffect::GetSampler2DID(const char* i_uniformName)
+{
+	// Textures will always be in fragment shaders for the scope of this project.
+	D3DXHANDLE textureHandle = o_fragmentShaderConstantTable->GetConstantByName(NULL, i_uniformName);
+	return static_cast<DWORD>(o_fragmentShaderConstantTable->GetSamplerIndex(textureHandle));
+}
+
+void eae6320::Graphics::GraphicEffect::SetSampler2DID(Texture::tSampler2D i_sampler, Texture::tTextureHandle i_textureHandle, tTextureUnit i_textureUnit)
+{
+	Graphics::GetLocalDirect3dDevice()->SetTexture(i_sampler, i_textureHandle);
+}

@@ -751,6 +751,7 @@ namespace
 						<<","<<i_vertexBuffer[i].z<<"}"<<",\n" ;
 					fout <<"\t\t\tcolor = {" << i_vertexBuffer[i].r << "," << i_vertexBuffer[i].g 
 						<< "," << i_vertexBuffer[i].b << "," << i_vertexBuffer[i].a<<"}"<<",\n";
+					fout << "\t\t\ttexture = {" << i_vertexBuffer[i].u << ", " << i_vertexBuffer[i].v << "},\n";
 					fout << "\t\t},\n";
 				}
 				fout << "\t},\n";

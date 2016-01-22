@@ -5,8 +5,10 @@ This is an example of a fragment shader
 // Platform-specific setup
 #include "shaders.inc"
 
+uniform sampler2D g_textureSampler;
 uniform float3 colorRGB;
 uniform float alphaModifier;
+
 
 #if defined( EAE6320_PLATFORM_D3D )
 
@@ -22,7 +24,7 @@ void main(
 	// will be interpolated across the triangle and given as input to the fragment shader
 
 	in float4 i_color : COLOR0,
-
+	in float2 i_texture_coords : TEXCOORD0,
 	// Output
 	//=======
 
@@ -41,6 +43,7 @@ void main(
 // will be interpolated across the triangle and given as input to the fragment shader
 
 layout(location = 0) in vec4 i_color;
+layout(location = 1) in vec2 i_texture_coords;
 
 // Output
 //=======
@@ -63,5 +66,8 @@ void main()
 	}
 	{
 		o_color.rgb *= colorRGB;
+	}
+	{
+		o_color *= Texture(g_textureSampler,i_texture_coords);
 	}
 }

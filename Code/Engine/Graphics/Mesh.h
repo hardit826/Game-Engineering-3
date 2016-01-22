@@ -62,6 +62,9 @@ namespace eae6320
 				// COLOR0
 				// 4 uint8_ts == 4 bytes
 				// Offset = 8
+				//TEXTURE COORDINATES 
+				//U,V
+				float u, v;
 
 //Seperate platform for OpenGl and Direct3D as mentioned by John Paul.
 #if defined EAE6320_PLATFORM_D3D

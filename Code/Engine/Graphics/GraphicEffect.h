@@ -3,6 +3,8 @@
 
 #include "../Math/cVector.h"
 #include "Camera.h"
+#include "Texture.h"
+#include <stdint.h>
 #if defined(EAE6320_PLATFORM_D3D)
 #include <d3dx9shader.h>
 #include <d3d9.h>
@@ -28,6 +30,11 @@ namespace eae6320
 			ID3DXConstantTable* o_fragmentShaderConstantTable;
 			char* o_bufferShader;
 			bool ReadFromBinaryShaderFile(char* i_path_shader);
+			typedef unsigned int tTextureUnit;
+
+			typedef D3DXHANDLE tUniformHandle;
+
+			typedef unsigned int tTextureUnit;
 
 			//Three handles for the Transform Matrices
 			D3DXHANDLE g_transform_localToWorld;
@@ -52,6 +59,10 @@ namespace eae6320
 			//constructor for GraphicEffect GL
 			//GraphicEffect(GLuint i_programID) : o_programID(i_programID){}
 
+		private:
+			typedef GLint tUniformHandle;
+
+			typedef GLint tTextureUnit;
 
 
 			struct sLogInfo
@@ -66,16 +77,21 @@ namespace eae6320
 			bool eae6320::Graphics::GraphicEffect::LoadAndAllocateShaderProgram(const char* i_path, void*& o_shader, size_t& o_size, std::string* o_errorMessage);
 		
 #endif
-
-			typedef
-#if defined( EAE6320_PLATFORM_D3D )
-				// This is conceptually a D3DXHANDLE but is defined this way
-				// so that external files aren't required to specify the #include path to the DirectX SDK
-				const char*
-#elif defined( EAE6320_PLATFORM_GL )
-				GLint
-#endif
-				tUniformHandle;
+//
+//			typedef
+//#if defined( EAE6320_PLATFORM_D3D )
+//				// This is conceptually a D3DXHANDLE but is defined this way
+//				// so that external files aren't required to specify the #include path to the DirectX SDK
+//				const char*
+//#elif defined( EAE6320_PLATFORM_GL )
+//				
+//				GLint
+//
+//
+//#endif
+//				tUniformHandle;
+//
+//			
 
 		public:
 			enum ShaderTypes
@@ -112,6 +128,9 @@ namespace eae6320
 			void SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation,Camera i_cam);
 			void SetUniformHandle(int o_vertexOrFragmentShader, UniformData i_uniformData);
 			tUniformHandle GetUniformHandle(int o_vertexOrFragmentShader, const char* i_uniformName);
+
+			Texture::tSampler2D GetSampler2DID(const char* i_uniformName);
+			void SetSampler2DID(Texture::tSampler2D i_sampler, Texture::tTextureHandle i_textureHandle, tTextureUnit i_textureUnit);
 
 			void ReleaseEffect();
 		};

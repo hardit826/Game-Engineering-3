@@ -256,6 +256,10 @@ bool eae6320::cMeshBuilder::Table_Vertices_Values(lua_State& io_luaState)
 			{
 				return false;
 			}
+			if (!Table_Vertives_Texture(io_luaState, i - 1))
+			{
+				return false;
+			}
 		}
 		else
 		{
@@ -369,6 +373,46 @@ bool eae6320::cMeshBuilder::Table_Vertices_Color(lua_State& io_luaState, int i_v
 		//	"(instead of a " << luaL_typename(&io_luaState, -1) << ")\n";
 
 		eae6320::OutputErrorMessage("Error Message - Error in Mesh.cpp in the function LoadTableValues_vertice_values_color(lua_State& io_luaState, int i_vertexIndex) ");
+		goto OnExit;
+	}
+
+OnExit:
+
+	// Pop the parameters table
+	lua_pop(&io_luaState, 1);
+
+	return !wereThereErrors;
+}
+
+bool eae6320::cMeshBuilder::Table_Vertives_Texture(lua_State& io_luaState, int i_vertexIndex)
+{
+	bool wereThereErrors = false;
+
+	const char* const key = "texture";
+	lua_pushstring(&io_luaState, key);
+	lua_gettable(&io_luaState, -2);
+	if (lua_istable(&io_luaState, -1))
+	{
+		// u
+		lua_pushinteger(&io_luaState, 1);
+		lua_gettable(&io_luaState, -2);
+		o_vertexData[i_vertexIndex].u = (float)lua_tonumber(&io_luaState, -1);
+		lua_pop(&io_luaState, 1);
+
+		// v
+		lua_pushinteger(&io_luaState, 2);
+		lua_gettable(&io_luaState, -2);
+		// We will be using D3D convention for both platfomes for V coordinate
+		o_vertexData[i_vertexIndex].v = (1.0f - (float)lua_tonumber(&io_luaState, -1));
+		lua_pop(&io_luaState, 1);
+	}
+	else
+	{
+		wereThereErrors = true;
+		std::stringstream errorMessage;
+		errorMessage << "The value at \"" << key << "\" must be a table "
+			"(instead of a " << luaL_typename(&io_luaState, -1) << ")\n";
+		eae6320::OutputErrorMessage(errorMessage.str().c_str());
 		goto OnExit;
 	}
 

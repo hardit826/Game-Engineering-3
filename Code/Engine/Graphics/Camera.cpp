@@ -64,6 +64,7 @@ void eae6320::Graphics::Camera::RotateAntiClockwise()
 		camRotation = camRotation * quat;
 	}
 }
+
 void eae6320::Graphics::Camera::CameraControls()
 {
 	StrafeLeft();

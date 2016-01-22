@@ -54,6 +54,11 @@ typedef
 		float values[4];
 		uint32_t valueCountToSet;
 	};
+	struct TextureData
+	{
+		char* uniformName;
+		char* texturePath;
+	};
 
 	private:
 		char* effectPath;
@@ -61,6 +66,8 @@ typedef
 		uint32_t uniformCount;
 		std::string * uniformName;
 		//std::vector<std::string> uniforrmNames;
+		TextureData * m_textureData;
+		uint32_t m_textureCount;
 
 	private:
 		bool LoadAsset(const char* i_path);
@@ -70,6 +77,7 @@ typedef
 		bool LoadUniformData_ShaderType(lua_State& io_luaState, int i);
 		bool LoadUniformData_Values(lua_State& io_luaState, int i);
 		bool LoadUniformData(lua_State& io_luaState);
+		bool LoadTextureData(lua_State& io_luaState);
 
 		bool CreateMaterialBinaryFile();
 	};

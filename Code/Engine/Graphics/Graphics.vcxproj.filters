@@ -33,6 +33,7 @@
     <ClCompile Include="Renderable.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics.h" />
@@ -41,5 +42,6 @@
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
 </Project>

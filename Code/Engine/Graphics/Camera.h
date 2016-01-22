@@ -15,7 +15,7 @@ namespace eae6320
 		{
 		public:
 			//Cam movement Speed
-			const float camSPEED = 3.0f;
+		    float camSPEED = 400.0f;
 
 			void StrafeLeft();
 			void StrafeRight();
@@ -34,7 +34,7 @@ namespace eae6320
 
 		public:
 			Camera() :
-				camPosition(Math::cVector(0, 4, 13)),
+				camPosition(Math::cVector(0, 10, 13)),
 				camRotation(Math::cQuaternion())
 			{};
 		};

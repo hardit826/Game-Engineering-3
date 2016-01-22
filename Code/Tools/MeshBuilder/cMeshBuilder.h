@@ -35,6 +35,7 @@ namespace eae6320
 		{
 			float x, y ,z;
 			uint8_t b, g, r, a;
+			float u, v;
 		};
 #endif
 #ifdef EAE6320_PLATFORM_GL
@@ -42,6 +43,7 @@ namespace eae6320
 		{
 			float x, y ,z;
 			uint8_t r,g,b,a;
+			float u, v;
 		};
 #endif
 
@@ -57,6 +59,8 @@ namespace eae6320
 		bool Table_Vertices_Values(lua_State& io_luaState);
 		bool Table_Vertices_Pos(lua_State& io_luaState, int i_vertexIndex);
 		bool Table_Vertices_Color(lua_State& io_luaState, int i_vertexIndex);
+		//texure
+		bool Table_Vertives_Texture(lua_State& io_luaState, int i_vertexIndex);
 		bool Table_Indices(lua_State& io_luaState);
 		bool Table_Indices_Values(lua_State& io_luaState);
 		bool CreateBinaryFile();

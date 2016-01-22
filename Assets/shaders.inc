@@ -19,6 +19,9 @@
 #define Transform( i_vector, i_matrix ) mul (i_vector,i_matrix)
 #define O_POSITION_SCREEN o_position
 
+// Macro to sample texture
+#define Texture( sampler, texcoords ) tex2D( sampler, texcoords )
+
 #elif defined( EAE6320_PLATFORM_GL )
 
 // The version of GLSL to use must come first
@@ -39,5 +42,8 @@
 
 #define Transform(i_vector,i_matrix) (i_vector*i_matrix)
 #define O_POSITION_SCREEN gl_Position
+
+// Macro to sample texture
+#define Texture( sampler, texcoords ) texture2D( sampler, texcoords )
 
 #endif

@@ -7,19 +7,13 @@ return
 		tool = "MeshBuilder.exe",
 		assets =
 		{
-			"rectangle.mesh",
-            "triangle.mesh",
-			"box.mesh",
-			"floor.mesh",
-			"floorMaya.mesh",
-			"house.mesh",
-			"man.mesh",
-			"sphere.mesh",
-			"BigBox.mesh",
-			"box1.mesh",
-			"box2.mesh",
-			"box3.mesh",
-			"box4.mesh",
+			"Ceiling.mesh",
+			"Floor.mesh",
+			"Metal.mesh",
+			"Railing.mesh",
+			"Lambert2.mesh",
+			"Walls.mesh",
+			"Cement.mesh"
 		},
 		dependencies = 
 		{
@@ -75,11 +69,29 @@ return
 		tool = "MaterialBuilder.exe",
 		assets =
 		{
-			"materialBlueTransparent.lua",
-			"defaultMaterial.lua",
-			"materialGreenOpaque.lua",
-			"materialRedOpaque.lua",
-			"materialYellowTransparent.lua",
+			"ceiling.lua",
+			"floor.lua",
+			"metal.lua",		
+			"cement.lua",
+			"wall.lua",
+			"railing.lua",
+		},
+		dependencies =
+		{
+		},
+	},
+	textures =
+	{
+		source = "",
+		target = "",
+		tool = "TextureBuilder.exe",
+		assets =
+		{
+			"floor_D.png",
+			"metal_brace_D.png",
+			"railing_D.png",
+			"wall_D.png",
+			"cement_wall_D.png",
 		},
 		dependencies =
 		{

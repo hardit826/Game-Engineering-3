@@ -16,16 +16,14 @@
 // Static Data Initialization
 //===========================
 
-eae6320::Graphics::Renderable* eae6320::Graphics::o_man = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_ceiling = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_floor = NULL;
-eae6320::Graphics::Renderable* eae6320::Graphics::o_house = NULL;
-//eae6320::Graphics::Renderable* eae6320::Graphics::o_sphere = NULL;
-eae6320::Graphics::Renderable* eae6320::Graphics::o_box_1 = NULL;
-eae6320::Graphics::Renderable* eae6320::Graphics::o_box_2 = NULL;
-eae6320::Graphics::Renderable* eae6320::Graphics::o_box_3 = NULL;
-eae6320::Graphics::Renderable* eae6320::Graphics::o_box_4 = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_metal = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_railing = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_lambert2 = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_wall = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_cement = NULL;
 
-//eae6320::Graphics::Renderable* eae6320::Graphics::o_bigbox = NULL;
 eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 namespace
 {
@@ -37,11 +35,13 @@ namespace
 	//eae6320::Graphics::GraphicEffect* s_effect = NULL;
 	//eae6320::Graphics::GraphicEffect* s_effect_transparent = NULL;
 
-	eae6320::Graphics::Material * s_material_default;
-	eae6320::Graphics::Material * s_material_green_opaque;
-	eae6320::Graphics::Material * s_material_red_opaque;
-	eae6320::Graphics::Material * s_material_blue_transparent;
-	eae6320::Graphics::Material * s_material_yellow_transparent;
+	eae6320::Graphics::Material * s_material_ceiling;
+	eae6320::Graphics::Material * s_material_floor;
+	eae6320::Graphics::Material * s_material_metal;
+	eae6320::Graphics::Material * s_material_railing;
+	eae6320::Graphics::Material * s_material_wall;
+	eae6320::Graphics::Material * s_material_cement;
+
 
 	// This struct determines the layout of the data that the CPU will send to the GPU
 	//struct sVertex
@@ -63,14 +63,16 @@ namespace
 	// (i.e. it defines the vertex connectivity)
 	//IDirect3DIndexBuffer9* s_indexBuffer = NULL;
 
-	eae6320::Graphics::Mesh *s_man = NULL;
+	eae6320::Graphics::Mesh *s_ceiling = NULL;
 	eae6320::Graphics::Mesh *s_floor = NULL;
-	eae6320::Graphics::Mesh *s_house = NULL;
-	//eae6320::Graphics::Mesh *s_sphere = NULL;
-	eae6320::Graphics::Mesh *s_box_1 = NULL;
-	eae6320::Graphics::Mesh *s_box_2 = NULL;
-	eae6320::Graphics::Mesh *s_box_3 = NULL;
-	eae6320::Graphics::Mesh *s_box_4 = NULL;
+	eae6320::Graphics::Mesh *s_metal = NULL;
+	eae6320::Graphics::Mesh *s_railing = NULL;
+	eae6320::Graphics::Mesh *s_lambert2 = NULL;
+	eae6320::Graphics::Mesh *s_wall = NULL;
+	eae6320::Graphics::Mesh *s_cement = NULL;
+	//eae6320::Graphics::Mesh *s_box_2 = NULL;
+	//eae6320::Graphics::Mesh *s_box_3 = NULL;
+	//eae6320::Graphics::Mesh *s_box_4 = NULL;
 	//eae6320::Graphics::Mesh *s_bigbox = NULL;
 
 
@@ -138,43 +140,42 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	}
 
 
-	s_material_default = new Material("data/defaultMaterial.lua");
-	s_material_green_opaque = new Material("data/materialGreenOpaque.lua");
-	s_material_blue_transparent = new Material("data/materialBlueTransparent.lua");
-	s_material_yellow_transparent = new Material("data/materialYellowTransparent.lua");
-	s_material_red_opaque = new Material("data/materialRedOpaque.lua");
+	s_material_ceiling = new Material("data/ceiling.lua");
+	s_material_floor = new Material("data/floor.lua");
+	s_material_metal = new Material("data/metal.lua");
+	s_material_railing = new Material("data/railing.lua");
+	s_material_wall = new Material("data/wall.lua");
+	s_material_cement = new Material("data/cement.lua");
 
-	s_material_default->s_direct3dDevice = s_direct3dDevice;
-	s_material_blue_transparent->s_direct3dDevice = s_direct3dDevice;
-	s_material_green_opaque->s_direct3dDevice = s_direct3dDevice;
-	s_material_red_opaque->s_direct3dDevice = s_direct3dDevice;
-	s_material_yellow_transparent->s_direct3dDevice = s_direct3dDevice;
+	s_material_ceiling->s_direct3dDevice = s_direct3dDevice;
+	s_material_floor->s_direct3dDevice = s_direct3dDevice;
+	s_material_metal->s_direct3dDevice = s_direct3dDevice;
+	s_material_railing->s_direct3dDevice = s_direct3dDevice;
+	s_material_wall->s_direct3dDevice = s_direct3dDevice;
+	s_material_cement->s_direct3dDevice = s_direct3dDevice;
 
 	/*HRESULT result;
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);*/
 
-	s_man = new Mesh("data/man.mesh");
-	s_floor = new Mesh("data/floorMaya.mesh");
-	s_house = new Mesh("data/house.mesh");
-	//s_sphere = new Mesh("data/sphere.mesh");
-	s_box_1 = new Mesh("data/box1.mesh");
-	s_box_2 = new Mesh("data/box2.mesh");
-	s_box_3 = new Mesh("data/box3.mesh");
-	s_box_4 = new Mesh("data/box4.mesh");
-	//s_bigbox = new Mesh("data/BigBox.mesh");
+	s_ceiling = new Mesh("data/Ceiling.mesh");
+	s_floor = new Mesh("data/Floor.mesh");
+	s_metal = new Mesh("data/Metal.mesh");
+	s_railing = new Mesh("data/Railing.mesh");
+	s_lambert2 = new Mesh("data/Lambert2.mesh");
+	s_wall = new Mesh("data/Walls.mesh");
+	s_cement = new Mesh("data/Cement.mesh");
+	
 
-
-	o_man = new Renderable(*s_material_default, *s_man);
-	o_house = new Renderable(*s_material_default, *s_house);
-	o_floor = new Renderable(*s_material_default, *s_floor);
-	//o_sphere = new Renderable(*s_material_blue_transparent, *s_sphere);
-	o_box_1 = new Renderable(*s_material_green_opaque, *s_box_1);
-	o_box_2 = new Renderable(*s_material_red_opaque, *s_box_2);
-	o_box_3 = new Renderable(*s_material_yellow_transparent, *s_box_3);
-	o_box_4 = new Renderable(*s_material_blue_transparent, *s_box_4);
-	//o_bigbox = new Renderable(*s_effect, *s_bigbox);
+	//o_fish = new Renderable(*s_material_default, *s_fish);
+	o_ceiling = new Renderable(*s_material_ceiling, *s_ceiling);
+	o_floor = new Renderable(*s_material_floor, *s_floor);
+	o_metal = new Renderable(*s_material_metal, *s_metal);
+	o_railing = new Renderable(*s_material_railing, *s_railing);
+	o_lambert2 = new Renderable(*s_material_floor, *s_lambert2);
+	o_wall = new Renderable(*s_material_wall, *s_wall);
+	o_cement = new Renderable(*s_material_cement, *s_cement);
 
 	/*if ( !CreateIndexBuffer() )
 	{
@@ -183,11 +184,18 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 
 	//s_direct3dDevice = Graphics::GetLocalDirect3dDevice();
 
-	if (!o_man->LoadRenderable() || !o_floor->LoadRenderable() || !o_house->LoadRenderable() || !o_box_1->LoadRenderable() || !o_box_2->LoadRenderable() || !o_box_3->LoadRenderable() || !o_box_4->LoadRenderable())
+	/*if (!o_man->LoadRenderable() || !o_floor->LoadRenderable() || !o_house->LoadRenderable() || !o_box_1->LoadRenderable() || !o_box_2->LoadRenderable() || !o_box_3->LoadRenderable() || !o_box_4->LoadRenderable())
 	{
 		goto OnError;
 	}
-	
+	*/
+	if (!o_ceiling->LoadRenderable() || !o_floor->LoadRenderable() || !o_metal->LoadRenderable() || !o_railing->LoadRenderable()
+		|| !o_lambert2->LoadRenderable() || !o_wall->LoadRenderable() || !o_cement->LoadRenderable())
+	{
+		goto OnError;
+	}
+
+
 
 	return true;
 
@@ -285,11 +293,11 @@ bool eae6320::Graphics::ShutDown()
 				s_effect = NULL;
 			}*/
 
-			if (s_man)
+		/*	if (s_man)
 			{
 				s_man->ReleaseMesh();
 				s_man = NULL;
-			}
+			}*/
 
 			s_direct3dDevice->Release();
 			s_direct3dDevice = NULL;
@@ -330,7 +338,7 @@ namespace
 			presentationParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
 			presentationParameters.hDeviceWindow = s_renderingWindow;
 			presentationParameters.Windowed = TRUE;
-			presentationParameters.AutoDepthStencilFormat = D3DFMT_D16;
+			presentationParameters.AutoDepthStencilFormat = D3DFMT_D24S8;
 			presentationParameters.EnableAutoDepthStencil = TRUE;
 			presentationParameters.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
 		}

@@ -12,20 +12,11 @@ void eae6320::Graphics::Render()
 
 void eae6320::Graphics::DrawRenderableList()
 {
-	//man mesh
-	o_man->DrawRenderable();
-	//floor mesh
+	o_ceiling->DrawRenderable();
 	o_floor->DrawRenderable();
-	//house mesh
-	o_house->DrawRenderable();
-	//sphere mesh
-	//o_sphere->DrawRenderable();
-	//box leftmost	
-	o_box_1->DrawRenderable();
-	//box middle left
-	o_box_2->DrawRenderable();
-	//box middle right
-	o_box_3->DrawRenderable();
-	//box right
-	o_box_4->DrawRenderable();
+	o_metal->DrawRenderable();
+	o_railing->DrawRenderable();
+	o_lambert2->DrawRenderable();
+	o_wall->DrawRenderable();
+	o_cement->DrawRenderable();
 }

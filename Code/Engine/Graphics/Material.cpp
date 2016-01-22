@@ -11,6 +11,12 @@ eae6320::Graphics::Material::Material(char* const i_path_material)
 	o_path_material = i_path_material;
 	ReadFromBinMaterialFile();
 	effect = new GraphicEffect(o_path_effect);
+
+	m_textureList = new Texture[m_textureCount];
+	for (unsigned int i = 0; i < m_textureCount; i++)
+	{
+		m_textureList[i] = Texture(m_textureData[i].texturePath);
+	}
 }
 bool eae6320::Graphics::Material::GetUniformHandleForMaterial()
 {
@@ -38,6 +44,15 @@ bool eae6320::Graphics::Material::LoadMaterial()
 	{
 		return false;
 	}
+	for (size_t i = 0; i < m_textureCount; ++i)
+	{
+		if (!m_textureList[i].LoadTexture())
+		{
+			return false;
+		}
+
+		m_textureList[i].m_samplerID = effect->GetSampler2DID(m_textureData[i].uniformName);
+	}
 
 	return true;
 }
@@ -56,6 +71,10 @@ void eae6320::Graphics::Material::SetUniformDataMaterial()
 			bVertexShader = 0;
 
 		effect->SetUniformHandle(bVertexShader, uniformData[i]);
+	}
+	for (size_t i = 0; i < m_textureCount; ++i)
+	{
+		effect->SetSampler2DID(m_textureList[i].m_samplerID, m_textureList[i].o_texture, i);
 	}
 }
 void eae6320::Graphics::Material::SetUniformDataEngine(Math::cMatrix_transformation i_localToWorld, Camera i_camera)
@@ -85,12 +104,24 @@ bool eae6320::Graphics::Material::ReadFromBinMaterialFile()
 			uniformData = reinterpret_cast<GraphicEffect::UniformData*>(pathLengthNullTerm + sizeof(uint32_t));
 			uniformNames = new std::string[uniformCount];
 
-			size_t previousStringSize =0;
+			size_t previousStringSize = 0;
 			for (size_t i = 0; i < uniformCount; ++i)
 			{
 				auto totalStructSize = sizeof(GraphicEffect::UniformData);
 				uniformNames[i] = pathLengthNullTerm + sizeof(uint32_t) + totalStructSize * uniformCount + previousStringSize;
-				previousStringSize = uniformNames[i].size() + 1;
+				previousStringSize += uniformNames[i].size() + 1;
+			}
+			// Extracting Texture data and texture initialization
+			int temp = (std::strlen(o_path_effect) + 1 + sizeof(uint32_t) + (sizeof(GraphicEffect::UniformData) * uniformCount) + previousStringSize);
+			m_textureCount = *reinterpret_cast<uint32_t*>(o_binReadBuffer + std::strlen(o_path_effect) + 1 + sizeof(uint32_t) + (sizeof(GraphicEffect::UniformData) * uniformCount) + previousStringSize);
+			m_textureData = new TextureData[m_textureCount];
+			for (unsigned int i = 0; i < m_textureCount; ++i)
+			{
+				m_textureData[i].uniformName = o_binReadBuffer + std::strlen(o_path_effect) + 1 + sizeof(uint32_t) + (sizeof(GraphicEffect::UniformData) * uniformCount) + previousStringSize + sizeof(uint32_t);
+				previousStringSize += std::strlen(m_textureData[i].uniformName) + 1;
+
+				m_textureData[i].texturePath = o_binReadBuffer + std::strlen(o_path_effect) + 1 + sizeof(uint32_t) + (sizeof(GraphicEffect::UniformData) * uniformCount) + previousStringSize + sizeof(uint32_t);
+				previousStringSize += std::strlen(m_textureData[i].texturePath) + 1;
 			}
 		}
 		return true;

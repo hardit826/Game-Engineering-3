@@ -3,6 +3,8 @@
 #include "../../External/OpenGlExtensions/OpenGlExtensions.h"
 #include "GraphicEffect.h"
 #include<vector>
+#include "../Math/cMatrix_transformation.h"
+#include "Texture.h"
 namespace eae6320
 {
 	namespace Graphics
@@ -27,6 +29,17 @@ namespace eae6320
 			GraphicEffect::UniformData* uniformData;
 			GraphicEffect* effect;
 			char* o_binReadBuffer;
+
+			Texture *m_textureList;
+			uint32_t m_textureCount;
+
+			struct TextureData
+			{
+				char* uniformName;
+				char* texturePath;
+			};
+			TextureData *m_textureData;
+
 		public:
 			explicit Material() {}
 			explicit Material(char* const o_path_material);

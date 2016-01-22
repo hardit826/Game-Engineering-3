@@ -21,15 +21,14 @@ namespace eae6320
 {
 	namespace Graphics
 	{
-		extern Renderable* o_man;
+		extern Renderable* o_ceiling;
 		extern Renderable* o_floor;
-		extern Renderable* o_house;
-	//	extern Renderable* o_sphere;
-		extern Renderable* o_box_1;
-		extern Renderable* o_box_2;
-		extern Renderable* o_box_3;
-		extern Renderable* o_box_4;
-		//extern Renderable* o_bigbox;
+		extern Renderable* o_metal;
+		extern Renderable* o_railing;
+		extern Renderable* o_wall;
+		extern Renderable* o_lambert2;
+		extern Renderable* o_cement;
+
 		extern Camera* o_cam;
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();

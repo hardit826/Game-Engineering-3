@@ -4,6 +4,8 @@
 #include "../Math/cQuaternion.h"
 #include "Graphics.h"
 #include "../UserInput/UserInput.h"
+
+
 void eae6320::Graphics::Renderable::UpdatePosition(Math::cVector i_offset)
 {
 	const float SPEED = 2.0f;
