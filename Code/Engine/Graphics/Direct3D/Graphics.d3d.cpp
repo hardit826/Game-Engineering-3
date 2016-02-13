@@ -23,6 +23,7 @@ eae6320::Graphics::Renderable* eae6320::Graphics::o_railing = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_lambert2 = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_wall = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_cement = NULL;
+eae6320::Graphics::Renderable* eae6320::Graphics::o_debugCylinder1 = NULL;
 
 eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 namespace
@@ -70,6 +71,7 @@ namespace
 	eae6320::Graphics::Mesh *s_lambert2 = NULL;
 	eae6320::Graphics::Mesh *s_wall = NULL;
 	eae6320::Graphics::Mesh *s_cement = NULL;
+	eae6320::Graphics::Mesh *s_debugCylinder1 = NULL;
 	//eae6320::Graphics::Mesh *s_box_2 = NULL;
 	//eae6320::Graphics::Mesh *s_box_3 = NULL;
 	//eae6320::Graphics::Mesh *s_box_4 = NULL;
@@ -166,6 +168,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_lambert2 = new Mesh("data/Lambert2.mesh");
 	s_wall = new Mesh("data/Walls.mesh");
 	s_cement = new Mesh("data/Cement.mesh");
+	s_debugCylinder1 = new Mesh("data/Cylinder.mesh");
 	
 
 	//o_fish = new Renderable(*s_material_default, *s_fish);
@@ -176,6 +179,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	o_lambert2 = new Renderable(*s_material_floor, *s_lambert2);
 	o_wall = new Renderable(*s_material_wall, *s_wall);
 	o_cement = new Renderable(*s_material_cement, *s_cement);
+	o_debugCylinder1 = new Renderable(*s_material_railing, *s_debugCylinder1);
 
 	/*if ( !CreateIndexBuffer() )
 	{
@@ -190,7 +194,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	}
 	*/
 	if (!o_ceiling->LoadRenderable() || !o_floor->LoadRenderable() || !o_metal->LoadRenderable() || !o_railing->LoadRenderable()
-		|| !o_lambert2->LoadRenderable() || !o_wall->LoadRenderable() || !o_cement->LoadRenderable())
+		|| !o_lambert2->LoadRenderable() || !o_wall->LoadRenderable() || !o_cement->LoadRenderable()||!o_debugCylinder1->LoadRenderable())
 	{
 		goto OnError;
 	}

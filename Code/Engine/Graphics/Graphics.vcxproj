@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DebugShapes.d3d.cpp" />
     <ClCompile Include="Direct3D\Graphics.d3d.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -55,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DebugShapes.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="GraphicEffect.h" />

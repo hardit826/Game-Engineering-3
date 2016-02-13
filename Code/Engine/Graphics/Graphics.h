@@ -29,6 +29,8 @@ namespace eae6320
 		extern Renderable* o_lambert2;
 		extern Renderable* o_cement;
 
+		extern Renderable* o_debugCylinder1;
+
 		extern Camera* o_cam;
 		bool Initialize( const HWND i_renderingWindow );
 		void Render();
@@ -39,6 +41,9 @@ namespace eae6320
 		bool Clear();
 		bool BeginDraw();
 		void DrawRenderableList();
+
+		bool LoadObjects();
+		bool DrawObjects();
 		bool EndDraw();
 		bool ShowBuffer();
 	}

@@ -13,7 +13,8 @@ return
 			"Railing.mesh",
 			"Lambert2.mesh",
 			"Walls.mesh",
-			"Cement.mesh"
+			"Cement.mesh",
+			"Cylinder.mesh"
 		},
 		dependencies = 
 		{
