@@ -93,6 +93,8 @@ return
 			"railing_D.png",
 			"wall_D.png",
 			"cement_wall_D.png",
+			"numbers.png",
+			"logo.png"
 		},
 		dependencies =
 		{

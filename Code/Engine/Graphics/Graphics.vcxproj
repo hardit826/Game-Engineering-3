@@ -29,6 +29,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GameSprite.d3d.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Renderable.cpp" />
     <ClCompile Include="GraphicEffect.cpp" />
@@ -57,6 +58,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DebugShapes.h" />
+    <ClInclude Include="GameSprite.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="GraphicEffect.h" />

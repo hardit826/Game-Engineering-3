@@ -24,6 +24,7 @@ eae6320::Graphics::Renderable* eae6320::Graphics::o_lambert2 = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_wall = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_cement = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_debugCylinder1 = NULL;
+eae6320::Graphics::GameSprite* eae6320::Graphics::s_numbers = NULL;
 
 eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 namespace
@@ -141,7 +142,8 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 		goto OnError;
 	}
 
-
+	s_numbers = new GameSprite(650, 100);
+	s_numbers->Initialize(s_direct3dDevice, "data/numbers.png", 512, 64);
 	s_material_ceiling = new Material("data/ceiling.lua");
 	s_material_floor = new Material("data/floor.lua");
 	s_material_metal = new Material("data/metal.lua");

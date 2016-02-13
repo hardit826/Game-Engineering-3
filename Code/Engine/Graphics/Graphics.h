@@ -14,6 +14,7 @@
 #include "../Windows/WindowsIncludes.h"
 #include <list>
 #include "Camera.h"
+#include"GameSprite.h"
 // Interface
 //==========
 
@@ -30,6 +31,7 @@ namespace eae6320
 		extern Renderable* o_cement;
 
 		extern Renderable* o_debugCylinder1;
+		extern GameSprite* s_numbers;
 
 		extern Camera* o_cam;
 		bool Initialize( const HWND i_renderingWindow );

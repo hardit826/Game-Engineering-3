@@ -11,6 +11,7 @@ eae6320::Graphics::DebugSphere s_debugSphere1;
 eae6320::Graphics::DebugLine s_debugLine2;
 eae6320::Graphics::DebugBox s_debugBox2;
 eae6320::Graphics::DebugSphere s_debugSphere2;
+eae6320::Graphics::GameSprite s_logo;
 
 void eae6320::Graphics::Render()
 {
@@ -59,11 +60,15 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugLine2.LoadDebugLine();
 	s_debugBox2.LoadDebugBox();
 	s_debugSphere2.LoadDebugSphere();
+	s_logo = GameSprite(10, 10);
+	s_logo.Initialize(GetLocalDirect3dDevice(), "data/logo.png", 256, 256);
 
 	return true;
 }
 bool eae6320::Graphics::DrawObjects()
 {
+	s_logo.Draw();
+	s_numbers->Draw();
 #ifdef _DEBUG
 	s_debugLine1.DrawLine();
 	s_debugBox1.DrawBox();
