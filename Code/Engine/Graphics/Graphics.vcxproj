@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DebugMenu.d3d.cpp" />
     <ClCompile Include="DebugShapes.d3d.cpp" />
     <ClCompile Include="Direct3D\Graphics.d3d.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -57,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DebugMenu.h" />
     <ClInclude Include="DebugShapes.h" />
     <ClInclude Include="GameSprite.h" />
     <ClInclude Include="Material.h" />

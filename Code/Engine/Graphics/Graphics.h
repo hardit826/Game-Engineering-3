@@ -15,6 +15,8 @@
 #include <list>
 #include "Camera.h"
 #include"GameSprite.h"
+#include "DebugMenu.h"
+#include "DebugShapes.h"
 // Interface
 //==========
 
@@ -31,7 +33,16 @@ namespace eae6320
 		extern Renderable* o_cement;
 
 		extern Renderable* o_debugCylinder1;
+		extern DebugSphere* s_debugSphere1;
+
 		extern GameSprite* s_numbers;
+
+		extern DebugMenuSelection s_activeMenuItem;
+		extern DebugMenuCheckBox* s_debugMenuCheckBox;
+		extern DebugMenuSlider* s_debugMenuSlider;
+		extern DebugMenuButton* s_debugMenuButton;
+		extern DebugMenuCheckBox* s_toggleFPSCheckBox;
+		extern bool s_debugMenuEnabled;
 
 		extern Camera* o_cam;
 		bool Initialize( const HWND i_renderingWindow );

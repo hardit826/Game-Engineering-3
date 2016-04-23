@@ -24,6 +24,8 @@ eae6320::Graphics::Renderable* eae6320::Graphics::o_lambert2 = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_wall = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_cement = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_debugCylinder1 = NULL;
+
+eae6320::Graphics::DebugSphere* eae6320::Graphics::s_debugSphere1 = NULL;
 eae6320::Graphics::GameSprite* eae6320::Graphics::s_numbers = NULL;
 
 eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
@@ -201,7 +203,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 		goto OnError;
 	}
 
-
+	LoadObjects();
 
 	return true;
 
