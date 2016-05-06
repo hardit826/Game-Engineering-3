@@ -12,7 +12,7 @@
 #include "../Mesh.h"
 #include <list>
 #include "../Material.h"
-
+#include "../Camera.h"
 // Static Data Initialization
 //===========================
 
@@ -25,13 +25,16 @@ eae6320::Graphics::Renderable* eae6320::Graphics::o_wall = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_cement = NULL;
 eae6320::Graphics::Renderable* eae6320::Graphics::o_debugCylinder1 = NULL;
 
+eae6320::Graphics::Renderable* eae6320::Graphics::o_robot = NULL;
+eae6320::Graphics::DebugLine* eae6320::Graphics::o_robotLine = NULL;
+
 eae6320::Graphics::DebugSphere* eae6320::Graphics::s_debugSphere1 = NULL;
 eae6320::Graphics::GameSprite* eae6320::Graphics::s_numbers = NULL;
 
 eae6320::Graphics::Camera* eae6320::Graphics::o_cam = NULL;
 namespace
 {
-	
+
 	HWND s_renderingWindow = NULL;
 	IDirect3D9* s_direct3dInterface = NULL;
 	IDirect3DDevice9* s_direct3dDevice = NULL;
@@ -45,6 +48,7 @@ namespace
 	eae6320::Graphics::Material * s_material_railing;
 	eae6320::Graphics::Material * s_material_wall;
 	eae6320::Graphics::Material * s_material_cement;
+	eae6320::Graphics::Material * s_material_robot;
 
 
 	// This struct determines the layout of the data that the CPU will send to the GPU
@@ -75,6 +79,7 @@ namespace
 	eae6320::Graphics::Mesh *s_wall = NULL;
 	eae6320::Graphics::Mesh *s_cement = NULL;
 	eae6320::Graphics::Mesh *s_debugCylinder1 = NULL;
+	eae6320::Graphics::Mesh *s_Robot = NULL;
 	//eae6320::Graphics::Mesh *s_box_2 = NULL;
 	//eae6320::Graphics::Mesh *s_box_3 = NULL;
 	//eae6320::Graphics::Mesh *s_box_4 = NULL;
@@ -125,21 +130,21 @@ namespace
 //	return s_direct3dDevice;
 //}
 
-bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
+bool eae6320::Graphics::Initialize(const HWND i_renderingWindow)
 {
 	s_renderingWindow = i_renderingWindow;
-	
+
 	//s_material = new Material("data/materialBlueTransparent.lua");
 
 	o_cam = new Camera();
 
 	// Initialize the interface to the Direct3D9 library
-	if ( !CreateInterface() )
+	if (!CreateInterface())
 	{
 		return false;
 	}
 	// Create an interface to a Direct3D device
-	if ( !CreateDevice() )
+	if (!CreateDevice())
 	{
 		goto OnError;
 	}
@@ -152,6 +157,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_material_railing = new Material("data/railing.lua");
 	s_material_wall = new Material("data/wall.lua");
 	s_material_cement = new Material("data/cement.lua");
+	s_material_robot = new Material("data/robot.lua");
 
 	s_material_ceiling->s_direct3dDevice = s_direct3dDevice;
 	s_material_floor->s_direct3dDevice = s_direct3dDevice;
@@ -159,6 +165,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_material_railing->s_direct3dDevice = s_direct3dDevice;
 	s_material_wall->s_direct3dDevice = s_direct3dDevice;
 	s_material_cement->s_direct3dDevice = s_direct3dDevice;
+	s_material_robot->s_direct3dDevice = s_direct3dDevice;
 
 	/*HRESULT result;
 	result = s_direct3dDevice->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
@@ -173,7 +180,7 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	s_wall = new Mesh("data/Walls.mesh");
 	s_cement = new Mesh("data/Cement.mesh");
 	s_debugCylinder1 = new Mesh("data/Cylinder.mesh");
-	
+	s_Robot = new Mesh("data/Robot.mesh");
 
 	//o_fish = new Renderable(*s_material_default, *s_fish);
 	o_ceiling = new Renderable(*s_material_ceiling, *s_ceiling);
@@ -185,25 +192,37 @@ bool eae6320::Graphics::Initialize( const HWND i_renderingWindow )
 	o_cement = new Renderable(*s_material_cement, *s_cement);
 	o_debugCylinder1 = new Renderable(*s_material_railing, *s_debugCylinder1);
 
+	//3rdperson Robot
+	o_robot = new Renderable(*s_material_robot, *s_Robot);
+	o_robotLine = new eae6320::Graphics::DebugLine(Math::cVector(100.0f, 0.0f, 0.0f), Math::cVector(75.0f, -50.0f, -50.0f), Math::cVector(0.0f, 0.0f, 1.0f));
+
 	/*if ( !CreateIndexBuffer() )
 	{
-		goto OnError;
+	goto OnError;
 	}*/
 
 	//s_direct3dDevice = Graphics::GetLocalDirect3dDevice();
 
 	/*if (!o_man->LoadRenderable() || !o_floor->LoadRenderable() || !o_house->LoadRenderable() || !o_box_1->LoadRenderable() || !o_box_2->LoadRenderable() || !o_box_3->LoadRenderable() || !o_box_4->LoadRenderable())
 	{
-		goto OnError;
+	goto OnError;
 	}
 	*/
 	if (!o_ceiling->LoadRenderable() || !o_floor->LoadRenderable() || !o_metal->LoadRenderable() || !o_railing->LoadRenderable()
-		|| !o_lambert2->LoadRenderable() || !o_wall->LoadRenderable() || !o_cement->LoadRenderable()||!o_debugCylinder1->LoadRenderable())
+		|| !o_lambert2->LoadRenderable() || !o_wall->LoadRenderable() || !o_cement->LoadRenderable() || !o_debugCylinder1->LoadRenderable() || !o_robot->LoadRenderable())
 	{
 		goto OnError;
 	}
 
 	LoadObjects();
+
+	o_robot->o_position.x -= 50;
+	o_robot->o_position.y -= 250;
+	o_robot->o_position.z -= 300;
+
+	o_cam->m_position = o_robot->o_position;
+	o_cam->m_position.y += 80;
+	o_cam->m_position.z += 200;
 
 	return true;
 
@@ -222,7 +241,7 @@ bool eae6320::Graphics::Clear()
 	{
 		const D3DRECT* subRectanglesToClear = NULL;
 		const DWORD subRectangleCount = 0;
-		const DWORD clearTheRenderTarget = D3DCLEAR_TARGET| D3DCLEAR_ZBUFFER;
+		const DWORD clearTheRenderTarget = D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER;
 		D3DCOLOR clearColor;
 		{
 			// Black is usually used:
@@ -240,38 +259,38 @@ bool eae6320::Graphics::BeginDraw()
 {
 	// The actual function calls that draw geometry must be made between paired calls to
 	// BeginScene() and EndScene()
-	
-		HRESULT result = s_direct3dDevice->BeginScene();
-		assert(SUCCEEDED(result));
 
-		//// Set the shaders
-		//{
-		//	result = s_direct3dDevice->SetVertexShader(s_vertexShader);
-		//	assert(SUCCEEDED(result));
-		//	result = s_direct3dDevice->SetPixelShader(s_fragmentShader);
-		//	assert(SUCCEEDED(result));
-		//}
+	HRESULT result = s_direct3dDevice->BeginScene();
+	assert(SUCCEEDED(result));
+
+	//// Set the shaders
+	//{
+	//	result = s_direct3dDevice->SetVertexShader(s_vertexShader);
+	//	assert(SUCCEEDED(result));
+	//	result = s_direct3dDevice->SetPixelShader(s_fragmentShader);
+	//	assert(SUCCEEDED(result));
+	//}
 
 	return true;
 }
-			//s_rectangle_object->DrawGameObject();
-			//s_leftTriangle_object->o_offset.x = -0.3f;
-			//s_leftTriangle_object->DrawGameObject();
-			//s_rightTriangle_object->o_offset.x = 0.3f;
-			//s_rightTriangle_object->DrawGameObject();
+//s_rectangle_object->DrawGameObject();
+//s_leftTriangle_object->o_offset.x = -0.3f;
+//s_leftTriangle_object->DrawGameObject();
+//s_rightTriangle_object->o_offset.x = 0.3f;
+//s_rightTriangle_object->DrawGameObject();
 
 
 bool eae6320::Graphics::EndDraw()
 {
-		HRESULT result = s_direct3dDevice->EndScene();
-		assert( SUCCEEDED( result ) );
+	HRESULT result = s_direct3dDevice->EndScene();
+	assert(SUCCEEDED(result));
 
-		return true;
+	return true;
 }
 
-	// Everything has been drawn to the "back buffer", which is just an image in memory.
-	// In order to display it, the contents of the back buffer must be "presented"
-	// (to the front buffer)
+// Everything has been drawn to the "back buffer", which is just an image in memory.
+// In order to display it, the contents of the back buffer must be "presented"
+// (to the front buffer)
 bool eae6320::Graphics::ShowBuffer()
 {
 	{
@@ -283,7 +302,7 @@ bool eae6320::Graphics::ShowBuffer()
 		assert(SUCCEEDED(result));
 	}
 	return true;
-	
+
 }
 
 
@@ -291,20 +310,20 @@ bool eae6320::Graphics::ShutDown()
 {
 	bool wereThereErrors = false;
 
-	if ( s_direct3dInterface )
+	if (s_direct3dInterface)
 	{
-		if ( s_direct3dDevice )
+		if (s_direct3dDevice)
 		{
-		/*	if (s_effect)
+			/*	if (s_effect)
 			{
-				s_effect->ReleaseEffect();
-				s_effect = NULL;
+			s_effect->ReleaseEffect();
+			s_effect = NULL;
 			}*/
 
-		/*	if (s_man)
+			/*	if (s_man)
 			{
-				s_man->ReleaseMesh();
-				s_man = NULL;
+			s_man->ReleaseMesh();
+			s_man = NULL;
 			}*/
 
 			s_direct3dDevice->Release();
@@ -350,15 +369,15 @@ namespace
 			presentationParameters.EnableAutoDepthStencil = TRUE;
 			presentationParameters.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
 		}
-		HRESULT result = s_direct3dInterface->CreateDevice( useDefaultDevice, useHardwareRendering,
-			s_renderingWindow, useHardwareVertexProcessing, &presentationParameters, &s_direct3dDevice );
-		if ( SUCCEEDED( result ) )
+		HRESULT result = s_direct3dInterface->CreateDevice(useDefaultDevice, useHardwareRendering,
+			s_renderingWindow, useHardwareVertexProcessing, &presentationParameters, &s_direct3dDevice);
+		if (SUCCEEDED(result))
 		{
 			return true;
 		}
 		else
 		{
-			eae6320::UserOutput::Print( "Direct3D failed to create a Direct3D9 device" );
+			eae6320::UserOutput::Print("Direct3D failed to create a Direct3D9 device");
 			return false;
 		}
 	}
@@ -453,14 +472,14 @@ namespace
 	{
 		// D3D_SDK_VERSION is #defined by the Direct3D header files,
 		// and is just a way to make sure that everything is up-to-date
-		s_direct3dInterface = Direct3DCreate9( D3D_SDK_VERSION );
-		if ( s_direct3dInterface )
+		s_direct3dInterface = Direct3DCreate9(D3D_SDK_VERSION);
+		if (s_direct3dInterface)
 		{
 			return true;
 		}
 		else
 		{
-			eae6320::UserOutput::Print( "DirectX failed to create a Direct3D9 interface" );
+			eae6320::UserOutput::Print("DirectX failed to create a Direct3D9 interface");
 			return false;
 		}
 	}
@@ -627,19 +646,19 @@ namespace
 
 	/*HRESULT GetVertexProcessingUsage( DWORD& o_usage )
 	{
-		D3DDEVICE_CREATION_PARAMETERS deviceCreationParameters;
-		const HRESULT result = s_direct3dDevice->GetCreationParameters( &deviceCreationParameters );
-		if ( SUCCEEDED( result ) )
-		{
-			DWORD vertexProcessingType = deviceCreationParameters.BehaviorFlags &
-				( D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MIXED_VERTEXPROCESSING | D3DCREATE_SOFTWARE_VERTEXPROCESSING );
-			o_usage = ( vertexProcessingType != D3DCREATE_SOFTWARE_VERTEXPROCESSING ) ? 0 : D3DUSAGE_SOFTWAREPROCESSING;
-		}
-		else
-		{
-			eae6320::UserOutput::Print( "Direct3D failed to get the device's creation parameters" );
-		}
-		return result;
+	D3DDEVICE_CREATION_PARAMETERS deviceCreationParameters;
+	const HRESULT result = s_direct3dDevice->GetCreationParameters( &deviceCreationParameters );
+	if ( SUCCEEDED( result ) )
+	{
+	DWORD vertexProcessingType = deviceCreationParameters.BehaviorFlags &
+	( D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MIXED_VERTEXPROCESSING | D3DCREATE_SOFTWARE_VERTEXPROCESSING );
+	o_usage = ( vertexProcessingType != D3DCREATE_SOFTWARE_VERTEXPROCESSING ) ? 0 : D3DUSAGE_SOFTWAREPROCESSING;
+	}
+	else
+	{
+	eae6320::UserOutput::Print( "Direct3D failed to get the device's creation parameters" );
+	}
+	return result;
 	}*/
 
 	//bool LoadFragmentShader()

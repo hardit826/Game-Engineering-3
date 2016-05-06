@@ -8,6 +8,7 @@
 #include "../Math/cQuaternion.h"
 #include "../Math/cMatrix_transformation.h"
 #include<fstream>
+#include "../../Engine/Graphics/Camera.h"
 
 #define Alpha_Transparency 0
 #define Depth_Testing 1
@@ -81,26 +82,26 @@ D3DXHANDLE eae6320::Graphics::GraphicEffect::GetUniformHandle(int i_vertexOrFrag
 		return o_fragmentShaderConstantTable->GetConstantByName(NULL, i_uniformName);
 
 }
-void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation,Camera i_camera)
+void eae6320::Graphics::GraphicEffect::SetDrawCallUniforms(eae6320::Math::cMatrix_transformation i_mvpMatrixTransformation, Camera i_camera)
 {
 	HRESULT result;
 	g_transform_localToWorld = o_vertexShaderConstantTable->GetConstantByName(NULL, "g_transform_localToWorld");
 	g_transform_worldToView = o_vertexShaderConstantTable->GetConstantByName(NULL, "g_transform_worldToView");
 	g_transform_viewToScreen = o_vertexShaderConstantTable->GetConstantByName(NULL, "g_transform_viewToScreen");
 
-	const float aspectRatio = (float)800 / 600;
-	Math::cVector cameraPosition = Math::cVector(0, 0, 10);
-	Math::cQuaternion cameraRotation = Math::cQuaternion();
+	//const float aspectRatio = (float)800 / 600;
+	//Math::cVector cameraPosition = Math::cVector(0, 0, 10);
+	//Math::cQuaternion cameraRotation = Math::cQuaternion();
 
-	const float z_nearPlane = 0.1f;
-	const float z_farPlane = 4000.0f;
-	const float fieldOfView = Math::ConvertDegreesToRadians(60); //60 degree field of view
+	//const float z_nearPlane = 0.1f;
+	//const float z_farPlane = 4000.0f;
+	//const float fieldOfView = Math::ConvertDegreesToRadians(60); //60 degree field of view
 
 	Math::cMatrix_transformation g_matrix_worldToView = Math::cMatrix_transformation::cMatrix_transformation::
-		CreateWorldToViewTransform(i_camera.camRotation, i_camera.camPosition);
+		CreateWorldToViewTransform(i_camera.m_orientation, i_camera.m_position);
 
 	Math::cMatrix_transformation g_matrix_viewToScreen = Math::cMatrix_transformation::cMatrix_transformation::
-		CreateViewToScreenTransform(fieldOfView, aspectRatio, z_nearPlane, z_farPlane);
+		CreateViewToScreenTransform(i_camera.m_fieldOfView_y, i_camera.m_aspectRatio, i_camera.m_z_nearPlane, i_camera.m_z_farPlane);
 
 
 	result = o_vertexShaderConstantTable->SetMatrixTranspose(s_direct3dDevice, g_transform_localToWorld,
@@ -123,7 +124,7 @@ bool eae6320::Graphics::GraphicEffect::LoadVertexShader()
 	{
 		return false;
 	}
-	D3DXGetShaderConstantTable(reinterpret_cast<const DWORD*>(o_bufferShader),&o_vertexShaderConstantTable);
+	D3DXGetShaderConstantTable(reinterpret_cast<const DWORD*>(o_bufferShader), &o_vertexShaderConstantTable);
 	//ID3DXBuffer* compiledShader;
 	//{
 	//	//const char* sourceCodeFileName = "data/vertex.shader";

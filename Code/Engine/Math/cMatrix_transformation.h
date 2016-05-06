@@ -51,6 +51,7 @@ namespace eae6320
 			static cMatrix_transformation CreateViewToScreenTransform(
 				const float i_fieldOfView_y, const float i_aspectRatio,
 				const float i_z_nearPlane, const float i_z_farPlane );
+			static cVector matrixMulVector(const cMatrix_transformation& i_mtx, const cVector& i_vec);
 
 			// Initialization / Shut Down
 			//---------------------------
@@ -58,6 +59,10 @@ namespace eae6320
 			cMatrix_transformation();	// Identity
 			cMatrix_transformation( const cQuaternion& i_rotation, const cVector& i_translation );
 
+			float Get(size_t i_row, size_t i_col) const { return *((&m_00) + i_row * 4 + i_col); };
+			void Set(int i_row, int i_col, float i_m) { *((&m_00) + i_row * 4 + i_col) = i_m; };
+
+			void Transpose();
 			// Data
 			//=====
 

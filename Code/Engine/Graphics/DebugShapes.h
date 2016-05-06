@@ -27,6 +27,7 @@ namespace eae6320
 
 		class DebugLine
 		{
+		public:
 			Math::cVector m_startPoint;
 			Math::cVector m_endPoint;
 			Math::cVector m_color;

@@ -37,6 +37,7 @@ void eae6320::Graphics::Render()
 
 void eae6320::Graphics::DrawRenderableList()
 {
+	o_robot->DrawRenderable();
 	o_ceiling->DrawRenderable();
 	o_floor->DrawRenderable();
 	o_metal->DrawRenderable();
@@ -66,6 +67,7 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugSphere2 = eae6320::Graphics::DebugSphere(Math::cVector(-50.0f, -80.0f, -40.0f), 30.0f, 20, 20, Math::cVector(1.0f, 1.0f, 0.0f));
 
 	s_debugLine1.LoadDebugLine();
+	o_robotLine->LoadDebugLine();
 	s_debugBox1.LoadDebugBox();
 	s_debugSphere1->LoadDebugSphere();
 
@@ -81,7 +83,7 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugMenuCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Debug Sphere Enabled", 20, 50, 200, 50);
 	s_debugMenuSlider = new eae6320::Graphics::DebugMenuSlider("Debug Sphere Radius", 20, 80, 200, 50);
 	s_debugMenuButton = new eae6320::Graphics::DebugMenuButton("Debug Sphere Radius Reset", 20, 110, 275, 50);
-	//s_toggleFPSCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Enable Fly Camera ", 20, 140, 200, 50);
+	s_toggleFPSCheckBox = new eae6320::Graphics::DebugMenuCheckBox("Enable Fly Camera ", 20, 140, 200, 50);
 #endif
 
 #ifdef _DEBUG
@@ -91,7 +93,8 @@ bool eae6320::Graphics::LoadObjects()
 	s_debugMenuCheckBox->LoadDebugCheckBox();
 	s_debugMenuSlider->LoadDebugSlider();
 	s_debugMenuButton->LoadDebugButton();
-	//s_toggleFPSCheckBox->LoadDebugCheckBox();
+	s_toggleFPSCheckBox->LoadDebugCheckBox();
+	s_toggleFPSCheckBox->m_isChecked = false;
 #endif
 
 	return true;
@@ -107,12 +110,13 @@ bool eae6320::Graphics::DrawObjects()
 	s_debugLine1.DrawLine();
 	s_debugBox1.DrawBox();
 
-	if(s_debugMenuCheckBox->m_isChecked)
+	if (s_debugMenuCheckBox->m_isChecked)
 		s_debugSphere1->DrawSphere();
 
 	s_debugLine2.DrawLine();
 	s_debugBox2.DrawBox();
 	s_debugSphere2.DrawSphere();
+	o_robotLine->DrawLine();
 
 	if (s_debugMenuEnabled)
 	{
@@ -126,7 +130,7 @@ bool eae6320::Graphics::DrawObjects()
 			s_debugMenuCheckBox->DrawDebugCheckBox(0);
 			s_debugMenuSlider->DrawDebugSlider(0);
 			s_debugMenuButton->DrawDebugButton(0);
-			//s_toggleFPSCheckBox->DrawDebugCheckBox(0);
+			s_toggleFPSCheckBox->DrawDebugCheckBox(0);
 			break;
 
 		case DebugMenuSelection::CheckBox:
@@ -134,7 +138,7 @@ bool eae6320::Graphics::DrawObjects()
 			s_debugMenuCheckBox->DrawDebugCheckBox(255);
 			s_debugMenuSlider->DrawDebugSlider(0);
 			s_debugMenuButton->DrawDebugButton(0);
-			//s_toggleFPSCheckBox->DrawDebugCheckBox(0);
+			s_toggleFPSCheckBox->DrawDebugCheckBox(0);
 			break;
 
 		case DebugMenuSelection::Slider:
@@ -142,7 +146,7 @@ bool eae6320::Graphics::DrawObjects()
 			s_debugMenuCheckBox->DrawDebugCheckBox(0);
 			s_debugMenuSlider->DrawDebugSlider(255);
 			s_debugMenuButton->DrawDebugButton(0);
-			//s_toggleFPSCheckBox->DrawDebugCheckBox(0);
+			s_toggleFPSCheckBox->DrawDebugCheckBox(0);
 			break;
 
 		case DebugMenuSelection::Button:
@@ -150,16 +154,16 @@ bool eae6320::Graphics::DrawObjects()
 			s_debugMenuCheckBox->DrawDebugCheckBox(0);
 			s_debugMenuSlider->DrawDebugSlider(0);
 			s_debugMenuButton->DrawDebugButton(255);
-			//s_toggleFPSCheckBox->DrawDebugCheckBox(0);
+			s_toggleFPSCheckBox->DrawDebugCheckBox(0);
 			break;
 
-		/*case DebugMenuSelection::ToggleCam:
+		case DebugMenuSelection::ToggleCam:
 			s_debugMenuTextFPS.DrawDebugText(0);
 			s_debugMenuCheckBox->DrawDebugCheckBox(0);
 			s_debugMenuSlider->DrawDebugSlider(0);
 			s_debugMenuButton->DrawDebugButton(0);
 			s_toggleFPSCheckBox->DrawDebugCheckBox(255);
-			break;*/
+			break;
 
 		default:
 			break;

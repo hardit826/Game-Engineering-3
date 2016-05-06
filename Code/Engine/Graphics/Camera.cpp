@@ -1,78 +1,21 @@
+// Header Files
+//=============
 #include "Camera.h"
-#include "../Math/cVector.h"
+#include "../Math/cMatrix_transformation.h"
 
-void eae6320::Graphics::Camera::StrafeLeft()
+// Interface
+//==========
+
+void eae6320::Graphics::Camera::UpdatePosition(Math::cVector i_position_offset)
 {
-	if (eae6320::UserInput::IsKeyPressed('A'))
-	{
-		camPosition.x -= camSPEED* eae6320::Time::GetSecondsElapsedThisFrame();
-	}
-}
-void eae6320::Graphics::Camera::StrafeRight()
-{
-	if (eae6320::UserInput::IsKeyPressed('D'))
-	{
-		camPosition.x += camSPEED* eae6320::Time::GetSecondsElapsedThisFrame();
-	}
-}
-void eae6320::Graphics::Camera::FlyUp()
-{
-	if (eae6320::UserInput::IsKeyPressed(' '))
-	{
-		camPosition.y += camSPEED* eae6320::Time::GetSecondsElapsedThisFrame();
-	}
-}
-void eae6320::Graphics::Camera::DiveDown()
-{
-	if (eae6320::UserInput::IsKeyPressed('Z'))
-	{
-		camPosition.y -= camSPEED* eae6320::Time::GetSecondsElapsedThisFrame();
-	}
+	// To move the camera in the direction it is pointing at
+	Math::cMatrix_transformation i_localToWorldTransform = Math::cMatrix_transformation(m_orientation, m_position);
+	m_position = Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransform, i_position_offset);
 }
 
-void eae6320::Graphics::Camera::WalkForward()
+void eae6320::Graphics::Camera::UpdateOrientation(Math::cVector i_rotation_offset)
 {
-	if (eae6320::UserInput::IsKeyPressed('W'))
-	{
-		camPosition.z -= camSPEED* eae6320::Time::GetSecondsElapsedThisFrame();
-	}
-}
-void eae6320::Graphics::Camera::WalkBackward()
-{
-	if (eae6320::UserInput::IsKeyPressed('S'))
-	{
-		camPosition.z += camSPEED* eae6320::Time::GetSecondsElapsedThisFrame();
-	}
-}
-void eae6320::Graphics::Camera::RotateClockwise()
-{
-	if (eae6320::UserInput::IsKeyPressed('E'))
-	{
-		const float degree = Math::ConvertDegreesToRadians(60 * Time::GetSecondsElapsedThisFrame());
-		Math::cVector axis(0, 1, 0);
-		Math::cQuaternion quat = Math::cQuaternion(degree, axis);
-		camRotation = camRotation * quat;
-	}
-}
-void eae6320::Graphics::Camera::RotateAntiClockwise()
-{
-	if (eae6320::UserInput::IsKeyPressed('Q'))
-	{
-		const float degree = Math::ConvertDegreesToRadians(-60 * Time::GetSecondsElapsedThisFrame());
-		Math::cVector axis(0, 1, 0);
-		Math::cQuaternion quat = Math::cQuaternion(degree, axis);
-		camRotation = camRotation * quat;
-	}
-}
-
-void eae6320::Graphics::Camera::CameraControls()
-{
-	StrafeLeft();
-	StrafeRight();
-	FlyUp();
-	DiveDown();
-	WalkForward();
-	WalkBackward();
-	RotateClockwise();
-	RotateAntiClockwise();
+	m_orientation = m_orientation * eae6320::Math::cQuaternion(i_rotation_offset.x, eae6320::Math::cVector(1.0f, 0.0f, 0.0f));
+	m_orientation = m_orientation * eae6320::Math::cQuaternion(i_rotation_offset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+	m_orientation = m_orientation * eae6320::Math::cQuaternion(i_rotation_offset.z, eae6320::Math::cVector(0.0f, 0.0f, 1.0f));
 }

@@ -14,7 +14,8 @@ return
 			"Lambert2.mesh",
 			"Walls.mesh",
 			"Cement.mesh",
-			"Cylinder.mesh"
+			"Cylinder.mesh",
+			"Robot.mesh"
 		},
 		dependencies = 
 		{
@@ -76,6 +77,7 @@ return
 			"cement.lua",
 			"wall.lua",
 			"railing.lua",
+			"robot.lua"
 		},
 		dependencies =
 		{
@@ -96,7 +98,8 @@ return
 			"numbers.png",
 			"logo.png",
 			"checkbox.png",
-			"button.png"
+			"button.png",
+			"robot.png"
 		},
 		dependencies =
 		{

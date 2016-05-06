@@ -1,5 +1,5 @@
 /*
-	This file contains all of the function definitions for this example program
+This file contains all of the function definitions for this example program
 */
 
 // Header Files
@@ -18,6 +18,9 @@
 #include "../../Engine/Graphics/Graphics.h"
 #include <math.h>
 #include "../../Engine/UserInput/UserInput.h"
+#include "../../Engine/Math/cMatrix_transformation.h"
+#include "../../Engine/Math/cQuaternion.h"
+
 // Static Data Initialization
 //===========================
 
@@ -50,14 +53,14 @@ namespace
 // Main Function
 //==============
 
-int CreateMainWindowAndReturnExitCodeWhenItCloses( const HINSTANCE i_thisInstanceOfTheProgram, const int i_initialWindowDisplayState )
+int CreateMainWindowAndReturnExitCodeWhenItCloses(const HINSTANCE i_thisInstanceOfTheProgram, const int i_initialWindowDisplayState)
 {
 	// Try to create the main window
-	if ( CreateMainWindow( i_thisInstanceOfTheProgram, i_initialWindowDisplayState ) )
+	if (CreateMainWindow(i_thisInstanceOfTheProgram, i_initialWindowDisplayState))
 	{
 		eae6320::Graphics::Initialize(s_mainWindow);
 		// If the main window was successfully created wait for it to be closed
-		const int exitCode = WaitForMainWindowToCloseAndReturnExitCode( i_thisInstanceOfTheProgram );
+		const int exitCode = WaitForMainWindowToCloseAndReturnExitCode(i_thisInstanceOfTheProgram);
 		return exitCode;
 	}
 	else
@@ -70,7 +73,7 @@ int CreateMainWindowAndReturnExitCodeWhenItCloses( const HINSTANCE i_thisInstanc
 // Helper Functions
 //=================
 
-bool CreateMainWindow( const HINSTANCE i_thisInstanceOfTheProgram, const int i_initialWindowDisplayState )
+bool CreateMainWindow(const HINSTANCE i_thisInstanceOfTheProgram, const int i_initialWindowDisplayState)
 {
 	// Every window that Windows creates must belong to a "class".
 	// Note that this is different than a C++ class (but similar in theory):
@@ -79,22 +82,22 @@ bool CreateMainWindow( const HINSTANCE i_thisInstanceOfTheProgram, const int i_i
 	// (In other words, every window will have exactly one class,
 	// but a windows class can have many windows.)
 	// To create a new windows class it must be "registered" with Windows.
-	ATOM mainWindowClass = RegisterMainWindowClass( i_thisInstanceOfTheProgram );
-	if ( mainWindowClass != NULL )
+	ATOM mainWindowClass = RegisterMainWindowClass(i_thisInstanceOfTheProgram);
+	if (mainWindowClass != NULL)
 	{
-		s_mainWindow = CreateMainWindowHandle( i_thisInstanceOfTheProgram, i_initialWindowDisplayState );
-		if ( s_mainWindow == NULL )
+		s_mainWindow = CreateMainWindowHandle(i_thisInstanceOfTheProgram, i_initialWindowDisplayState);
+		if (s_mainWindow == NULL)
 		{
 			goto OnError;
 		}
 
 		return true;
 
-OnError:
+	OnError:
 
 		// Unregister the main window class
 		{
-			UnregisterMainWindowClass( i_thisInstanceOfTheProgram );
+			UnregisterMainWindowClass(i_thisInstanceOfTheProgram);
 			mainWindowClass = NULL;
 		}
 
@@ -106,20 +109,20 @@ OnError:
 	}
 }
 
-int WaitForMainWindowToCloseAndReturnExitCode( const HINSTANCE i_thisInstanceOfTheProgram )
+int WaitForMainWindowToCloseAndReturnExitCode(const HINSTANCE i_thisInstanceOfTheProgram)
 {
 	// Wait for the main window to close
 	int exitCode;
-	bool wereThereErrors = WaitForMainWindowToClose( exitCode );
+	bool wereThereErrors = WaitForMainWindowToClose(exitCode);
 
 	// Clean up anything that was created/registered/initialized
-	if ( OnMainWindowClosed( i_thisInstanceOfTheProgram ) )
+	if (OnMainWindowClosed(i_thisInstanceOfTheProgram))
 	{
 		return exitCode;
 	}
 	else
 	{
-		if ( wereThereErrors )
+		if (wereThereErrors)
 		{
 			// If the program already had errors while waiting for the main window to close
 			// the existing error exit code can be returned
@@ -137,7 +140,7 @@ int WaitForMainWindowToCloseAndReturnExitCode( const HINSTANCE i_thisInstanceOfT
 // CreateMainWindow
 //-----------------
 
-HWND CreateMainWindowHandle( const HINSTANCE i_thisInstanceOfTheProgram, const int i_initialWindowDisplayState )
+HWND CreateMainWindowHandle(const HINSTANCE i_thisInstanceOfTheProgram, const int i_initialWindowDisplayState)
 {
 	// Create the main window
 	HWND mainWindow;
@@ -189,15 +192,15 @@ HWND CreateMainWindowHandle( const HINSTANCE i_thisInstanceOfTheProgram, const i
 		// Ask Windows to create the specified window.
 		// CreateWindowEx() will return a handle to the window,
 		// which is what we'll use to communicate with Windows about this window
-		mainWindow = CreateWindowEx( windowStyle_extended, s_mainWindowClass_name, windowCaption, windowStyle,
+		mainWindow = CreateWindowEx(windowStyle_extended, s_mainWindowClass_name, windowCaption, windowStyle,
 			position_x, position_y, width, height,
-			hParent, hMenu, hProgram, userData );
-		if ( mainWindow == NULL )
+			hParent, hMenu, hProgram, userData);
+		if (mainWindow == NULL)
 		{
 			const char* errorCaption = "No Main Window";
-			std::string errorMessage( "Windows failed to create the main window: " );
+			std::string errorMessage("Windows failed to create the main window: ");
 			errorMessage += eae6320::GetLastWindowsError();
-			MessageBox( NULL, errorMessage.c_str(), errorCaption, MB_OK | MB_ICONERROR );
+			MessageBox(NULL, errorMessage.c_str(), errorCaption, MB_OK | MB_ICONERROR);
 			return NULL;
 		}
 	}
@@ -219,64 +222,64 @@ HWND CreateMainWindowHandle( const HINSTANCE i_thisInstanceOfTheProgram, const i
 		} nonClientAreaSize;
 		{
 			// Get the coordinates of the entire window
-			if ( GetWindowRect( mainWindow, &windowCoordinates ) == FALSE )
+			if (GetWindowRect(mainWindow, &windowCoordinates) == FALSE)
 			{
-				std::string errorMessage( "Windows failed to get the coordinates of the main window: " );
+				std::string errorMessage("Windows failed to get the coordinates of the main window: ");
 				errorMessage += eae6320::GetLastWindowsError();
-				MessageBox( NULL, errorMessage.c_str(), NULL, MB_OK | MB_ICONERROR );
+				MessageBox(NULL, errorMessage.c_str(), NULL, MB_OK | MB_ICONERROR);
 				goto OnError;
 			}
 			// Get the dimensions of the client area
 			RECT clientDimensions;
-			if ( GetClientRect( mainWindow, &clientDimensions ) == FALSE )
+			if (GetClientRect(mainWindow, &clientDimensions) == FALSE)
 			{
-				std::string errorMessage( "Windows failed to get the dimensions of the main window's client area: " );
+				std::string errorMessage("Windows failed to get the dimensions of the main window's client area: ");
 				errorMessage += eae6320::GetLastWindowsError();
-				MessageBox( NULL, errorMessage.c_str(), NULL, MB_OK | MB_ICONERROR );
+				MessageBox(NULL, errorMessage.c_str(), NULL, MB_OK | MB_ICONERROR);
 				goto OnError;
 			}
 			// Get the difference between them
-			nonClientAreaSize.width = ( windowCoordinates.right - windowCoordinates.left ) - clientDimensions.right;
-			nonClientAreaSize.height = ( windowCoordinates.bottom - windowCoordinates.top ) - clientDimensions.bottom;
+			nonClientAreaSize.width = (windowCoordinates.right - windowCoordinates.left) - clientDimensions.right;
+			nonClientAreaSize.height = (windowCoordinates.bottom - windowCoordinates.top) - clientDimensions.bottom;
 		}
 		// Resize the window
 		{
 			BOOL shouldTheResizedWindowBeRedrawn = TRUE;
-			if ( MoveWindow( mainWindow, windowCoordinates.left, windowCoordinates.top,
+			if (MoveWindow(mainWindow, windowCoordinates.left, windowCoordinates.top,
 				desiredWidth + nonClientAreaSize.width, desiredHeight + nonClientAreaSize.height,
-				shouldTheResizedWindowBeRedrawn ) == FALSE )
+				shouldTheResizedWindowBeRedrawn) == FALSE)
 			{
-				std::string errorMessage( "Windows failed to resize the main window: " );
+				std::string errorMessage("Windows failed to resize the main window: ");
 				errorMessage += eae6320::GetLastWindowsError();
-				MessageBox( NULL, errorMessage.c_str(), NULL, MB_OK | MB_ICONERROR );
+				MessageBox(NULL, errorMessage.c_str(), NULL, MB_OK | MB_ICONERROR);
 				goto OnError;
 			}
 		}
 	}
 
 	// Display the window in the initial state that Windows requested
-	ShowWindow( mainWindow, i_initialWindowDisplayState );
+	ShowWindow(mainWindow, i_initialWindowDisplayState);
 
 	return mainWindow;
 
 OnError:
 
-	if ( DestroyWindow( mainWindow ) == FALSE )
+	if (DestroyWindow(mainWindow) == FALSE)
 	{
-		std::string errorMessage( "Windows failed to destroy the main window "
-			"after an error in creation: " );
+		std::string errorMessage("Windows failed to destroy the main window "
+			"after an error in creation: ");
 		errorMessage += eae6320::GetLastWindowsError();
-		MessageBox( NULL, errorMessage.c_str(), NULL, MB_OK | MB_ICONERROR );
+		MessageBox(NULL, errorMessage.c_str(), NULL, MB_OK | MB_ICONERROR);
 	}
 	mainWindow = NULL;
 
 	return NULL;
 }
 
-ATOM RegisterMainWindowClass( const HINSTANCE i_thisInstanceOfTheProgram )
+ATOM RegisterMainWindowClass(const HINSTANCE i_thisInstanceOfTheProgram)
 {
 	WNDCLASSEX wndClassEx = { 0 };
-	wndClassEx.cbSize = sizeof( WNDCLASSEX );
+	wndClassEx.cbSize = sizeof(WNDCLASSEX);
 	wndClassEx.hInstance = i_thisInstanceOfTheProgram;
 
 	// The class's style
@@ -295,14 +298,14 @@ ATOM RegisterMainWindowClass( const HINSTANCE i_thisInstanceOfTheProgram )
 	wndClassEx.cbWndExtra = 0;
 	// The large and small icons that windows of this class should use
 	// (These can be found in the Resources folder; feel free to change them)
-	wndClassEx.hIcon = LoadIcon( i_thisInstanceOfTheProgram, MAKEINTRESOURCE( IDI_BIG ) );
-	wndClassEx.hIconSm = LoadIcon( i_thisInstanceOfTheProgram, MAKEINTRESOURCE( IDI_SMALL ) );
+	wndClassEx.hIcon = LoadIcon(i_thisInstanceOfTheProgram, MAKEINTRESOURCE(IDI_BIG));
+	wndClassEx.hIconSm = LoadIcon(i_thisInstanceOfTheProgram, MAKEINTRESOURCE(IDI_SMALL));
 	// The cursor that should display when the mouse pointer is over windows of this class
-	wndClassEx.hCursor = LoadCursor( NULL, IDC_ARROW );
+	wndClassEx.hCursor = LoadCursor(NULL, IDC_ARROW);
 	// The "brush" that windows of this class should use as a background
 	// (Setting this is a bit confusing but not important,
 	// so don't be alarmed if the next line looks scary)
-	wndClassEx.hbrBackground = reinterpret_cast<HBRUSH>( IntToPtr( COLOR_BACKGROUND + 1 ) );
+	wndClassEx.hbrBackground = reinterpret_cast<HBRUSH>(IntToPtr(COLOR_BACKGROUND + 1));
 	// A menu can be specified that all windows of this class would use by default,
 	// but usually this is set for each window individually
 	wndClassEx.lpszMenuName = NULL;
@@ -312,13 +315,13 @@ ATOM RegisterMainWindowClass( const HINSTANCE i_thisInstanceOfTheProgram )
 	// Now all of the above information is given to Windows.
 	// If all goes well, the class will be successfully registered
 	// and it can be specified by name when creating the main window.
-	const ATOM mainWindowClass = RegisterClassEx( &wndClassEx );
-	if ( mainWindowClass == NULL )
+	const ATOM mainWindowClass = RegisterClassEx(&wndClassEx);
+	if (mainWindowClass == NULL)
 	{
 		const char* errorCaption = "No Main Window Class";
-		std::string errorMessage( "Windows failed to register the main window's class: " );
+		std::string errorMessage("Windows failed to register the main window's class: ");
 		errorMessage += eae6320::GetLastWindowsError();
-		MessageBox( NULL, errorMessage.c_str(), errorCaption, MB_OK | MB_ICONERROR );
+		MessageBox(NULL, errorMessage.c_str(), errorCaption, MB_OK | MB_ICONERROR);
 	}
 	return mainWindowClass;
 }
@@ -328,34 +331,34 @@ ATOM RegisterMainWindowClass( const HINSTANCE i_thisInstanceOfTheProgram )
 
 bool CleanupMainWindow()
 {
-	if ( s_mainWindow != NULL )
+	if (s_mainWindow != NULL)
 	{
-		if ( DestroyWindow( s_mainWindow ) != FALSE )
+		if (DestroyWindow(s_mainWindow) != FALSE)
 		{
 			s_mainWindow = NULL;
 		}
 		else
 		{
 			const char* errorCaption = "Couldn't Destroy Main Window";
-			std::string errorMessage( "Windows failed to destroy the main window: " );
+			std::string errorMessage("Windows failed to destroy the main window: ");
 			errorMessage += eae6320::GetLastWindowsError();
-			MessageBox( NULL, errorMessage.c_str(), errorCaption, MB_OK | MB_ICONERROR );
+			MessageBox(NULL, errorMessage.c_str(), errorCaption, MB_OK | MB_ICONERROR);
 			return false;
 		}
 	}
 	return true;
 }
 
-bool OnMainWindowClosed( const HINSTANCE i_thisInstanceOfTheProgram )
+bool OnMainWindowClosed(const HINSTANCE i_thisInstanceOfTheProgram)
 {
 	bool wereThereErrors = false;
 
-	if ( !CleanupMainWindow() )
+	if (!CleanupMainWindow())
 	{
 		wereThereErrors = true;
 	}
 
-	if ( !UnregisterMainWindowClass( i_thisInstanceOfTheProgram ) )
+	if (!UnregisterMainWindowClass(i_thisInstanceOfTheProgram))
 	{
 		wereThereErrors = true;
 	}
@@ -363,7 +366,7 @@ bool OnMainWindowClosed( const HINSTANCE i_thisInstanceOfTheProgram )
 	return !wereThereErrors;
 }
 
-LRESULT CALLBACK OnMessageReceived( HWND i_window, UINT i_message, WPARAM i_wParam, LPARAM i_lParam )
+LRESULT CALLBACK OnMessageReceived(HWND i_window, UINT i_message, WPARAM i_wParam, LPARAM i_lParam)
 {
 	// DispatchMessage() will send messages to the main window here.
 	// There are many messages that get sent to a window,
@@ -373,87 +376,87 @@ LRESULT CALLBACK OnMessageReceived( HWND i_window, UINT i_message, WPARAM i_wPar
 	// Process any messages that the game cares about
 	// (any messages that are processed here should return a value
 	// rather than letting the default processing function try to handle them a second time)
-	switch( i_message )
+	switch (i_message)
 	{
-	// A key has been pressed down, and this is the translated character
+		// A key has been pressed down, and this is the translated character
 	case WM_CHAR:
+	{
+		// This isn't usually the best way to handle keyboard input in a real-time game,
+		// but it is a convenient way to handle an exit key
+		// (The WPARAM input parameter indicates which key was pressed,
+		// but this example program only cares about the escape key)
+		if (i_wParam == VK_ESCAPE)
 		{
-			// This isn't usually the best way to handle keyboard input in a real-time game,
-			// but it is a convenient way to handle an exit key
-			// (The WPARAM input parameter indicates which key was pressed,
-			// but this example program only cares about the escape key)
-			if ( i_wParam == VK_ESCAPE )
+			// You do _not_ need to do this in your game,
+			// but this example program shows you how to display a "message box"
+			// that asks the user for confirmation
+			int result;
 			{
-				// You do _not_ need to do this in your game,
-				// but this example program shows you how to display a "message box"
-				// that asks the user for confirmation
-				int result;
-				{
-					const char* caption = "Exit Program?";
-					const char* message = "Are you sure you want to quit?";
-					result = MessageBox( s_mainWindow, message, caption, MB_YESNO | MB_ICONQUESTION );
-				}
-				if ( result == IDYES )
-				{
-					// Instruct Windows to send a WM_QUIT message
-					{
-						// The exit code is ignored,
-						// but just as an example of what's possible a different exit code is sent here
-						// than when the user closes the program in the usual way
-						// (by clicking the X in the upper-right hand corner).
-						int exitCode = 1;
-						PostQuitMessage( exitCode );
-					}
-
-					// For WM_CHAR messages, return 0 to indicate that it was processed
-					return 0;
-				}
-				else
-				{
-					// If the user doesn't select "Yes" to quit
-					// then do nothing to keep running the program
-				}
+				const char* caption = "Exit Program?";
+				const char* message = "Are you sure you want to quit?";
+				result = MessageBox(s_mainWindow, message, caption, MB_YESNO | MB_ICONQUESTION);
 			}
+			if (result == IDYES)
+			{
+				// Instruct Windows to send a WM_QUIT message
+				{
+					// The exit code is ignored,
+					// but just as an example of what's possible a different exit code is sent here
+					// than when the user closes the program in the usual way
+					// (by clicking the X in the upper-right hand corner).
+					int exitCode = 1;
+					PostQuitMessage(exitCode);
+				}
 
-			// If the key press wasn't handled pass it on to Windows to process in the default way
-			break;
+				// For WM_CHAR messages, return 0 to indicate that it was processed
+				return 0;
+			}
+			else
+			{
+				// If the user doesn't select "Yes" to quit
+				// then do nothing to keep running the program
+			}
 		}
+
+		// If the key press wasn't handled pass it on to Windows to process in the default way
+		break;
+	}
 	// The window's nonclient area is being destroyed
 	case WM_NCDESTROY:
-		{
-			// This is the last message a window will receive
-			// (Any child windows have already been destroyed).
-			// After this message has been processed the window's handle will be invalid:
-			s_mainWindow = NULL;
+	{
+		// This is the last message a window will receive
+		// (Any child windows have already been destroyed).
+		// After this message has been processed the window's handle will be invalid:
+		s_mainWindow = NULL;
 
-			// When the main window is destroyed
-			// a WM_QUIT message should be sent
-			// (if this isn't done the application would continue to run with no window).
-			// This is where the exitCode in WaitForShutdown() comes from:
-			int exitCode = 0;	// Arbitrary de facto success code
-			PostQuitMessage( exitCode );	// This sends a WM_QUIT message
+		// When the main window is destroyed
+		// a WM_QUIT message should be sent
+		// (if this isn't done the application would continue to run with no window).
+		// This is where the exitCode in WaitForShutdown() comes from:
+		int exitCode = 0;	// Arbitrary de facto success code
+		PostQuitMessage(exitCode);	// This sends a WM_QUIT message
 
-			// For WM_NCDESTROY messages, return 0 to indicate that it was processed
-			return 0;
-		}
+									// For WM_NCDESTROY messages, return 0 to indicate that it was processed
+		return 0;
+	}
 	}
 
 	// Pass any messages that weren't handled on to Windows
-	return DefWindowProc( i_window, i_message, i_wParam, i_lParam );
+	return DefWindowProc(i_window, i_message, i_wParam, i_lParam);
 }
 
-bool UnregisterMainWindowClass( const HINSTANCE i_thisInstanceOfTheProgram )
+bool UnregisterMainWindowClass(const HINSTANCE i_thisInstanceOfTheProgram)
 {
-	if ( UnregisterClass( s_mainWindowClass_name, i_thisInstanceOfTheProgram ) != FALSE )
+	if (UnregisterClass(s_mainWindowClass_name, i_thisInstanceOfTheProgram) != FALSE)
 	{
 		return true;
 	}
 	else
 	{
 		const char* errorCaption = "Couldn't Unregister Main Window Class";
-		std::string errorMessage( "Windows failed to unregister the main window's class: " );
+		std::string errorMessage("Windows failed to unregister the main window's class: ");
 		errorMessage += eae6320::GetLastWindowsError();
-		MessageBox( NULL, errorMessage.c_str(), errorCaption, MB_OK | MB_ICONERROR );
+		MessageBox(NULL, errorMessage.c_str(), errorCaption, MB_OK | MB_ICONERROR);
 		return false;
 	}
 }
@@ -461,41 +464,143 @@ bool UnregisterMainWindowClass( const HINSTANCE i_thisInstanceOfTheProgram )
 bool UpdateEntities_vector()
 {
 	bool wereThereErrors = false;
-	
+
 	eae6320::Math::cVector offset(0.0f, 0.0f);
+	eae6320::Math::cVector rotationOffset(0.0f, 0.0f, 0.0f);
+	eae6320::Math::cVector thirdPersonCamOffset(0.0f, 0.0f, 0.0f);
 	{
 		// Get the direction
 		{
-			if (eae6320::UserInput::IsKeyPressed(VK_LEFT))
+			if (eae6320::UserInput::IsKeyPressed('A'))
 			{
 				offset.x -= 1.0f;
 			}
-			if (eae6320::UserInput::IsKeyPressed(VK_RIGHT))
+			if (eae6320::UserInput::IsKeyPressed('D'))
 			{
 				offset.x += 1.0f;
 			}
-			if (eae6320::UserInput::IsKeyPressed(VK_DOWN))
-			{
-				offset.z += 1.0f; 
-			}
-			if (eae6320::UserInput::IsKeyPressed(VK_UP))
+			if (eae6320::UserInput::IsKeyPressed('W'))
 			{
 				offset.z -= 1.0f;
 			}
+			if (eae6320::UserInput::IsKeyPressed('S'))
+			{
+				offset.z += 1.0f;
+			}
+			//if (eae6320::UserInput::IsKeyPressed(VK_LEFT))
+			//{
+			//	offset.x -= 1.0f;
+			//}
+			//if (eae6320::UserInput::IsKeyPressed(VK_RIGHT))
+			//{
+			//	offset.x += 1.0f;
+			//}
+			//if (eae6320::UserInput::IsKeyPressed(VK_DOWN))
+			//{
+			//	offset.z += 1.0f; 
+			//}
+			//if (eae6320::UserInput::IsKeyPressed(VK_UP))
+			//{
+			//	offset.z -= 1.0f;
+			//}
+			if (eae6320::UserInput::IsKeyPressed(VK_UP))
+			{
+				offset.y += 1.0f;
+			}
+			if (eae6320::UserInput::IsKeyPressed(VK_DOWN))
+			{
+				offset.y -= 1.0f;
+			}
+
+			// Get rotation
+			if (eae6320::UserInput::IsKeyPressed(VK_LEFT))
+			{
+				rotationOffset.y -= 0.3f;
+			}
+			if (eae6320::UserInput::IsKeyPressed(VK_RIGHT))
+			{
+				rotationOffset.y += 0.3f;
+			}
+			if (eae6320::UserInput::IsKeyPressed('Z'))
+			{
+				thirdPersonCamOffset.x -= 5.0f;
+			}
+			if (eae6320::UserInput::IsKeyPressed('X'))
+			{
+				thirdPersonCamOffset.x += 5.0f;
+			}
 		}
-		
+
 		// Get the speed
-		const float unitsPerSecond = 1.0f;	// This is arbitrary
+		const float unitsPerSecond = 300.0f;	// This is arbitrary
 		const float unitsToMove = unitsPerSecond * eae6320::Time::GetSecondsElapsedThisFrame();	// This makes the speed frame-rate-independent
 																								// Normalize the offset
 		offset *= unitsToMove;
+		rotationOffset *= unitsToMove / 100.0f;
+	}
+	if (eae6320::Graphics::s_toggleFPSCheckBox->m_isChecked)
+	{
+		// Setting camera rotation once for x axis and once for y axis
+		eae6320::Graphics::o_cam->UpdateOrientation(rotationOffset);
+
+		// The following line assumes there is some "entity" for the rectangle that the game code controls
+		// that encapsulates a mesh, an effect, and a position offset.
+		// You don't have to do it this way for your assignment!
+		// You just need a way to update the position offset associated with the colorful rectangle.
+		eae6320::Graphics::o_cam->UpdatePosition(offset);
+	}
+	else
+	{
+		rotationOffset.y = offset.x / 300.0f;
+		offset.x = 0;
+		offset.y = 0;
+
+		// Rotating Player
+		eae6320::Graphics::o_robot->o_quaternion = eae6320::Graphics::o_robot->o_quaternion *
+			eae6320::Math::cQuaternion(rotationOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+
+		// Updating player's position
+		eae6320::Math::cVector oldRobotPos = eae6320::Graphics::o_robot->o_position;
+		eae6320::Math::cMatrix_transformation i_localToWorldTransformRobot = eae6320::Math::cMatrix_transformation(
+			eae6320::Graphics::o_cam->m_orientation, eae6320::Graphics::o_robot->o_position);
+		eae6320::Math::cVector newRobotPos = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformRobot, offset);
+		eae6320::Graphics::o_robot->o_position = newRobotPos;
+
+		// Updating third person camera according to the player's position
+		eae6320::Math::cVector camOffset = eae6320::Math::cVector(0, 80, 300);
+		eae6320::Math::cVector val = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformRobot, camOffset);
+		eae6320::Graphics::o_cam->m_position += (val - eae6320::Graphics::o_cam->m_position) * eae6320::Time::GetSecondsElapsedThisFrame() * 3;
+		eae6320::Graphics::o_cam->m_orientation = eae6320::Graphics::o_cam->m_orientation *
+			eae6320::Math::cQuaternion(rotationOffset.y, eae6320::Math::cVector(0.0f, 1.0f, 0.0f));
+
+		// Temporarily moving third person camera left/right
+		eae6320::Math::cMatrix_transformation i_localToWorldTransformCamera = eae6320::Math::cMatrix_transformation(
+			eae6320::Graphics::o_cam->m_orientation, eae6320::Graphics::o_cam->m_position);
+		eae6320::Graphics::o_cam->m_position = eae6320::Math::cMatrix_transformation::matrixMulVector(i_localToWorldTransformCamera, thirdPersonCamOffset);
+
+		// Updating debug line for the player
+		oldRobotPos.y += 35;
+		newRobotPos.y = oldRobotPos.y;
+		if (!(newRobotPos == oldRobotPos))
+		{
+			eae6320::Math::cVector directionVector = (newRobotPos - oldRobotPos);
+			directionVector.Normalize();
+			eae6320::Graphics::o_robotLine->m_startPoint = newRobotPos;
+			eae6320::Graphics::o_robotLine->m_endPoint = newRobotPos + (directionVector * 100);
+			eae6320::Graphics::o_robotLine->LoadDebugLine();
+		}
+		else
+		{
+			eae6320::Graphics::o_robotLine->m_startPoint = eae6320::Graphics::o_robotLine->m_endPoint = oldRobotPos;
+			eae6320::Graphics::o_robotLine->LoadDebugLine();
+		}
 	}
 	// The following line assumes there is some "entity" for the rectangle that the game code controls
 	// that encapsulates a mesh, an effect, and a position offset.
 	// You don't have to do it this way for your assignment!
 	// You just need a way to update the position offset associated with the colorful rectangle.
-//	eae6320::Graphics::o_man->UpdatePosition(offset);
-//	eae6320::Graphics::o_man->UpdateRotation();
+	//	eae6320::Graphics::o_man->UpdatePosition(offset);
+	//	eae6320::Graphics::o_man->UpdateRotation();
 
 	return !wereThereErrors;
 }
@@ -553,14 +658,14 @@ bool UpdateSprite()
 	return !wereThereErrors;
 }
 
-bool CameraControls()
-{
-	bool wereThereErrors = false;
-	
-	eae6320::Graphics::o_cam->CameraControls();
-
-	return !wereThereErrors;
-}
+//bool CameraControls()
+//{
+//	bool wereThereErrors = false;
+//	
+//	eae6320::Graphics::o_cam();
+//
+//	return !wereThereErrors;
+//}
 
 // Enable DebugMenu
 void EnableDebugMenu()
@@ -687,9 +792,9 @@ void DebugMenuNavigation()
 	case 3:
 		eae6320::Graphics::s_activeMenuItem = eae6320::Graphics::DebugMenuSelection::Button;
 		break;
-	/*case 4:
+	case 4:
 		eae6320::Graphics::s_activeMenuItem = eae6320::Graphics::DebugMenuSelection::ToggleCam;
-		break;*/
+		break;
 	default:
 		break;
 	}
@@ -717,7 +822,7 @@ void DebugMenuNavigation()
 		leftPressed = false;
 }
 
-bool WaitForMainWindowToClose( int& o_exitCode )
+bool WaitForMainWindowToClose(int& o_exitCode)
 {
 	// Any time something happens that Windows cares about, it will send the main window a message.
 
@@ -743,10 +848,10 @@ bool WaitForMainWindowToClose( int& o_exitCode )
 			HWND getMessagesFromAnyWindowBelongingToTheCurrentThread = NULL;
 			unsigned int getAllMessageTypes = 0;
 			unsigned int ifAMessageExistsRemoveItFromTheQueue = PM_REMOVE;
-			hasWindowsSentAMessage = PeekMessage( &message, getMessagesFromAnyWindowBelongingToTheCurrentThread,
-				getAllMessageTypes, getAllMessageTypes, ifAMessageExistsRemoveItFromTheQueue ) == TRUE;
+			hasWindowsSentAMessage = PeekMessage(&message, getMessagesFromAnyWindowBelongingToTheCurrentThread,
+				getAllMessageTypes, getAllMessageTypes, ifAMessageExistsRemoveItFromTheQueue) == TRUE;
 		}
-		if ( !hasWindowsSentAMessage )
+		if (!hasWindowsSentAMessage)
 		{
 			// Usually there will be no messages in the queue, and the game can run
 
@@ -772,7 +877,7 @@ bool WaitForMainWindowToClose( int& o_exitCode )
 			{
 				UpdateEntities_vector();
 				UpdateSprite();
-				CameraControls();
+				//CameraControls();
 			}
 			else
 			{
@@ -790,21 +895,21 @@ bool WaitForMainWindowToClose( int& o_exitCode )
 
 			// First, the message must be "translated"
 			// (Key presses are translated into character messages)
-			TranslateMessage( &message );
+			TranslateMessage(&message);
 
 			// Then, the message is sent on to the appropriate processing function.
 			// This function is specified in the lpfnWndProc field of the WNDCLASSEX struct
 			// used to register a class with Windows.
 			// In the case of the main window in this example program
 			// it will always be OnMessageReceived()
-			DispatchMessage( &message );
+			DispatchMessage(&message);
 		}
-	} while ( message.message != WM_QUIT );
+	} while (message.message != WM_QUIT);
 
 	eae6320::Graphics::ShutDown();
 
 	// The exit code for the application is stored in the WPARAM of a WM_QUIT message
-	o_exitCode = static_cast<int>( message.wParam );
+	o_exitCode = static_cast<int>(message.wParam);
 
 	return true;
 }

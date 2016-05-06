@@ -31,6 +31,8 @@ namespace eae6320
 		extern Renderable* o_wall;
 		extern Renderable* o_lambert2;
 		extern Renderable* o_cement;
+		extern Renderable* o_robot;
+		extern DebugLine* o_robotLine;
 
 		extern Renderable* o_debugCylinder1;
 		extern DebugSphere* s_debugSphere1;

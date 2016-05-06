@@ -7,6 +7,8 @@
 #include "../Math/Functions.h"
 #include "../UserInput/UserInput.h"
 #include "../Time/Time.h"
+#include "../Math/cQuaternion.h"
+
 namespace eae6320
 {
 	namespace Graphics
@@ -14,30 +16,28 @@ namespace eae6320
 		struct Camera
 		{
 		public:
-			//Cam movement Speed
-		    float camSPEED = 400.0f;
-
-			void StrafeLeft();
-			void StrafeRight();
-			void FlyUp();
-			void DiveDown();
-			void WalkForward();
-			void WalkBackward();
-			void RotateClockwise();
-			void RotateAntiClockwise();
-			void CameraControls();
-			
-
-		public:
-			Math::cVector camPosition;
-			Math::cQuaternion camRotation;
+			Math::cVector m_position;
+			Math::cQuaternion m_orientation;
+			float m_fieldOfView_y;
+			float m_aspectRatio;
+			float m_z_nearPlane;
+			float m_z_farPlane;
 
 		public:
 			Camera() :
-				camPosition(Math::cVector(0, 10, 13)),
-				camRotation(Math::cQuaternion())
-			{};
+				m_position(Math::cVector(0, 0, 100)),
+				m_orientation(Math::cQuaternion()),
+				m_fieldOfView_y(Math::ConvertDegreesToRadians(60)),
+				m_aspectRatio((float)800 / 600),
+				m_z_nearPlane(0.1f),
+				m_z_farPlane(10000)
+			{
+			};
+
+			void UpdatePosition(Math::cVector i_position_offset);
+			void UpdateOrientation(Math::cVector i_rotation_offset);
 		};
+
 	}
 }
 #endif // !GUARD_CAMERA_H
